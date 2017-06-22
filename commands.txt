@@ -1,0 +1,5 @@
+for f in *.vcf.gz; do echo $f; bcftools view -i 'QUAL>250 & DP>100' $f | bgzip -c > $f'.qual250_dp100.vcf.gz'; tabix $f'.qual250_dp100.vcf.gz'; done
+
+for f in *.vcf.gz; do echo $f; bcftools annotate --rename-chrs ~/Jumis/tools/repositories/dnaexecution/data/chrn_to_n_mapping.txt $f | bgzip -c > $f'.rename-chrs.vcf.gz'; tabix $f'.rename-chrs.vcf.gz' ; bcftools view -r 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,M,MT $f'.rename-chrs.vcf.gz' | bgzip -c > $f'.rename-chrs.1-22xym.vcf.gz'; tabix $f'.rename-chrs.1-22xym.vcf.gz'; done                         
+
+for f in *.vcf.gz; do echo $f; bcftools annotate --threads 24 -a ~/Jumis/data/grch/37/variants/9606_b150/All_20170403.vcf.gz -c ID $f | bgzip -@ 24 -c > $f.dbsnp_rsided.vcf.gz; tabix $f.dbsnp_rsided.vcf.gz; done

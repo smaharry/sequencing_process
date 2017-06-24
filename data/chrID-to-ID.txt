@@ -21,6 +21,5 @@ chr20   20
 chr21   21
 chr22   22
 chrM    MT
-chrMT   MT
 chrX    X
 chrY    Y

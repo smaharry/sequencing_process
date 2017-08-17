@@ -12,12 +12,14 @@ def bgzip(file_path):
     Arguments:
         file_path (str):
     Returns:
-        None
+        str:
     """
 
     command = 'bgzip -f {}'.format(file_path)
 
     run_command(command)
+
+    return file_path + '.gz'
 
 
 def tabix(bgzipped_file_path):
@@ -26,12 +28,14 @@ def tabix(bgzipped_file_path):
     Arguments:
         bgzipped_file_path (str):
     Returns:
-        None
+        str:
     """
 
     command = 'tabix -f {}'.format(bgzipped_file_path)
 
     run_command(command)
+
+    return bgzipped_file_path + '.tbi'
 
 
 def convert_gzipped_to_bgzipped(gzipped_file_path):
@@ -40,7 +44,7 @@ def convert_gzipped_to_bgzipped(gzipped_file_path):
     Arguments:
         gzipped_file_path (str):
     Returns:
-        None
+        str:
     """
 
     tmp_file_path = '{}.convert_gzipped_to_bgzipped.tmp'.format(
@@ -59,3 +63,5 @@ def convert_gzipped_to_bgzipped(gzipped_file_path):
 
     # Rename tmp file path to gzipped file path
     rename(tmp_file_path, gzipped_file_path)
+
+    return gzipped_file_path

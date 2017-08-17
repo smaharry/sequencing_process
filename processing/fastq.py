@@ -7,13 +7,15 @@ def align(hisat2_index_file_path_prefix,
           paired_reverse_file_path=None,
           n_jobs=1):
     """
-    Align unpaired .FASTQ or paired .FASTQs.
-    :param hisat2_index_file_path_prefix: str
-    :param unpaired_file_path: str
-    :param paired_forward_file_path: str
-    :param paired_reverse_file_path: str
-    :param n_jobs: int
-    :return: str
+    Align unpaired .fastq file or paired forward and reverse .fastq files.
+    Arguments:
+        hisat2_index_file_path_prefix (str):
+        unpaired_file_path (str):
+        paired_forward_file_path (str):
+        paired_reverse_file_path (str):
+        n_jobs (int):
+    Returns:
+        str:
     """
 
     if unpaired_file_path:
@@ -27,7 +29,8 @@ def align(hisat2_index_file_path_prefix,
 
     else:
         raise ValueError(
-            'Need either unpaired sample or paired forward & reverse samples.')
+            'Need unpaired .fastq file or paired forward and reverse .fastq files.'
+        )
 
     command = 'hisat2 --dta-cufflinks -p {} -x {} {} -S {}'.format(
         n_jobs, hisat2_index_file_path_prefix, sample_command,

@@ -2,7 +2,7 @@ from .gz import bgzip, tabix
 from .helper.helper.subprocess_ import run_command
 
 
-def samptools_convert_sam_to_bam(sam_file_path, n_jobs=1):
+def samptools_sam_to_bam(sam_file_path, n_jobs=1):
     """
     Compress .sam file to .bam file.
     Arguments:
@@ -12,7 +12,7 @@ def samptools_convert_sam_to_bam(sam_file_path, n_jobs=1):
         str:
     """
 
-    output_bam_file_path = sam_file_path + '.samptools_convert_sam_to_bam.bam'
+    output_bam_file_path = sam_file_path + '.samptools_sam_to_bam.bam'
 
     command = 'samtools view -Sb -@ {} {} -o {}'.format(
         n_jobs, sam_file_path, output_bam_file_path)
@@ -22,7 +22,7 @@ def samptools_convert_sam_to_bam(sam_file_path, n_jobs=1):
     return output_bam_file_path
 
 
-def freebayes_call_cariants(bam_file_path, fasta_file_path):
+def freebayes(bam_file_path, fasta_file_path):
     """
     Call variants on .bam file.
     Arguments:
@@ -32,7 +32,7 @@ def freebayes_call_cariants(bam_file_path, fasta_file_path):
         str:
     """
 
-    output_vcf_file_path = bam_file_path + '.freebayes_call_cariants.vcf'
+    output_vcf_file_path = bam_file_path + '.freebayes.vcf'
 
     command = 'freebayes --fasta-reference {} {} > {}'.format(
         fasta_file_path, bam_file_path, output_vcf_file_path)

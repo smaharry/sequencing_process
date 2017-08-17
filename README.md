@@ -1,3 +1,3 @@
-# DNA Execution Library
+# Processing Library
 
-Library for executing tools on DNA files :pray:
+Library for processing bioinformatics files :fast_forward:

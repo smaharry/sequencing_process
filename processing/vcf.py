@@ -139,6 +139,30 @@ def bcftools_extract_chromosomes(vcf_file_path, chromosome_format):
     return tabix(bgzip(output_vcf_file_path))
 
 
+def bcftools_filter(vcf_file_path, qual=60, dp=30):
+    """
+    Annotate .vcf file with annotaiton.
+    Arguments:
+        vcf_file_path (str):
+        qual (int):
+        dp (int):
+    Returns:
+        str:
+    """
+
+    output_vcf_file_path = vcf_file_path + '.bcftools_filter_qual{}_dp{}.vcf'.format(
+        qual, dp)
+
+    bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
+
+    command = 'bcftoosl view '.format(bgzipped_tabixed_vcf_file_path, qual, dp,
+                                      output_vcf_file_path)
+
+    run_command(command)
+
+    return tabix(bgzip(output_vcf_file_path))
+
+
 def snpeff(vcf_file_path, genomic_assembly='GRCh38.82'):
     """
     Annotate .vcf file.

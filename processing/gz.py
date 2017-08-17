@@ -8,7 +8,7 @@ from .helper.helper.subprocess_ import run_command
 
 def bgzip(file_path):
     """
-    bgzip file_path.
+    bgzip file.
     Arguments:
         file_path (str):
     Returns:
@@ -24,7 +24,7 @@ def bgzip(file_path):
 
 def tabix(bgzipped_file_path):
     """
-    tabix bgzipped_file_path.
+    tabix bgzipped file.
     Arguments:
         bgzipped_file_path (str):
     Returns:

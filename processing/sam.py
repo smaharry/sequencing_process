@@ -1,34 +1,41 @@
 from .gz import bgzip, tabix
+from .helper.helper.subprocess_ import run_command
 
 
-def compress_sam_to_bam(sam_file_path):
+def samptools_convert_sam_to_bam(sam_file_path, n_jobs=1):
     """
+    Compress .sam file to .bam file.
     Arguments:
         sam_file_path (str):
+        n_jobs (int):
     Returns:
         str:
     """
 
-    output_bam_file_path = sam_file_path + '.bam'
+    output_bam_file_path = sam_file_path + '.samptools_convert_sam_to_bam.bam'
 
-    command =
+    command = 'samtools view -Sb -@ {} {} -o {}'.format(
+        n_jobs, sam_file_path, output_bam_file_path)
 
     run_command(command)
 
     return output_bam_file_path
 
 
-def call_variants(bam_file_path):
+def freebayes_call_cariants(bam_file_path, fasta_file_path):
     """
+    Call variants on .bam file.
     Arguments:
         bam_file_path (str):
+        fasta_file_path (str): reference .fasta file
     Returns:
         str:
     """
 
-    output_vcf_file_path = bam_file_path + '.vcf'
+    output_vcf_file_path = bam_file_path + '.freebayes_call_cariants.vcf'
 
-    command =
+    command = 'freebayes --fasta-reference {} {} > {}'.format(
+        fasta_file_path, bam_file_path, output_vcf_file_path)
 
     run_command(command)
 

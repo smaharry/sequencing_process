@@ -14,8 +14,8 @@ def samptools_sam_to_bam(sam_file_path, n_jobs=1):
 
     output_bam_file_path = sam_file_path + '.samptools_sam_to_bam.bam'
 
-    command = 'samtools view -Sb -@ {} {} -o {}'.format(
-        n_jobs, sam_file_path, output_bam_file_path)
+    command = 'samtools view -Sb -@ {} {} > {}'.format(n_jobs, sam_file_path,
+                                                       output_bam_file_path)
 
     run_command(command)
 

@@ -32,9 +32,9 @@ def hisat2(hisat2_index_file_path_prefix,
             'Need unpaired .fastq file path or paired forward and reverse .fastq file paths.'
         )
 
-    command = 'hisat2 --dta-cufflinks -p {} -x {} {} -S {}'.format(
-        n_jobs, hisat2_index_file_path_prefix, sample_command,
-        output_sam_file_path)
+    command = 'hisat2 --dta-cufflinks {} -x {} -S {} -p {}'.format(
+        sample_command, hisat2_index_file_path_prefix, output_sam_file_path,
+        n_jobs)
 
     run_command(command)
 

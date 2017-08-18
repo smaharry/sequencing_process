@@ -4,18 +4,13 @@ from . import CHROMOSOMES_CHRN, CHROMOSOMES_N
 from .gz import bgzip, tabix
 from .helper.helper.subprocess_ import run_command
 
-PICARD = ''
-SNPEFF = ''
-SNPSIFT = ''
 
-
-def picard_liftovervcf(vcf_file_path, source_assembly,
-                       assembly_chain_file_path, target_assembly_file_path):
+def picard_liftovervcf(vcf_file_path, assembly_chain_file_path,
+                       target_assembly_file_path):
     """
     Re-map .vcf file coordinates.
     Arguments:
         vcf_file_path (str):
-        source_assembly (str): 'hg19' | 'GRCh37'
         assembly_chain_file_path (str):
         target_assembly_file_path (str):
     Returns:
@@ -26,9 +21,9 @@ def picard_liftovervcf(vcf_file_path, source_assembly,
 
     rejected_vcf_file_path = vcf_file_path + '.picard_liftovervcf.rejected.vcf'
 
-    command = '{} LiftoverVcf INPUT={} OUTPUT={} REJECT={} CHAIN={} REFERENCE_SEQUENCE={}'.format(
-        PICARD, vcf_file_path, output_vcf_file_path, rejected_vcf_file_path,
-        assembly_chain_file_path, target_assembly_file_path)
+    command = 'picard LiftoverVcf INPUT={} CHAIN={} REFERENCE_SEQUENCE={} OUTPUT={} REJECT={}'.format(
+        vcf_file_path, assembly_chain_file_path, target_assembly_file_path,
+        output_vcf_file_path, rejected_vcf_file_path)
 
     run_command(command)
 
@@ -37,12 +32,13 @@ def picard_liftovervcf(vcf_file_path, source_assembly,
     return tabix(bgzip(output_vcf_file_path))
 
 
-def bcftools_isec(vcf_file_path_1, vcf_file_path_2):
+def bcftools_isec(vcf_file_path_1, vcf_file_path_2, n_jobs=1):
     """
     Get the intersection between 2 .vcf files.
     Arguments:
         vcf_file_path_1 (str):
         vcf_file_path_2 (str):
+        n_jobs (int):
     Returns:
         str:
     """
@@ -52,21 +48,21 @@ def bcftools_isec(vcf_file_path_1, vcf_file_path_2):
     bgzipped_tabixed_vcf_file_path_1 = tabix(bgzip(vcf_file_path_1))
     bgzipped_tabixed_vcf_file_path_2 = tabix(bgzip(vcf_file_path_2))
 
-    command = 'bcftools isec {} {} -O z -p {}'.format(
+    command = 'bcftools isec {} {} -p {} --threads {}'.format(
         bgzipped_tabixed_vcf_file_path_1, bgzipped_tabixed_vcf_file_path_2,
-        output_directory_path)
+        output_directory_path, n_jobs)
 
     run_command(command)
 
     return output_directory_path
 
 
-def bcftools_concat(vcf_file_paths):
+def bcftools_concat(vcf_file_paths, n_jobs):
     """
     Concatenate .vcf files.
     Arguments
         vcf_file_paths (iterable):
-        output_vcf_file_path (str):
+        n_jobs (int):
     Returns:
         str:
     """
@@ -77,20 +73,22 @@ def bcftools_concat(vcf_file_paths):
         tabix(bgzip(fn)) for fn in vcf_file_paths
     ]
 
-    command = 'bcftools concat -a {} -O z -o {}'.format(
-        ' '.join(bgzipped_tabixed_vcf_file_paths), output_vcf_file_path)
+    command = 'bcftools concat -a {} --threads {} > {}'.format(
+        ' '.join(bgzipped_tabixed_vcf_file_paths), n_jobs,
+        output_vcf_file_path)
 
     run_command(command)
 
     return tabix(bgzip(output_vcf_file_path))
 
 
-def bcftools_rename_chr(vcf_file_path, chromosome_map_file_path):
+def bcftools_rename_chr(vcf_file_path, chromosome_map_file_path, n_jobs=1):
     """
     Rename chromosomes in .vcf file.
     Arguments:
         vcf_file_path (str):
         chromosome_map_file_path (str):
+        n_jobs (int):
     Returns:
         str:
     """
@@ -99,8 +97,8 @@ def bcftools_rename_chr(vcf_file_path, chromosome_map_file_path):
 
     bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
 
-    command = 'bcftools annotate --rename-chrs {} {} -O z -o {}'.format(
-        chromosome_map_file_path, bgzipped_tabixed_vcf_file_path,
+    command = 'bcftools annotate --rename-chrs {} --threads {} {} > {}'.format(
+        chromosome_map_file_path, n_jobs, bgzipped_tabixed_vcf_file_path,
         output_vcf_file_path)
 
     run_command(command)
@@ -108,12 +106,41 @@ def bcftools_rename_chr(vcf_file_path, chromosome_map_file_path):
     return tabix(bgzip(output_vcf_file_path))
 
 
-def bcftools_extract_chromosomes(vcf_file_path, chromosome_format):
+def bcftools_extract_chromosomes(vcf_file_path,
+                                 chromosomes=[
+                                     '1',
+                                     '2',
+                                     '3',
+                                     '4',
+                                     '5',
+                                     '6',
+                                     '7',
+                                     '8',
+                                     '9',
+                                     '10',
+                                     '11',
+                                     '12',
+                                     '13',
+                                     '14',
+                                     '15',
+                                     '16',
+                                     '17',
+                                     '18',
+                                     '19',
+                                     '20',
+                                     '21',
+                                     '22',
+                                     'X',
+                                     'Y',
+                                     'MT',
+                                 ],
+                                 n_jobs=1):
     """
     Extract chromosomes (chromosome 1 to 22, X, Y, and MT) from .vcf file.
     Arguments:
         vcf_file_path (str):
-        chromosome_format (str): 'chrN' | 'N'
+        chromosomes (iterable):
+        n_jobs (int):
     Returns:
         str:
     """
@@ -122,16 +149,8 @@ def bcftools_extract_chromosomes(vcf_file_path, chromosome_format):
 
     bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
 
-    if chromosome_format == 'chrN':
-        chromosomes = CHROMOSOMES_CHRN
-    elif chromosome_format == 'N':
-        chromosomes = CHROMOSOMES_N
-    else:
-        raise ValueError(
-            'Invalid chromosome_format {}'.format(chromosome_format))
-
-    command = 'bcftools view -r {} {} -O z -o {}'.format(
-        ','.join(chromosomes), bgzipped_tabixed_vcf_file_path,
+    command = 'bcftools view -r {} --threads {} {} > {}'.format(
+        ','.join(chromosomes), n_jobs, bgzipped_tabixed_vcf_file_path,
         output_vcf_file_path)
 
     run_command(command)
@@ -139,13 +158,14 @@ def bcftools_extract_chromosomes(vcf_file_path, chromosome_format):
     return tabix(bgzip(output_vcf_file_path))
 
 
-def bcftools_filter(vcf_file_path, qual=60, dp=30):
+def bcftools_filter(vcf_file_path, qual=60, dp=30, n_jobs=1):
     """
     Annotate .vcf file with annotaiton.
     Arguments:
         vcf_file_path (str):
         qual (int):
         dp (int):
+        n_jobs (int):
     Returns:
         str:
     """
@@ -155,8 +175,37 @@ def bcftools_filter(vcf_file_path, qual=60, dp=30):
 
     bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
 
-    command = 'bcftoosl view '.format(bgzipped_tabixed_vcf_file_path, qual, dp,
-                                      output_vcf_file_path)
+    command = 'bcftoosl view -i \'{}<QUAL & {}<DP\' --threads {} {} > {}'.format(
+        qual, dp, n_jobs, bgzipped_tabixed_vcf_file_path, output_vcf_file_path)
+
+    run_command(command)
+
+    return tabix(bgzip(output_vcf_file_path))
+
+
+def bcftools_annotate(vcf_file_path,
+                      annotation_file_path,
+                      annotation_arguments='-c ID',
+                      n_jobs=1):
+    """
+    Annotate .vcf file with annotaiton file path.
+    Arguments:
+        vcf_file_path (str):
+        annotation_file_path (str):
+        annotation_arguments (str):
+        n_jobs (int):
+    Returns:
+        str:
+    """
+
+    output_vcf_file_path = vcf_file_path + '.bcftools_annotate_{}.vcf'.format(
+        split(annotation_file_path)[-1])
+
+    bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
+
+    command = 'bcftools annotate -a {} {} --threads {} {} > {}'.format(
+        annotation_file_path, annotation_arguments, n_jobs,
+        bgzipped_tabixed_vcf_file_path, output_vcf_file_path)
 
     run_command(command)
 
@@ -177,9 +226,9 @@ def snpeff(vcf_file_path, genomic_assembly='GRCh38.82'):
 
     bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
 
-    command = '{} -noDownload -v -noLog -s {}.html {} {} > {}'.format(
-        SNPEFF, output_vcf_file_path, genomic_assembly,
-        bgzipped_tabixed_vcf_file_path, output_vcf_file_path)
+    command = 'snpeff -noDownload -v -noLog -s {}.html {} {} > {}'.format(
+        output_vcf_file_path, genomic_assembly, bgzipped_tabixed_vcf_file_path,
+        output_vcf_file_path)
 
     run_command(command)
 
@@ -188,7 +237,7 @@ def snpeff(vcf_file_path, genomic_assembly='GRCh38.82'):
 
 def snpsift(vcf_file_path, annotation_file_path):
     """
-    Annotate .vcf file with annotaiton.
+    Annotate .vcf file with annotaiton file path.
     Arguments:
         vcf_file_path (str):
         annotation_file_path (str):
@@ -197,12 +246,12 @@ def snpsift(vcf_file_path, annotation_file_path):
     """
 
     output_vcf_file_path = vcf_file_path + '.snpsift_{}.vcf'.format(
-        annotation_file_path)
+        split(annotation_file_path)[-1])
 
     bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
 
-    command = '{} annotate -noDownload -v -noLog {} {} > {}'.format(
-        SNPSIFT, annotation_file_path, bgzipped_tabixed_vcf_file_path,
+    command = 'snpsift annotate -noDownload -v -noLog {} {} > {}'.format(
+        annotation_file_path, bgzipped_tabixed_vcf_file_path,
         output_vcf_file_path)
 
     run_command(command)

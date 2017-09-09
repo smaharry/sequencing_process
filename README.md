@@ -1,3 +1,3 @@
-# Processing Library
+# Library to Process DNA Sequences
 
-Library for processing bioinformatics files :fast_forward:
+Library to process DNA sequences :fast_forward:

@@ -12,5 +12,3 @@ parser.add_argument(
 
 # Parse arguments
 args = parser.parse_args()
-
- = args.

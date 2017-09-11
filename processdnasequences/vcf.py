@@ -211,12 +211,12 @@ def bcftools_annotate(vcf_file_path,
     return tabix(bgzip(output_vcf_file_path))
 
 
-def snpeff(vcf_file_path, genomic_assembly='GRCh38.82'):
+def snpeff(vcf_file_path, genomic_assembly='GRCh38.86'):
     """
     Annotate .vcf file.
     Arguments:
         vcf_file_path (str):
-        genomic_assembly (str): 'GRCh38.82' | 'GRCh37.75'
+        genomic_assembly (str): 'GRCh38.86' | 'GRCh37.75'
     Returns:
         str:
     """

@@ -15,3 +15,6 @@ if process == 'vcf.snpeff':
     from processdnasequences.vcf import snpeff
 
     snpeff(vcf_file_path)
+
+elif process == 'fastq.hisat2':
+    from processdnasequences.fastq import hisat2

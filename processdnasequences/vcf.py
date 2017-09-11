@@ -223,7 +223,8 @@ def snpeff(vcf_file_path, genomic_assembly='GRCh38.82'):
 
     output_vcf_file_path = vcf_file_path + '.snpeff.vcf'
 
-    bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
+    if not vcf_file_path.endswith('.gz'):
+        bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
 
     command = 'snpeff -noDownload -v -noLog -s {}.html {} {} > {}'.format(
         output_vcf_file_path, genomic_assembly, bgzipped_tabixed_vcf_file_path,

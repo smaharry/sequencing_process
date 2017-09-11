@@ -1,6 +1,5 @@
 from os.path import join, split
 
-from . import CHROMOSOMES_CHRN, CHROMOSOMES_N
 from .gz import bgzip, tabix
 from .helper.helper.subprocess_ import run_command
 

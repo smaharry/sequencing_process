@@ -12,6 +12,6 @@ process = args.process
 vcf_file_path = args.vcf_file_path
 
 if process == 'vcf.snpeff':
-    from .processdnasequences.vcf import snpeff
+    from processdnasequences.vcf import snpeff
 
     snpeff(vcf_file_path)

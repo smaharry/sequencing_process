@@ -228,7 +228,7 @@ def snpeff(vcf_file_path, genomic_assembly='GRCh38.82'):
     else:
         bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
 
-    command = 'snpeff -noDownload -v -noLog -s {}.html {} {} > {}'.format(
+    command = 'snpEff -noDownload -v -noLog -s {}.html {} {} > {}'.format(
         output_vcf_file_path, genomic_assembly, bgzipped_tabixed_vcf_file_path,
         output_vcf_file_path)
 
@@ -252,7 +252,7 @@ def snpsift(vcf_file_path, annotation_file_path):
 
     bgzipped_tabixed_vcf_file_path = tabix(bgzip(vcf_file_path))
 
-    command = 'snpsift annotate -noDownload -v -noLog {} {} > {}'.format(
+    command = 'SnpSift annotate -noDownload -v -noLog {} {} > {}'.format(
         annotation_file_path, bgzipped_tabixed_vcf_file_path,
         output_vcf_file_path)
 

@@ -1,3 +1,3 @@
-# Process DNA Sequences
+# Sequencing Process
 
-Library to process DNA sequences :fast_forward:
+Library for sequencing process

@@ -1,4 +1,4 @@
-from .helper.helper.subprocess_ import run_command
+from .support.support.subprocess_ import run_command
 
 
 def bgzip(file_path):

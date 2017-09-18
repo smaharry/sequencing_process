@@ -1,5 +1,5 @@
 from .gz import bgzip, tabix
-from .helper.helper.subprocess_ import run_command
+from .support.support.subprocess_ import run_command
 
 
 def samptools_sam_to_bam(sam_file_path, n_jobs=1):

@@ -1,7 +1,7 @@
 from os.path import join, split
 
 from .gz import bgzip, tabix
-from .helper.helper.subprocess_ import run_command
+from .support.support.subprocess_ import run_command
 
 
 def picard_liftovervcf(vcf_file_path, assembly_chain_file_path,

@@ -1,6 +1,6 @@
 from os.path import join, split
 
-from .gz import bgzip, tabix
+from .process_gz import bgzip, tabix
 from .support.support.subprocess_ import run_command
 
 

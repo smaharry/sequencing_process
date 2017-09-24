@@ -12,9 +12,9 @@ process = args.process
 vcf_file_path = args.vcf_file_path
 
 if process == 'vcf.snpeff':
-    from processdnasequences.vcf import snpeff
+    from sequencing_process.vcf import snpeff
 
     snpeff(vcf_file_path)
 
 elif process == 'fastq.hisat2':
-    from processdnasequences.fastq import hisat2
+    from sequencing_process.fastq import hisat2

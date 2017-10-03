@@ -3,7 +3,7 @@ from .support.support.subprocess_ import run_command
 
 def bgzip(file_path):
     """
-    bgzip file.
+    bgzip file_path.
     Arguments:
         file_path (str):
     Returns:
@@ -19,7 +19,7 @@ def bgzip(file_path):
 
 def tabix(bgzipped_file_path):
     """
-    tabix bgzipped file.
+    tabix bgzipped_file_path.
     Arguments:
         bgzipped_file_path (str):
     Returns:

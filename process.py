@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 # ==============================================================================
 parser = ArgumentParser()
 
-parser.add_argument('process', help='Process name.')
+parser.add_argument('process', choices=[], help='Process name.')
 
 parser.add_argument('-vcf', '--vcf-file-path', help='.vcf file path.')
 

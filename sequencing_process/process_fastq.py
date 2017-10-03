@@ -1,11 +1,11 @@
 from .support.support.subprocess_ import run_command
 
 
-def hisat2(hisat2_index_file_path_prefix,
-           unpaired_fastq_file_path=None,
-           paired_forward_fastq_file_path=None,
-           paired_reverse_fastq_file_path=None,
-           n_jobs=1):
+def align_dna_fastq_with_hisatw(hisat2_index_file_path_prefix,
+                                unpaired_fastq_file_path=None,
+                                paired_forward_fastq_file_path=None,
+                                paired_reverse_fastq_file_path=None,
+                                n_jobs=1):
     """
     Align unpaired .fastq file or paired forward and reverse .fastq files.
     Arguments:

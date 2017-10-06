@@ -2,7 +2,7 @@ from .process_gz import bgzip, tabix
 from .support.support.subprocess_ import run_command
 
 
-def samptools_sam_to_bam(sam_file_path, n_jobs=1):
+def samtools_sam_to_bam(sam_file_path, n_jobs=1):
     """
     Compress .sam file to .bam file.
     Arguments:

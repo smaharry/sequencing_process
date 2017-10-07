@@ -42,9 +42,15 @@ def align_fastq_gz_with_hisat2(hisat2_index_file_path_prefix,
         additional_arguments = '--no-spliced-alignment'
 
     command = 'hisat2 {} -x {} -p {} {} | samtools view -Sb -@ {} | samtools sort -@ {} > {} & samtools index -@ {} {}'.format(
-        sample_command, hisat2_index_file_path_prefix, n_jobs,
-        additional_arguments, n_jobs, n_jobs, output_bam_file_path,
-        output_bam_file_path, n_jobs)
+        sample_command,
+        hisat2_index_file_path_prefix,
+        n_jobs,
+        additional_arguments,
+        n_jobs,
+        n_jobs,
+        output_bam_file_path,
+        n_jobs,
+        output_bam_file_path, )
 
     run_command(command)
 

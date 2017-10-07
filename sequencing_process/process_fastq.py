@@ -41,7 +41,7 @@ def align_fastq_gz_with_hisat2(hisat2_index_file_path_prefix,
     elif sequence_type == 'RNA':
         additional_arguments = '--no-spliced-alignment'
 
-    command = 'hisat2 {} -x {} -p {} {} | samtools view -Sb -@ {} | samtools sort -@ {} > {} & samtools index -@ {} {}'.format(
+    command = 'hisat2 {} -x {} -p {} {} | samtools view -Sb -@ {} | samtools sort -@ {} > {}; samtools index -@ {} {}'.format(
         sample_command,
         hisat2_index_file_path_prefix,
         n_jobs,

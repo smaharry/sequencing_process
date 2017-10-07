@@ -20,7 +20,7 @@ def align_fastq_gz_with_hisat2(hisat2_index_file_path_prefix,
         str:
     """
 
-    extension = '.hisat2.sorted.bam'
+    extension = '.hisat2.sort.bam'
 
     if unpaired_fastq_gz_file_path:
         sample_command = '-U {}'.format(unpaired_fastq_gz_file_path)

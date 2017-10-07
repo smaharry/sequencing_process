@@ -12,17 +12,15 @@ def call_variants_on_bam(bam_file_path, fasta_file_path, n_jobs=1):
         str:
     """
 
-    output_vcf_file_path = bam_file_path + '.freebayes.vcf'
+    output_vcf_gz_file_path = bam_file_path + '.freebayes.vcf.gz'
 
-    # command = 'freebayes --fasta-reference {} {} | bgzip -fc -@ {} > {}; tabix -f {}'.format(
-    command = 'freebayes -f {} {} > {}; bgzip -f -@ {}; tabix -f {}'.format(
+    command = 'freebayes --fasta-reference {} {} | bgzip -fc -@ {} > {}; tabix -f {}'.format(
         fasta_file_path,
         bam_file_path,
-        output_vcf_file_path,
         n_jobs,
-        output_vcf_file_path + '.gz',
-        output_vcf_file_path + '.gz', )
+        output_vcf_gz_file_path,
+        output_vcf_gz_file_path, )
 
     run_command(command)
 
-    return output_vcf_file_path + '.gz'
+    return output_vcf_gz_file_path

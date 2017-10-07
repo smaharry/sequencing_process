@@ -13,7 +13,7 @@ def call_variants_on_bam(bam_file_path, fasta_file_path):
 
     output_vcf_gz_file_path = bam_file_path + '.freebayes.vcf.gz'
 
-    command = 'freebayes --fasta-reference {} {} | bgzip -fc > {} & tabix -f {}'.format(
+    command = 'freebayes --fasta-reference {} {} | bgzip -fc > {} ; tabix -f {}'.format(
         fasta_file_path, bam_file_path, output_vcf_gz_file_path,
         output_vcf_gz_file_path)
 

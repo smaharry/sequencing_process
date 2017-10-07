@@ -20,12 +20,12 @@ def align_dna_fastq_with_hisat2(hisat2_index_file_path_prefix,
 
     if unpaired_fastq_file_path:
         sample_command = '-U {}'.format(unpaired_fastq_file_path)
-        output_bam_file_path = unpaired_fastq_file_path + '.sam'
+        output_bam_file_path = unpaired_fastq_file_path + '.bam'
 
     elif paired_forward_fastq_file_path and paired_reverse_fastq_file_path:
         sample_command = '-1 {} -2 {}'.format(paired_forward_fastq_file_path,
                                               paired_reverse_fastq_file_path)
-        output_bam_file_path = paired_forward_fastq_file_path + '.sam'
+        output_bam_file_path = paired_forward_fastq_file_path + '.bam'
 
     else:
         raise ValueError('Need unpaired or paired DNA .fastq file paths.')

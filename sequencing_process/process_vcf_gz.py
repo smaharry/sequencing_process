@@ -16,7 +16,7 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths, n_jobs=1):
     output_vcf_gz_file_path = vcf_gz_file_paths[0].replace(
         '.vcf.gz', '.concatenate_vcf_gzs_using_bcftools.vcf')
 
-    run_command('bcftools concat -a --threads {} {}  > {}'.format(
+    run_command('bcftools concat -a --threads {} {} > {}'.format(
         n_jobs, ' '.join(vcf_gz_file_paths), output_vcf_gz_file_path))
 
     return bgzip_and_tabix(output_vcf_gz_file_path)
@@ -85,7 +85,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
     output_vcf_gz_file_path = vcf_gz_file_path.replace(
         '.vcf.gz', '.annotate_vcf_gz_using_snpeff.vcf')
 
-    run_command('snpEff -Xmx{} -s {}.html -v -noLog {} {}  > {}'.format(
+    run_command('snpEff -Xmx{} -s {}.html -v -noLog {} {} > {}'.format(
         maximum_memory, output_vcf_gz_file_path, genomic_assembly,
         vcf_gz_file_path, output_vcf_gz_file_path))
 

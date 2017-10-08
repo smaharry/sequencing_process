@@ -22,16 +22,20 @@ def align_fastq_gzs_with_hisat2(hisat2_index_file_path_prefix,
             exists('{}.{}.ht2'.format(hisat2_index_file_path_prefix, i))
             for i in range(1, 9)
     ]):
-        print('Could not find HISAT2 indices; building it ...')
-        command = 'hisat2-build {}'.format(hisat2_index_file_path_prefix)
+        print('Could not find HISAT2 index; building it ...')
+
+        command = 'hisat2-build {} {}'.format(hisat2_index_file_path_prefix,
+                                              hisat2_index_file_path_prefix)
         run_command(command)
 
     if len(fastq_gz_file_paths) == 1:
         print('Using single-end reads ...')
+
         sample_command = '-U {}'.format(*fastq_gz_file_paths)
 
     elif len(fastq_gz_file_paths) == 2:
         print('Using paired-end reads ...')
+
         sample_command = '-1 {} -2 {}'.format(*fastq_gz_file_paths)
 
     else:
@@ -48,14 +52,9 @@ def align_fastq_gzs_with_hisat2(hisat2_index_file_path_prefix,
     output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_with_hisat2.bam'
 
     command = 'hisat2 {} -x {} -p {} {} | samtools sort -@ {} > {}; samtools index -@ {} {}'.format(
-        sample_command,
-        hisat2_index_file_path_prefix,
-        n_jobs,
-        additional_arguments,
-        n_jobs,
-        output_bam_file_path,
-        n_jobs,
-        output_bam_file_path, )
+        sample_command, hisat2_index_file_path_prefix, n_jobs,
+        additional_arguments, n_jobs, output_bam_file_path, n_jobs,
+        output_bam_file_path)
 
     run_command(command)
 
@@ -75,16 +74,18 @@ def align_fastq_gzs_with_bwa(bwa_index_file_path_prefix,
         str:
     """
 
+    if not exists('{}.{}'.format(bwa_index_file_path_prefix, )):
+        print('Could not find BWA index; building it ...')
+
+        command = 'bwa index {}'.format(bwa_index_file_path_prefix)
+
+        run_command(command)
+
     output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_with_bwa.bam'
 
     command = 'bwa mem -t {} {} {} | samtools sort -@ {} > {}; samtools index -@ {} {}'.format(
-        n_jobs,
-        bwa_index_file_path_prefix,
-        ' '.join(fastq_gz_file_paths),
-        n_jobs,
-        output_bam_file_path,
-        n_jobs,
-        output_bam_file_path, )
+        n_jobs, bwa_index_file_path_prefix, ' '.join(fastq_gz_file_paths),
+        n_jobs, output_bam_file_path, n_jobs, output_bam_file_path)
 
     run_command(command)
 

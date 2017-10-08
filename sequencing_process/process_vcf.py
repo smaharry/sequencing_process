@@ -1,5 +1,6 @@
 from os.path import join, split
 
+from . import CHROMOSOMES
 from .process_gz import bgzip, tabix
 from .support.support.subprocess_ import run_command
 
@@ -106,33 +107,7 @@ def bcftools_rename_chr(vcf_file_path, chromosome_map_file_path, n_jobs=1):
 
 
 def bcftools_extract_chromosomes(vcf_file_path,
-                                 chromosomes=[
-                                     '1',
-                                     '2',
-                                     '3',
-                                     '4',
-                                     '5',
-                                     '6',
-                                     '7',
-                                     '8',
-                                     '9',
-                                     '10',
-                                     '11',
-                                     '12',
-                                     '13',
-                                     '14',
-                                     '15',
-                                     '16',
-                                     '17',
-                                     '18',
-                                     '19',
-                                     '20',
-                                     '21',
-                                     '22',
-                                     'X',
-                                     'Y',
-                                     'MT',
-                                 ],
+                                 chromosome=CHROMOSOMES,
                                  n_jobs=1):
     """
     Extract chromosomes (chromosome 1 to 22, X, Y, and MT) from .vcf file.

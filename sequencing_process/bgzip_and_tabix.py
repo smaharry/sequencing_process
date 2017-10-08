@@ -10,7 +10,8 @@ def bgzip_and_tabix(file_path):
         str:
     """
 
-    run_command(
-        'bgzip -f {}; tabix -f {}'.format(file_path, file_path + '.gz'))
+    output_file_path = file_path + '.gz'
 
-    return file_path + '.gz'
+    run_command('bgzip -f {}; tabix -f {}'.format(file_path, output_file_path))
+
+    return output_file_path

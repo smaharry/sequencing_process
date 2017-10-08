@@ -15,9 +15,12 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1):
         str:
     """
 
-    run_command('samtools sort -@ {} > {}'.format(n_jobs, bam_file_path))
+    output_bam_file_path = + '.output_bam_file_pathsort_bam_using_samtools.bam'
 
-    return bam_file_path
+    run_command('samtools sort -@ {} {} > {}'.format(n_jobs, bam_file_path,
+                                                     output_bam_file_path))
+
+    return output_bam_file_path
 
 
 def index_bam_using_samtools(bam_file_path, n_jobs=1):

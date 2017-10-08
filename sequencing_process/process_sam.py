@@ -18,7 +18,7 @@ def call_variants_on_bam_with_multiprocess(bam_file_path,
         str:
     """
 
-    args = [[bam_file_path, fasta_file_path, '-r {}'.format(c)]
+    args = [[bam_file_path, fasta_file_path, '{}'.format(c)]
             for c in chromosomes]
 
     multiprocess(call_variants_on_bam, args, n_jobs=n_jobs)
@@ -41,14 +41,17 @@ def call_variants_on_bam(bam_file_path,
         str:
     """
 
-    output_vcf_gz_file_path = bam_file_path + '.freebayes.vcf.gz'
 
     additional_arguments = ''
-
     if regions:
         additional_arguments += '-r {}'.format(regions)
 
-    command = 'freebayes --fasta-reference {} {} {} | bgzip -fc -@ {} > {}; tabix -f {}'.format(
+    if additional_arguments:
+        output_vcf_gz_file_path = bam_file_path + '.freebayes.{}.vcf.gz'.format(additional_arguments.replace(' ', '_'))
+    else:
+        output_vcf_gz_file_path = bam_file_path + '.freebayes.vcf.gz'
+
+    command = 'freebayes -f {} {} {} | bgzip -fc -@ {} > {}; tabix -f {}'.format(
         fasta_file_path,
         additional_arguments,
         bam_file_path,

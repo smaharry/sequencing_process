@@ -15,11 +15,11 @@ def mark_duplicates_in_bam_with_samtools(bam_file_path, n_jobs):
 
     output_bam_file_path = bam_file_path + '.mark_duplicates_in_bam_with_samtools.bam'
 
-    # command = 'samtools sort -n -@ {} {} | samtools fixmate -m -@ {} | samtools sort -@ {} | samtools markdup -@ {} > {}; samtools index -@ {} {}'.format(
-    #     n_jobs, bam_file_path, n_jobs, n_jobs, n_jobs, output_bam_file_path,
-    #     n_jobs, output_bam_file_path)
-    command = 'samtools rmdup -@ {} {} > {}'.format(n_jobs, bam_file_path,
-                                                    output_bam_file_path)
+    # command = 'samtools sort -n -@ {} {} | samtools fixmate -m | samtools sort -@ {} | samtools markdup > {}; samtools index -@ {} {}'.format(
+    #     n_jobs, bam_file_path, n_jobs, output_bam_file_path, n_jobs,
+    #     output_bam_file_path)
+    command = 'samtools rmdup {} > {}'.format(bam_file_path,
+                                              output_bam_file_path)
 
     run_command(command)
 
@@ -72,16 +72,10 @@ def call_variants_on_bam_with_freebayes(bam_file_path,
     """
 
     additional_arguments = ''
-
     if regions:
         additional_arguments += '-r {}'.format(regions)
 
-    if additional_arguments:
-        output_vcf_gz_file_path = bam_file_path + '.call_variants_on_bam_with_freebayes.{}.vcf.gz'.format(
-            additional_arguments.replace(' ', '_'))
-
-    else:
-        output_vcf_gz_file_path = bam_file_path + '.call_variants_on_bam_with_freebayes.vcf.gz'
+    output_vcf_gz_file_path = bam_file_path + '.call_variants_on_bam_with_freebayes.vcf.gz'
 
     command = 'freebayes -f {} {} {} | bgzip -fc -@ {} > {}; tabix -f {}'.format(
         fasta_file_path, additional_arguments, bam_file_path, n_jobs,

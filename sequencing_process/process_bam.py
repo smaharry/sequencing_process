@@ -40,14 +40,24 @@ def call_variants_on_bam_using_multiprocess_with_freebayes(
         n_jobs (int):
         chromosomes (iterable):
     Returns:
-        list:
+        str:
     """
 
     args = [[bam_file_path, fasta_file_path, '{}'.format(c)]
             for c in chromosomes]
 
-    return multiprocess(
+    returns = multiprocess(
         call_variants_on_bam_with_freebayes, args, n_jobs=n_jobs)
+
+    output_vcf_gz_file_path = bam_file_path + '.call_variants_on_bam_using_multiprocess_with_freebayes.vcf.gz'
+
+    command = 'bcftools concat {} | bgzip -fc -@ {} > {}; tabix -f {}'.format(
+        ' '.join(returns), n_jobs, output_vcf_gz_file_path,
+        output_vcf_gz_file_path)
+
+    run_command(command)
+
+    return output_vcf_gz_file_path
 
 
 def call_variants_on_bam_with_freebayes(bam_file_path,

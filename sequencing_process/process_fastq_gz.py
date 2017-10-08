@@ -76,7 +76,7 @@ def align_fastq_gzs_using_bwa(fasta_file_path, fastq_gz_file_paths, n_jobs=1):
 
     output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_using_bwa.bam'
 
-    run_command('bwa mem -t {} {} {} | samtools sort -@ {} > {}'.format(
+    run_command('bwa mem -t {} {} {} | samtools view -Sb -@ {} > {}'.format(
         n_jobs, fasta_file_path, ' '.join(fastq_gz_file_paths), n_jobs,
         output_bam_file_path))
 

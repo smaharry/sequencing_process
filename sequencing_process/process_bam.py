@@ -15,7 +15,8 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1):
         str:
     """
 
-    output_bam_file_path = + '.output_bam_file_pathsort_bam_using_samtools.bam'
+    output_bam_file_path = bam_file_path.replace(
+        '.bam', '.sort_bam_using_samtools.bam')
 
     run_command('samtools sort -@ {} {} > {}'.format(n_jobs, bam_file_path,
                                                      output_bam_file_path))
@@ -51,7 +52,8 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
         str:
     """
 
-    output_bam_file_path = bam_file_path + '.remove_duplicates_in_bam_using_picard.bam'
+    output_bam_file_path = bam_file_path.replace(
+        '.bam', '.remove_duplicates_in_bam_using_picard.bam')
 
     run_command('picard -Xmx{} MarkDuplicates I={} O={} M={}'.format(
         maximum_memory, bam_file_path, output_bam_file_path,
@@ -100,7 +102,8 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
     if regions:
         additional_arguments += '-r {}'.format(regions)
 
-    output_vcf_gz_file_path = bam_file_path + '.call_variants_on_bam_using_freebayes.vcf.gz'
+    output_vcf_gz_file_path = bam_file_path.replace(
+        '.bam', '.call_variants_on_bam_using_freebayes.vcf')
 
     run_command('freebayes -f {} {} {} > {}'.format(
         fasta_file_path, additional_arguments, bam_file_path,

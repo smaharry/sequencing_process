@@ -45,7 +45,8 @@ def align_fastq_gzs_using_hisat2(hisat2_index_file_paths_prefix,
     elif sequence_type == 'RNA':
         additional_arguments = '--dta --dta-cufflinks'
 
-    output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_using_hisat2.bam'
+    output_bam_file_path = fastq_gz_file_paths[0].replace(
+        '.fastq.gz', '.align_fastq_gzs_using_hisat2.bam')
 
     run_command('hisat2 {} -x {} -p {} {} | samtools view -Sb -@ {} > {}'.
                 format(sample_command, hisat2_index_file_paths_prefix, n_jobs,
@@ -74,7 +75,8 @@ def align_fastq_gzs_using_bwa(fasta_file_path, fastq_gz_file_paths, n_jobs=1):
         print('Could not find BWA index; building it ...')
         run_command('bwa index {}'.format(fasta_file_path))
 
-    output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_using_bwa.bam'
+    output_bam_file_path = fastq_gz_file_paths[0].replace(
+        '.fastq.gz', '.align_fastq_gzs_using_bwa.bam')
 
     run_command('bwa mem -t {} {} {} | samtools view -Sb -@ {} > {}'.format(
         n_jobs, fasta_file_path, ' '.join(fastq_gz_file_paths), n_jobs,

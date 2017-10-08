@@ -13,7 +13,8 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths, n_jobs=1):
         str:
     """
 
-    output_vcf_gz_file_path = vcf_gz_file_paths[0] + '.concatenate_vcf_gzs_using_bcftools.vcf.gz'
+    output_vcf_gz_file_path = vcf_gz_file_paths[0].replace(
+        '.vcf.gz', '.concatenate_vcf_gzs_using_bcftools.vcf')
 
     run_command('bcftools concat -a --threads {} {}  > {}'.format(
         n_jobs, ' '.join(vcf_gz_file_paths), output_vcf_gz_file_path))
@@ -34,7 +35,8 @@ def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
         str:
     """
 
-    output_vcf_gz_file_path = vcf_gz_file_path + '.extract_vcf_gz_chromosomes_using_bcftools.vcf.gz'
+    output_vcf_gz_file_path = vcf_gz_file_path.replace(
+        '.vcf.gz', '.extract_vcf_gz_chromosomes_using_bcftools.vcf')
 
     run_command('bcftools view -r {} --threads {} {} > {}'.format(
         ','.join(chromosomes), n_jobs, vcf_gz_file_path,
@@ -55,7 +57,8 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path, qual=60, dp=30, n_jobs=1):
         str:
     """
 
-    output_vcf_gz_file_path = vcf_gz_file_path + '.filter_vcf_gz_using_bcftools.vcf.gz'
+    output_vcf_gz_file_path = vcf_gz_file_path.replace(
+        '.vcf.gz', '.filter_vcf_gz_using_bcftools.vcf')
 
     run_command(
         'bcftoosl view -i \'{}<QUAL & {}<DP\' --threads {} {} > {}'.format(
@@ -79,7 +82,8 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
         str:
     """
 
-    output_vcf_gz_file_path = vcf_gz_file_path + '.annotate_vcf_gz_using_snpeff.vcf.gz'
+    output_vcf_gz_file_path = vcf_gz_file_path.replace(
+        '.vcf.gz', '.annotate_vcf_gz_using_snpeff.vcf')
 
     run_command('snpEff -Xmx{} -s {}.html -v -noLog {} {}  > {}'.format(
         maximum_memory, output_vcf_gz_file_path, genomic_assembly,
@@ -103,7 +107,8 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
         str:
     """
 
-    output_vcf_gz_file_path = vcf_gz_file_path + '.annotate_vcf_gz_using_bcftools.vcf.gz'
+    output_vcf_gz_file_path = vcf_gz_file_path.replace(
+        '.vcf.gz', '.annotate_vcf_gz_using_bcftools.vcf')
 
     run_command('bcftools annotate -a {} --threads {} {} {} > {}'.format(
         annotation_file_path, n_jobs, additional_arguments, vcf_gz_file_path,

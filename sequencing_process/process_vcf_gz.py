@@ -19,7 +19,7 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths, n_jobs=1):
     run_command('bcftools concat -a --threads {} {} > {}'.format(
         n_jobs, ' '.join(vcf_gz_file_paths), output_vcf_gz_file_path))
 
-    return bgzip_and_tabix(output_vcf_gz_file_path)
+    return bgzip_and_tabix(output_vcf_gz_file_path, n_jobs=n_jobs)
 
 
 def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
@@ -42,7 +42,7 @@ def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
         ','.join(chromosomes), n_jobs, vcf_gz_file_path,
         output_vcf_gz_file_path))
 
-    return bgzip_and_tabix(output_vcf_gz_file_path)
+    return bgzip_and_tabix(output_vcf_gz_file_path, n_jobs=n_jobs)
 
 
 def filter_vcf_gz_using_bcftools(vcf_gz_file_path, qual=60, dp=30, n_jobs=1):
@@ -64,7 +64,7 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path, qual=60, dp=30, n_jobs=1):
         'bcftoosl view -i \'{}<QUAL & {}<DP\' --threads {} {} > {}'.format(
             qual, dp, n_jobs, vcf_gz_file_path, output_vcf_gz_file_path))
 
-    return bgzip_and_tabix(output_vcf_gz_file_path)
+    return bgzip_and_tabix(output_vcf_gz_file_path, n_jobs=n_jobs)
 
 
 def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
@@ -89,7 +89,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
         maximum_memory, output_vcf_gz_file_path, genomic_assembly,
         vcf_gz_file_path, output_vcf_gz_file_path))
 
-    return bgzip_and_tabix(output_vcf_gz_file_path)
+    return bgzip_and_tabix(output_vcf_gz_file_path, n_jobs=n_jobs)
 
 
 def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
@@ -114,4 +114,4 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
         annotation_file_path, n_jobs, additional_arguments, vcf_gz_file_path,
         output_vcf_gz_file_path))
 
-    return bgzip_and_tabix(output_vcf_gz_file_path)
+    return bgzip_and_tabix(output_vcf_gz_file_path, n_jobs=n_jobs)

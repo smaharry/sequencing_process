@@ -116,4 +116,4 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         fasta_file_path, additional_arguments, bam_file_path,
         output_vcf_gz_file_path))
 
-    return bgzip_and_tabix(output_vcf_gz_file_path)
+    return bgzip_and_tabix(output_vcf_gz_file_path, n_jobs=n_jobs)

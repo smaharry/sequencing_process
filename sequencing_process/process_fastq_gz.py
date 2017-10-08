@@ -3,12 +3,12 @@ from os.path import exists
 from .support.support.subprocess_ import run_command
 
 
-def align_fastq_gzs_with_hisat2(hisat2_index_file_path_prefix,
-                                fastq_gz_file_paths,
-                                sequence_type,
-                                n_jobs=1):
+def align_fastq_gzs_using_hisat2(hisat2_index_file_path_prefix,
+                                 fastq_gz_file_paths,
+                                 sequence_type,
+                                 n_jobs=1):
     """
-    Align unpaired or paired .fastq.gz files with hisat2.
+    Align unpaired or paired .fastq.gz files using hisat2.
     Arguments:
         hisat2_index_file_path_prefix (str):
         fastq_gz_file_paths (iterable): (< 2)
@@ -49,7 +49,7 @@ def align_fastq_gzs_with_hisat2(hisat2_index_file_path_prefix,
     elif sequence_type == 'RNA':
         additional_arguments = '--no-spliced-alignment'
 
-    output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_with_hisat2.bam'
+    output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_using_hisat2.bam'
 
     command = 'hisat2 {} -x {} -p {} {} | samtools sort -@ {} > {}; samtools index -@ {} {}'.format(
         sample_command, hisat2_index_file_path_prefix, n_jobs,
@@ -61,11 +61,11 @@ def align_fastq_gzs_with_hisat2(hisat2_index_file_path_prefix,
     return output_bam_file_path
 
 
-def align_fastq_gzs_with_bwa(bwa_index_file_path_prefix,
-                             fastq_gz_file_paths,
-                             n_jobs=1):
+def align_fastq_gzs_using_bwa(bwa_index_file_path_prefix,
+                              fastq_gz_file_paths,
+                              n_jobs=1):
     """
-    Align unpaired or paired .fastq.gz files with bwa.
+    Align unpaired or paired .fastq.gz files using bwa.
     Arguments:
         hisat2_index_file_path_prefix (str):
         fastq_gz_file_paths (iterable): (< 2)
@@ -84,7 +84,7 @@ def align_fastq_gzs_with_bwa(bwa_index_file_path_prefix,
 
         run_command(command)
 
-    output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_with_bwa.bam'
+    output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_using_bwa.bam'
 
     command = 'bwa mem -t {} {} {} | samtools sort -@ {} > {}; samtools index -@ {} {}'.format(
         n_jobs, bwa_index_file_path_prefix, ' '.join(fastq_gz_file_paths),

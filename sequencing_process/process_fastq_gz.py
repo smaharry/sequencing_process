@@ -74,7 +74,16 @@ def align_fastq_gzs_with_bwa(bwa_index_file_path_prefix,
         str:
     """
 
-    if not exists('{}.{}'.format(bwa_index_file_path_prefix, )):
+    if not all([
+            exists('{}.{}'.format(bwa_index_file_path_prefix, suffix)
+                   for suffix in [
+                       'bwt',
+                       'pac',
+                       'ann',
+                       'amb',
+                       'sa',
+                   ])
+    ]):
         print('Could not find BWA index; building it ...')
 
         command = 'bwa index {}'.format(bwa_index_file_path_prefix)

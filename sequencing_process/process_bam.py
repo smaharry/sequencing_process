@@ -21,6 +21,8 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1):
     run_command('samtools sort -@ {} {} > {}'.format(n_jobs, bam_file_path,
                                                      output_bam_file_path))
 
+    run_command('rm -rf {}'.format(bam_file_path))
+
     return output_bam_file_path
 
 

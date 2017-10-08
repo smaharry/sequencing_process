@@ -3,9 +3,9 @@ from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command
 
 
-def mark_duplicates_in_bam_with_samtools(bam_file_path, n_jobs):
+def remove_duplicates_in_bam_with_picard(bam_file_path, maximum_memory='8G'):
     """
-    Mark duplicates in .bam file with samtools.
+    Mark duplicates in .bam file with picard.
     Arguments:
         bam_file_path (str):
         n_jobs (int):
@@ -13,13 +13,11 @@ def mark_duplicates_in_bam_with_samtools(bam_file_path, n_jobs):
         str:
     """
 
-    output_bam_file_path = bam_file_path + '.mark_duplicates_in_bam_with_samtools.bam'
+    output_bam_file_path = bam_file_path + '.remove_duplicates_in_bam_with_picard.bam'
+    report_file_path = bam_file_path + '.remove_duplicates_in_bam_with_picard'
 
-    # command = 'samtools sort -n -@ {} {} | samtools fixmate -m | samtools sort -@ {} | samtools markdup > {}; samtools index -@ {} {}'.format(
-    #     n_jobs, bam_file_path, n_jobs, output_bam_file_path, n_jobs,
-    #     output_bam_file_path)
-    command = 'samtools rmdup {} > {}'.format(bam_file_path,
-                                              output_bam_file_path)
+    command = 'picard -Xmx{} MarkDuplicates I={} O={} M={}'.format(
+        maximum_memory, bam_file_path, output_bam_file_path, report_file_path)
 
     run_command(command)
 

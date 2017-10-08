@@ -1,17 +1,17 @@
 from os.path import exists
 
-from .process_bam import index_bam_using_samtools
+from .process_bam import index_bam_using_samtools, sort_bam_using_samtools
 from .support.support.subprocess_ import run_command
 
 
-def align_fastq_gzs_using_hisat2(hisat2_index_file_path_prefix,
+def align_fastq_gzs_using_hisat2(hisat2_index_file_paths_prefix,
                                  fastq_gz_file_paths,
                                  sequence_type,
                                  n_jobs=1):
     """
     Align .fastq.gz files using hisat2.
     Arguments:
-        hisat2_index_file_path_prefix (str): reference .fasta file path
+        hisat2_index_file_paths_prefix (str): reference .fasta file path
         fastq_gz_file_paths (iterable): (< 2)
         sequence_type (str): 'DNA' | 'RNA'
         n_jobs (int):
@@ -20,14 +20,12 @@ def align_fastq_gzs_using_hisat2(hisat2_index_file_path_prefix,
     """
 
     if not all([
-            exists('{}.{}.ht2'.format(hisat2_index_file_path_prefix, i))
+            exists('{}.{}.ht2'.format(hisat2_index_file_paths_prefix, i))
             for i in range(1, 9)
     ]):
         print('Could not find HISAT2 index; building it ...')
-
-        command = 'hisat2-build {} {}'.format(hisat2_index_file_path_prefix,
-                                              hisat2_index_file_path_prefix)
-        run_command(command)
+        run_command('hisat2-build {} {}'.format(
+            * [hisat2_index_file_paths_prefix] * 2))
 
     if len(fastq_gz_file_paths) == 1:
         print('Using single-end ...')
@@ -39,26 +37,23 @@ def align_fastq_gzs_using_hisat2(hisat2_index_file_path_prefix,
 
     else:
         raise ValueError(
-            'fastq_gz_file_paths must be an iterable containing unpaired or paired .fastq.gz file paths.'
+            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file paths.'
         )
 
     if sequence_type == 'DNA':
         additional_arguments = '--no-spliced-alignment'
-
     elif sequence_type == 'RNA':
         additional_arguments = '--dta --dta-cufflinks'
 
     output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_using_hisat2.bam'
 
-    command = 'hisat2 {} -x {} -p {} {} | samtools sort -@ {} > {}'.format(
-        sample_command, hisat2_index_file_path_prefix, n_jobs,
-        additional_arguments, n_jobs, output_bam_file_path)
-    run_command(command)
+    run_command('hisat2 {} -x {} -p {} {} | samtools view -Sb -@ {} > {}'.
+                format(sample_command, hisat2_index_file_paths_prefix, n_jobs,
+                       additional_arguments, n_jobs, output_bam_file_path))
 
-    command = 'samtools index -@ {} {}'.format(n_jobs, output_bam_file_path)
-    run_command(command)
-
-    return output_bam_file_path
+    return index_bam_using_samtools(
+        sort_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs),
+        n_jobs=n_jobs)
 
 
 def align_fastq_gzs_using_bwa(fasta_file_path, fastq_gz_file_paths, n_jobs=1):
@@ -77,14 +72,14 @@ def align_fastq_gzs_using_bwa(fasta_file_path, fastq_gz_file_paths, n_jobs=1):
             for suffix in ['bwt', 'pac', 'ann', 'amb', 'sa']
     ]):
         print('Could not find BWA index; building it ...')
-        command = 'bwa index {}'.format(fasta_file_path)
-        run_command(command)
+        run_command('bwa index {}'.format(fasta_file_path))
 
     output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_using_bwa.bam'
 
-    command = 'bwa mem -t {} {} {} | samtools sort -@ {} > {}'.format(
+    run_command('bwa mem -t {} {} {} | samtools sort -@ {} > {}'.format(
         n_jobs, fasta_file_path, ' '.join(fastq_gz_file_paths), n_jobs,
-        output_bam_file_path)
-    run_command(command)
+        output_bam_file_path))
 
-    return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
+    return index_bam_using_samtools(
+        sort_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs),
+        n_jobs=n_jobs)

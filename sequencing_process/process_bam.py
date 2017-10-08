@@ -1,7 +1,23 @@
 from . import CHROMOSOMES
+from .bgzip_and_tabix import bgzip_and_tabix
 from .process_vcf_gz import concatenate_vcf_gzs_using_bcftools
 from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command
+
+
+def sort_bam_using_samtools(bam_file_path, n_jobs=1):
+    """
+    Sort .bam file using samtools.
+    Arguments:
+        bam_file_path (str):
+        n_jobs (int):
+    Returns:
+        str:
+    """
+
+    run_command('samtools sort -@ {} > {}'.format(n_jobs, bam_file_path))
+
+    return bam_file_path
 
 
 def index_bam_using_samtools(bam_file_path, n_jobs=1):
@@ -14,8 +30,7 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1):
         str:
     """
 
-    command = 'samtools index -@ {} {}'.format(n_jobs, bam_file_path)
-    run_command(command)
+    run_command('samtools index -@ {} {}'.format(n_jobs, bam_file_path))
 
     return bam_file_path
 
@@ -34,11 +49,10 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
     """
 
     output_bam_file_path = bam_file_path + '.remove_duplicates_in_bam_using_picard.bam'
-    report_file_path = bam_file_path + '.remove_duplicates_in_bam_using_picard'
 
-    command = 'picard -Xmx{} MarkDuplicates I={} O={} M={}'.format(
-        maximum_memory, bam_file_path, output_bam_file_path, report_file_path)
-    run_command(command)
+    run_command('picard -Xmx{} MarkDuplicates I={} O={} M={}'.format(
+        maximum_memory, bam_file_path, output_bam_file_path,
+        output_bam_file_path[:-4]))
 
     return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
 
@@ -56,13 +70,12 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         str:
     """
 
-    args = [[bam_file_path, fasta_file_path, c] for c in chromosomes]
+    ps = multiprocess(
+        call_variants_on_bam_using_freebayes,
+        [[bam_file_path, fasta_file_path, c] for c in chromosomes],
+        n_jobs=n_jobs)
 
-    output_vcf_gz_file_paths = multiprocess(
-        call_variants_on_bam_using_freebayes, args, n_jobs=n_jobs)
-
-    return concatenate_vcf_gzs_using_bcftools(
-        output_vcf_gz_file_paths, n_jobs=n_jobs)
+    return concatenate_vcf_gzs_using_bcftools(ps, n_jobs=n_jobs)
 
 
 def call_variants_on_bam_using_freebayes(bam_file_path,
@@ -86,9 +99,8 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
 
     output_vcf_gz_file_path = bam_file_path + '.call_variants_on_bam_using_freebayes.vcf.gz'
 
-    command = 'freebayes -f {} {} {} | bgzip -cf -@ {} > {}; tabix -f {}'.format(
-        fasta_file_path, additional_arguments, bam_file_path, n_jobs,
-        output_vcf_gz_file_path, output_vcf_gz_file_path)
-    run_command(command)
+    run_command('freebayes -f {} {} {} > {}'.format(
+        fasta_file_path, additional_arguments, bam_file_path,
+        output_vcf_gz_file_path))
 
-    return output_vcf_gz_file_path
+    return bgzip_and_tabix(output_vcf_gz_file_path)

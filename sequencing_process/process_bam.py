@@ -3,9 +3,9 @@ from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command
 
 
-def mark_duplicates_in_bam(bam_file_path, n_jobs):
+def mark_duplicates_in_bam_with_samtools(bam_file_path, n_jobs):
     """
-    Mark duplicates in .bam file using samtools.
+    Mark duplicates in .bam file with samtools.
     Arguments:
         bam_file_path (str):
         n_jobs (int):
@@ -13,17 +13,11 @@ def mark_duplicates_in_bam(bam_file_path, n_jobs):
         str:
     """
 
-    output_bam_file_path = bam_file_path + '.mark_duplicates_in_bam.bam'
+    output_bam_file_path = bam_file_path + '.mark_duplicates_in_bam_with_samtools.bam'
 
     command = 'samtools sort -n -@ {} {} | samtools fixmate -m -@ {} | samtools sort -@ {} | samtools markdup -@ {} > {}; samtools index -@ {} {}'.format(
-        n_jobs,
-        bam_file_path,
-        n_jobs,
-        n_jobs,
-        n_jobs,
-        output_bam_file_path,
-        n_jobs,
-        output_bam_file_path, )
+        n_jobs, bam_file_path, n_jobs, n_jobs, n_jobs, output_bam_file_path,
+        n_jobs, output_bam_file_path)
 
     run_command(command)
 

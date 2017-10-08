@@ -4,7 +4,7 @@ from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command
 
 
-def index_bam_using_samtools(bam_file_path, n_jobs):
+def index_bam_using_samtools(bam_file_path, n_jobs=1):
     """
     Index .bam file using samtools.
     Arguments:
@@ -40,7 +40,7 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
         maximum_memory, bam_file_path, output_bam_file_path, report_file_path)
     run_command(command)
 
-    return index_bam_using_samtools(output_bam_file_path)
+    return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
 
 
 def call_variants_on_bam_using_freebayes_and_multiprocess(

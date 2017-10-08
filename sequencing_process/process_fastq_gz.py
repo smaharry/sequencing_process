@@ -87,4 +87,4 @@ def align_fastq_gzs_using_bwa(fasta_file_path, fastq_gz_file_paths, n_jobs=1):
         output_bam_file_path)
     run_command(command)
 
-    return index_bam_using_samtools(output_bam_file_path)
+    return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)

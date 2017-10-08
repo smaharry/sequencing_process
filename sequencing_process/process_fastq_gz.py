@@ -29,12 +29,12 @@ def align_fastq_gzs_with_hisat2(hisat2_index_file_path_prefix,
         run_command(command)
 
     if len(fastq_gz_file_paths) == 1:
-        print('Using single-end reads ...')
+        print('Using single-end ...')
 
         sample_command = '-U {}'.format(*fastq_gz_file_paths)
 
     elif len(fastq_gz_file_paths) == 2:
-        print('Using paired-end reads ...')
+        print('Using paired-end ...')
 
         sample_command = '-1 {} -2 {}'.format(*fastq_gz_file_paths)
 

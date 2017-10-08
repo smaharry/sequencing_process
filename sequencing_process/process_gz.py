@@ -17,17 +17,17 @@ def bgzip(file_path):
     return file_path + '.gz'
 
 
-def tabix(bgzipped_file_path):
+def tabix(bgzip_file_path):
     """
-    tabix bgzipped_file_path.
+    tabix bgzip_file_path.
     Arguments:
-        bgzipped_file_path (str):
+        bgzip_file_path (str):
     Returns:
         str:
     """
 
-    command = 'tabix -f {}'.format(bgzipped_file_path)
+    command = 'tabix -f {}'.format(bgzip_file_path)
 
     run_command(command)
 
-    return bgzipped_file_path + '.tbi'
+    return bgzip_file_path + '.tbi'

@@ -107,7 +107,7 @@ def bcftools_rename_chr(vcf_file_path, chromosome_map_file_path, n_jobs=1):
 
 
 def bcftools_extract_chromosomes(vcf_file_path,
-                                 chromosome=CHROMOSOMES,
+                                 chromosomes=CHROMOSOMES,
                                  n_jobs=1):
     """
     Extract chromosomes (chromosome 1 to 22, X, Y, and MT) from .vcf file.

@@ -100,12 +100,16 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         str:
     """
 
+    output_vcf_gz_file_path = bam_file_path.replace(
+        '.bam', '.call_variants_on_bam_using_freebayes.vcf')
+
     additional_arguments = ''
     if regions:
         additional_arguments += '-r {}'.format(regions)
 
-    output_vcf_gz_file_path = bam_file_path.replace(
-        '.bam', '.call_variants_on_bam_using_freebayes.vcf')
+    if additional_arguments:
+        output_vcf_gz_file_path = output_vcf_gz_file_path.replace(
+            '.vcf', '.{}.vcf'.format(additional_arguments.replace(' ', '_')))
 
     run_command('freebayes -f {} {} {} > {}'.format(
         fasta_file_path, additional_arguments, bam_file_path,

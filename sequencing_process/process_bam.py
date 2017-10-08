@@ -8,7 +8,7 @@ def remove_duplicates_in_bam_with_picard(bam_file_path, maximum_memory='8G'):
     Mark duplicates in .bam file with picard.
     Arguments:
         bam_file_path (str):
-        n_jobs (int):
+        maximum_memory (str):
     Returns:
         str:
     """

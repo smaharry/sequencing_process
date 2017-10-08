@@ -43,10 +43,10 @@ def align_fastq_gzs_using_hisat2(hisat2_index_file_path_prefix,
         )
 
     if sequence_type == 'DNA':
-        additional_arguments = '--dta-cufflinks'
+        additional_arguments = '--no-spliced-alignment'
 
     elif sequence_type == 'RNA':
-        additional_arguments = '--no-spliced-alignment'
+        additional_arguments = '--dta-cufflinks'
 
     output_bam_file_path = fastq_gz_file_paths[0] + '.align_fastq_gzs_using_hisat2.bam'
 

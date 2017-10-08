@@ -57,9 +57,10 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
     output_bam_file_path = bam_file_path.replace(
         '.bam', '.remove_duplicates_in_bam_using_picard.bam')
 
-    run_command('picard -Xmx{} MarkDuplicates I={} O={} M={}'.format(
-        maximum_memory, bam_file_path, output_bam_file_path,
-        output_bam_file_path[:-4]))
+    run_command(
+        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES=true I={} O={} M={}'.
+        format(maximum_memory, bam_file_path, output_bam_file_path,
+               output_bam_file_path[:-4]))
 
     return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
 

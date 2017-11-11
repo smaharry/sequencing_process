@@ -65,7 +65,7 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path, qual=60, dp=30, n_jobs=1):
         '.vcf.gz', '.filter_vcf_gz_using_bcftools.vcf')
 
     run_command_and_monitor(
-        'bcftoosl view --include \'{}<QUAL & {}<DP\' --threads {} {} > {}'.
+        'bcftools view --include \'{}<QUAL & {}<DP\' --threads {} {} > {}'.
         format(qual, dp, n_jobs, vcf_gz_file_path, output_vcf_gz_file_path),
         print_command=True)
 

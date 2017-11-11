@@ -129,8 +129,8 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
 
     output_vcf_file_path = join(dirname(bam_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path):
-        raise FileExistsError('{} exists.'.format(output_vcf_file_path))
+    # if isfile(output_vcf_file_path):
+    #     raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     additional_argument = ''
     if regions:
@@ -140,10 +140,10 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         output_vcf_file_path = output_vcf_file_path.replace(
             '.vcf', '.{}.vcf'.format(additional_argument.replace(' ', '_')))
 
-    run_command_and_monitor(
-        'freebayes --fasta-reference {} {} {} > {}'.format(
-            fasta_file_path, additional_argument, bam_file_path,
-            output_vcf_file_path),
-        print_command=True)
+    # run_command_and_monitor(
+    #     'freebayes --fasta-reference {} {} {} > {}'.format(
+    #         fasta_file_path, additional_argument, bam_file_path,
+    #         output_vcf_file_path),
+    #     print_command=True)
 
     return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)

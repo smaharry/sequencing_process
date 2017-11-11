@@ -19,9 +19,8 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
         str:
     """
 
-    print(dirname(vcf_gz_file_paths), stack()[0][3] + '.vcf')
     output_vcf_file_path = join(
-        dirname(vcf_gz_file_paths), stack()[0][3] + '.vcf')
+        dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
 
     if isfile(output_vcf_file_path):
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))

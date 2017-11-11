@@ -73,7 +73,7 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path, qual=60, dp=30, n_jobs=1):
 
 
 def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
-                                 genomic_assembly='GRCh38.90',
+                                 genomic_assembly='GRCh38.86',
                                  maximum_memory='8G',
                                  n_jobs=1):
     """

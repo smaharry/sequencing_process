@@ -2,6 +2,7 @@ from inspect import stack
 from os.path import dirname, isfile, join
 
 from .process_bam import index_bam_using_samtools, sort_bam_using_samtools
+from .support.support.path import remove_path
 from .support.support.subprocess_ import run_command_and_monitor
 
 
@@ -43,7 +44,7 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
     output_bam_file_path = join(
         dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
 
-    if isfile(output_bam_file_path):
+    if isfile(output_bam_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     run_command_and_monitor(
@@ -54,7 +55,8 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
 
     return index_bam_using_samtools(
         sort_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs),
-        n_jobs=n_jobs)
+        n_jobs=n_jobs,
+        overwrite=overwrite)
 
 
 def align_fastq_gzs_using_hisat2(fasta_file_path,
@@ -81,6 +83,14 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         run_command_and_monitor(
             'hisat2-build {0} {0}'.format(fasta_file_path), print_command=True)
 
+    output_bam_file_path = join(
+        dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
+
+    if isfile(output_bam_file_path) and not overwrite:
+        raise FileExistsError('{} exists.'.format(output_bam_file_path))
+
+    summary_file_path = output_bam_file_path + '.summary'
+
     if len(fastq_gz_file_paths) == 1:
         print('Using single-end ...')
 
@@ -102,14 +112,6 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     elif sequence_type == 'RNA':
         additional_argument = '--dta --dta-cufflinks'
 
-    output_bam_file_path = join(
-        dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
-
-    if isfile(output_bam_file_path):
-        raise FileExistsError('{} exists.'.format(output_bam_file_path))
-
-    summary_file_path = output_bam_file_path + '.summary'
-
     run_command_and_monitor(
         'hisat2 {} -x {} --summary-file {} --threads {} {} | samtools view -Sb --threads {} > {}'.
         format(sample_argument, fasta_file_path, summary_file_path, n_jobs,
@@ -118,7 +120,8 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
 
     return index_bam_using_samtools(
         sort_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs),
-        n_jobs=n_jobs)
+        n_jobs=n_jobs,
+        overwrite=overwrite)
 
 
 def count_transcripts_using_kallisto(fasta_gz_file_path,
@@ -172,6 +175,9 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
         raise ValueError(
             'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
         )
+
+    if overwrite:
+        remove_path(output_directory_path)
 
     run_command_and_monitor(
         'kallisto quant --index {} --output-dir {} --bootstrap-samples {} {}'.

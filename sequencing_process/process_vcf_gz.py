@@ -23,7 +23,7 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path):
+    if isfile(output_vcf_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -35,7 +35,8 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
         remove(vcf_gz_file_path)
         remove(vcf_gz_file_path + '.tbi')
 
-    return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)
+    return bgzip_and_tabix(
+        output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
@@ -56,7 +57,7 @@ def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path):
+    if isfile(output_vcf_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -65,7 +66,8 @@ def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
             output_vcf_file_path),
         print_command=True)
 
-    return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)
+    return bgzip_and_tabix(
+        output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def filter_vcf_gz_using_bcftools(vcf_gz_file_path,
@@ -88,7 +90,7 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path):
+    if isfile(output_vcf_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -96,7 +98,8 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path,
         format(qual, dp, n_jobs, vcf_gz_file_path, output_vcf_file_path),
         print_command=True)
 
-    return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)
+    return bgzip_and_tabix(
+        output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
@@ -119,7 +122,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path):
+    if isfile(output_vcf_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -128,7 +131,8 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
                genomic_assembly, vcf_gz_file_path, output_vcf_file_path),
         print_command=True)
 
-    return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)
+    return bgzip_and_tabix(
+        output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
@@ -151,7 +155,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path):
+    if isfile(output_vcf_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -160,4 +164,5 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
             vcf_gz_file_path, output_vcf_file_path),
         print_command=True)
 
-    return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)
+    return bgzip_and_tabix(
+        output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)

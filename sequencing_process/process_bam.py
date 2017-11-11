@@ -22,7 +22,7 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
 
     output_bam_file_path = join(dirname(bam_file_path), stack()[0][3] + '.bam')
 
-    if isfile(output_bam_file_path):
+    if isfile(output_bam_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     run_command_and_monitor(
@@ -52,7 +52,7 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
 
     output_bam_file_path = join(dirname(bam_file_path), stack()[0][3] + '.bam')
 
-    if isfile(output_bam_file_path):
+    if isfile(output_bam_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     metrics_file_path = output_bam_file_path + '.metrics'
@@ -63,7 +63,8 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
                metrics_file_path),
         print_command=True)
 
-    return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
+    return index_bam_using_samtools(
+        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
@@ -76,6 +77,9 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
     Returns:
         str:
     """
+
+    if isfile(bam_file_path + '.bai') and not overwrite:
+        raise FileExistsError('{} exists.'.format(bam_file_path + '.bai'))
 
     run_command_and_monitor(
         'samtools index -@ {} {}'.format(n_jobs, bam_file_path),
@@ -104,10 +108,12 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
 
     ps = multiprocess(
         call_variants_on_bam_using_freebayes,
-        [[bam_file_path, fasta_file_path, c] for c in chromosomes],
+        [[bam_file_path, fasta_file_path, c, 1, overwrite]
+         for c in chromosomes],
         n_jobs=n_jobs)
 
-    return concatenate_vcf_gzs_using_bcftools(ps, n_jobs=n_jobs)
+    return concatenate_vcf_gzs_using_bcftools(
+        ps, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def call_variants_on_bam_using_freebayes(bam_file_path,
@@ -137,7 +143,7 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         output_vcf_file_path = output_vcf_file_path.replace(
             '.vcf', '.{}.vcf'.format(additional_argument.replace(' ', '_')))
 
-    if isfile(output_vcf_file_path):
+    if isfile(output_vcf_file_path) and not overwrite:
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -146,4 +152,5 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
             output_vcf_file_path),
         print_command=True)
 
-    return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)
+    return bgzip_and_tabix(
+        output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)

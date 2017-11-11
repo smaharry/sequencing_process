@@ -47,8 +47,8 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
         raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     run_command_and_monitor(
-        'bwa mem -t {} {} | samtools view -Sb --threads {} > {}'.format(
-            n_jobs, ' '.join(fastq_gz_file_paths), n_jobs,
+        'bwa mem -t {} {} {} | samtools view -Sb --threads {} > {}'.format(
+            n_jobs, fasta_gz_file_path, ' '.join(fastq_gz_file_paths), n_jobs,
             output_bam_file_path),
         print_command=True)
 

@@ -1,5 +1,3 @@
-from os.path import isfile
-
 from .support.support.subprocess_ import run_command_and_monitor
 
 
@@ -10,17 +8,10 @@ def plot_fastq_gz_or_bam(fastq_gz_or_bam_file_path, overwrite=False):
         fastq_gz_or_bam_file_path (str):
         overwrite (bool):
     Returns:
-        str:
+        None
     """
 
-    output_path = fastq_gz_or_bam_file_path + '.plot'
-
-    if isfile(output_path) and not overwrite:
-        raise FileExistsError('{} exists.'.format(output_path))
-
     run_command_and_monitor(
-        'fastqp --output {0} --text {0} {1}'.format(output_path,
-                                                    fastq_gz_or_bam_file_path),
+        'fastqp --output {0}.plot --text {0}.plot.tsv {0}'.format(
+            fastq_gz_or_bam_file_path),
         print_command=True)
-
-    return output_path

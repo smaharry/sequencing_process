@@ -1,4 +1,5 @@
 from inspect import stack
+from os import remove
 from os.path import dirname, isfile, join
 
 from . import CHROMOSOMES
@@ -29,6 +30,10 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
         'bcftools concat --allow-overlaps --threads {} {} > {}'.format(
             n_jobs, ' '.join(vcf_gz_file_paths), output_vcf_file_path),
         print_command=True)
+
+    for vcf_gz_file_path in vcf_gz_file_paths:
+        remove(vcf_gz_file_path)
+        remove(vcf_gz_file_path + '.tbi')
 
     return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)
 

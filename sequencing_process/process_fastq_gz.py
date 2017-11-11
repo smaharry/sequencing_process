@@ -7,7 +7,6 @@ from .support.support.subprocess_ import run_command_and_monitor
 
 def align_fastq_gzs_using_bwa(fasta_gz_file_path,
                               fastq_gz_file_paths,
-                              paths,
                               n_jobs=1,
                               overwrite=False):
     """

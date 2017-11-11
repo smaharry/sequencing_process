@@ -1,6 +1,6 @@
 from inspect import stack
 from os import remove
-from os.path import dirname, isfile, join
+from os.path import dirname, exists, join
 
 from . import CHROMOSOMES
 from .bgzip_and_tabix import bgzip_and_tabix
@@ -23,7 +23,7 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path) and not overwrite:
+    if not overwrite and exists(output_vcf_file_path):
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -57,7 +57,7 @@ def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path) and not overwrite:
+    if not overwrite and exists(output_vcf_file_path):
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -90,7 +90,7 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path) and not overwrite:
+    if not overwrite and exists(output_vcf_file_path):
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
@@ -122,11 +122,11 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path) and not overwrite:
+    if not overwrite and exists(output_vcf_file_path):
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
-        'snpEff -Xmx{} -htmlStats {}.summary.html -csvStats {}.summary.csv -verbose -noLog {} {} > {}'.
+        'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -verbose -noLog {} {} > {}'.
         format(maximum_memory, output_vcf_file_path, output_vcf_file_path,
                genomic_assembly, vcf_gz_file_path, output_vcf_file_path),
         print_command=True)
@@ -155,7 +155,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if isfile(output_vcf_file_path) and not overwrite:
+    if not overwrite and exists(output_vcf_file_path):
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(

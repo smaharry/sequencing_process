@@ -1,6 +1,6 @@
 from inspect import stack
 from os import remove
-from os.path import dirname, isfile, join
+from os.path import dirname, exists, join
 
 from . import CHROMOSOMES
 from .bgzip_and_tabix import bgzip_and_tabix
@@ -22,7 +22,7 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
 
     output_bam_file_path = join(dirname(bam_file_path), stack()[0][3] + '.bam')
 
-    if isfile(output_bam_file_path) and not overwrite:
+    if not overwrite and exists(output_bam_file_path):
         raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     run_command_and_monitor(
@@ -52,15 +52,13 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
 
     output_bam_file_path = join(dirname(bam_file_path), stack()[0][3] + '.bam')
 
-    if isfile(output_bam_file_path) and not overwrite:
+    if not overwrite and exists(output_bam_file_path):
         raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
-    metrics_file_path = output_bam_file_path + '.metrics'
-
     run_command_and_monitor(
-        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES=true INPUT={} OUTPUT={} METRICS_FILE={}'.
+        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES=true INPUT={} OUTPUT={} METRICS_FILE={}.metrics'.
         format(maximum_memory, bam_file_path, output_bam_file_path,
-               metrics_file_path),
+               output_bam_file_path),
         print_command=True)
 
     return index_bam_using_samtools(
@@ -78,7 +76,7 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
         str:
     """
 
-    if isfile(bam_file_path + '.bai') and not overwrite:
+    if not overwrite and exists(bam_file_path + '.bai'):
         raise FileExistsError('{} exists.'.format(bam_file_path + '.bai'))
 
     run_command_and_monitor(
@@ -140,7 +138,7 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         output_vcf_file_path = output_vcf_file_path.replace(
             '.vcf', '.{}.vcf'.format(additional_argument.replace(' ', '_')))
 
-    if isfile(output_vcf_file_path) and not overwrite:
+    if not overwrite and exists(output_vcf_file_path):
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(

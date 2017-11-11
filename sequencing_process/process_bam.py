@@ -134,7 +134,7 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
 
     additional_argument = ''
     if regions:
-        additional_argument += '--regions {}'.format(regions)
+        additional_argument += '--region {}'.format(regions)
 
     if additional_argument:
         output_vcf_file_path = output_vcf_file_path.replace(

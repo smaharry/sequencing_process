@@ -146,5 +146,4 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
     #         output_vcf_file_path),
     #     print_command=True)
 
-    print(bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs))
     return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)

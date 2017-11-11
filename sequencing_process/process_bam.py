@@ -1,4 +1,5 @@
 from inspect import stack
+from os import remove
 from os.path import dirname, isfile, join
 
 from . import CHROMOSOMES
@@ -29,8 +30,7 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
                                                     output_bam_file_path),
         print_command=True)
 
-    run_command_and_monitor(
-        'rm --force --recursive {}'.format(bam_file_path), print_command=True)
+    remove(bam_file_path)
 
     return output_bam_file_path
 

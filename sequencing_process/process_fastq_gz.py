@@ -54,7 +54,8 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
         print_command=True)
 
     return index_bam_using_samtools(
-        sort_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs),
+        sort_bam_using_samtools(
+            output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite),
         n_jobs=n_jobs,
         overwrite=overwrite)
 

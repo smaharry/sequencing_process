@@ -23,7 +23,7 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
     output_bam_file_path = join(dirname(bam_file_path), stack()[0][3] + '.bam')
 
     if isfile(output_bam_file_path):
-        raise ValueError('{} exists.'.format(output_bam_file_path))
+        raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     run_command_and_monitor(
         'samtools sort --threads {} {} > {}'.format(n_jobs, bam_file_path,
@@ -53,7 +53,7 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
     output_bam_file_path = join(dirname(bam_file_path), stack()[0][3] + '.bam')
 
     if isfile(output_bam_file_path):
-        raise ValueError('{} exists.'.format(output_bam_file_path))
+        raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     metrics_file_path = output_bam_file_path + '.metrics'
 
@@ -130,7 +130,7 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
     output_vcf_file_path = join(dirname(bam_file_path), stack()[0][3] + '.vcf')
 
     if isfile(output_vcf_file_path):
-        raise ValueError('{} exists.'.format(output_vcf_file_path))
+        raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     additional_argument = ''
     if regions:

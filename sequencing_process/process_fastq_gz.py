@@ -45,7 +45,7 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
         dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
 
     if isfile(output_bam_file_path):
-        raise ValueError('{} exists.'.format(output_bam_file_path))
+        raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     run_command_and_monitor(
         'bwa mem -t {} {} | samtools view -Sb --threads {} > {}'.format(
@@ -107,7 +107,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
 
     if isfile(output_bam_file_path):
-        raise ValueError('{} exists.'.format(output_bam_file_path))
+        raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     summary_file_path = output_bam_file_path + '.summary'
 

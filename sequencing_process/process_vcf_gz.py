@@ -102,14 +102,14 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
 
 def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
                                    annotation_file_path,
-                                   additional_arguments='-c ID',
+                                   additional_argument,
                                    n_jobs=1):
     """
     Annotate .vcf.gz file using bcftools.
     Arguments:
         vcf_gz_file_path (str):
         annotation_file_path (str):
-        additional_arguments (str):
+        additional_argument (str):
         n_jobs (int):
     Returns:
         str:
@@ -120,7 +120,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
 
     run_command_and_monitor(
         'bcftools annotate --annotations {} --threads {} {} {} > {}'.format(
-            annotation_file_path, n_jobs, additional_arguments,
+            annotation_file_path, n_jobs, additional_argument,
             vcf_gz_file_path, output_vcf_gz_file_path),
         print_command=True)
 

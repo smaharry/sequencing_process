@@ -74,7 +74,7 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1):
     """
 
     run_command_and_monitor(
-        'samtools index --threads {} {}'.format(n_jobs, bam_file_path),
+        'samtools index -@ {} {}'.format(n_jobs, bam_file_path),
         print_command=True)
 
     return bam_file_path

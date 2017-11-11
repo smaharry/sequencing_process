@@ -8,12 +8,13 @@ from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command_and_monitor
 
 
-def sort_bam_using_samtools(bam_file_path, n_jobs=1):
+def sort_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
     """
     Sort .bam file using samtools.
     Arguments:
         bam_file_path (str):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -36,13 +37,15 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1):
 
 def remove_duplicates_in_bam_using_picard(bam_file_path,
                                           maximum_memory='8G',
-                                          n_jobs=1):
+                                          n_jobs=1,
+                                          overwrite=False):
     """
     Remove duplicates in .bam file using picard.
     Arguments:
         bam_file_path (str):
         maximum_memory (str):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -63,12 +66,13 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
     return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
 
 
-def index_bam_using_samtools(bam_file_path, n_jobs=1):
+def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
     """
     Index .bam file using samtools.
     Arguments:
         bam_file_path (str):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -81,7 +85,11 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1):
 
 
 def call_variants_on_bam_using_freebayes_and_multiprocess(
-        bam_file_path, fasta_file_path, chromosomes=CHROMOSOMES, n_jobs=2):
+        bam_file_path,
+        fasta_file_path,
+        chromosomes=CHROMOSOMES,
+        n_jobs=2,
+        overwrite=False):
     """
     Call variants on .bam file using freebayes and multiprocess.
     Arguments:
@@ -89,6 +97,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         fasta_file_path (str): reference .fasta file
         chromosomes (iterable):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -104,7 +113,8 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
 def call_variants_on_bam_using_freebayes(bam_file_path,
                                          fasta_file_path,
                                          regions=None,
-                                         n_jobs=1):
+                                         n_jobs=1,
+                                         overwrite=False):
     """
     Call variants on .bam file using freebayes.
     Arguments:
@@ -112,6 +122,7 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         fasta_file_path (str): reference .fasta file
         regions (str):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -133,6 +144,6 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         'freebayes --fasta-reference {} {} {} > {}'.format(
             fasta_file_path, additional_argument, bam_file_path,
             output_vcf_file_path),
-        run_command=True)
+        print_command=True)
 
     return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)

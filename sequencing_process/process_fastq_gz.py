@@ -8,13 +8,15 @@ from .support.support.subprocess_ import run_command_and_monitor
 def align_fastq_gzs_using_bwa(fasta_gz_file_path,
                               fastq_gz_file_paths,
                               paths,
-                              n_jobs=1):
+                              n_jobs=1,
+                              overwrite=False):
     """
     Align unpaired or paired .fastq.gz file using bwa.
     Arguments:
         fasta_gz_file_path (str):
         fastq_gz_file_paths (iterable): (<= 2) unpaired or paired sequences
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -59,7 +61,8 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
 def align_fastq_gzs_using_hisat2(fasta_file_path,
                                  fastq_gz_file_paths,
                                  sequence_type,
-                                 n_jobs=1):
+                                 n_jobs=1,
+                                 overwrite=False):
     """
     Align unpaired or paired .fastq.gz files using hisat2.
     Arguments:
@@ -67,6 +70,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         fastq_gz_file_paths (iterable): (<= 2) unpaired or paired end sequences
         sequence_type (str): 'DNA' | 'RNA'
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -124,7 +128,8 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
                                      n_bootstraps=100,
                                      fragment_lendth=180,
                                      fragment_lendth_standard_deviation=20,
-                                     n_jobs=1):
+                                     n_jobs=1,
+                                     overwrite=False):
     """
     Count transcripts using kallisto.
     Arguments:
@@ -136,6 +141,7 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
         fragment_lendth_standard_deviation (number): estimated fragment length
             standard deviation
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """

@@ -6,12 +6,15 @@ from .bgzip_and_tabix import bgzip_and_tabix
 from .support.support.subprocess_ import run_command_and_monitor
 
 
-def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths, n_jobs=1):
+def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
+                                       n_jobs=1,
+                                       overwrite=False):
     """
     Concatenate .vcf.gz files using bcftools.
     Arguments
         vcf_gz_file_paths (iterable):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -32,13 +35,15 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths, n_jobs=1):
 
 def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
                                               chromosomes=CHROMOSOMES,
-                                              n_jobs=1):
+                                              n_jobs=1,
+                                              overwrite=False):
     """
     Extract chromosomes from .vcf.gz file using bcftools.
     Arguments:
         vcf_gz_file_path (str):
         chromosomes (iterable):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -58,7 +63,11 @@ def extract_vcf_gz_chromosomes_using_bcftools(vcf_gz_file_path,
     return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)
 
 
-def filter_vcf_gz_using_bcftools(vcf_gz_file_path, qual=60, dp=30, n_jobs=1):
+def filter_vcf_gz_using_bcftools(vcf_gz_file_path,
+                                 qual=60,
+                                 dp=30,
+                                 n_jobs=1,
+                                 overwrite=False):
     """
     Filter .vcf.gz file using bcftools.
     Arguments:
@@ -66,6 +75,7 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path, qual=60, dp=30, n_jobs=1):
         qual (int):
         dp (int):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -87,7 +97,8 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path, qual=60, dp=30, n_jobs=1):
 def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
                                  genomic_assembly='GRCh38.86',
                                  maximum_memory='8G',
-                                 n_jobs=1):
+                                 n_jobs=1,
+                                 overwrite=False):
     """
     Annotate .vcf.gz file using snpeff.
     Arguments:
@@ -95,6 +106,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
         genomic_assembly (str):
         maximum_memory (str):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """
@@ -117,7 +129,8 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
 def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
                                    annotation_file_path,
                                    additional_argument,
-                                   n_jobs=1):
+                                   n_jobs=1,
+                                   overwrite=False):
     """
     Annotate .vcf.gz file using bcftools.
     Arguments:
@@ -125,6 +138,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
         annotation_file_path (str):
         additional_argument (str):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """

@@ -1,12 +1,13 @@
 from .support.support.subprocess_ import run_command_and_monitor
 
 
-def bgzip_and_tabix(file_path, n_jobs=1):
+def bgzip_and_tabix(file_path, n_jobs=1, overwrite=False):
     """
     Bgzip and tabix file_path.
     Arguments:
         file_path (str):
         n_jobs (int):
+        overwrite (bool):
     Returns:
         str:
     """

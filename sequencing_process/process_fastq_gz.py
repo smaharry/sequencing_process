@@ -1,7 +1,59 @@
-from os.path import isfile
+from inspect import stack
+from os.path import dirname, isfile, join
 
 from .process_bam import index_bam_using_samtools, sort_bam_using_samtools
 from .support.support.subprocess_ import run_command_and_monitor
+
+
+def align_fastq_gzs_using_bwa(fasta_gz_file_path,
+                              fastq_gz_file_paths,
+                              paths,
+                              n_jobs=1):
+    """
+    Align unpaired or paired .fastq.gz file using bwa.
+    Arguments:
+        fasta_gz_file_path (str):
+        fastq_gz_file_paths (iterable): (<= 2) unpaired or paired sequences
+        n_jobs (int):
+    Returns:
+        str:
+    """
+
+    if not all([
+            isfile('{}.{}'.format(fasta_gz_file_path, suffix))
+            for suffix in [
+                'bwt',
+                'pac',
+                'ann',
+                'amb',
+                'sa',
+            ]
+    ]):
+        print('Indexing ...')
+
+        run_command_and_monitor(
+            'bwa index {}'.format(fasta_gz_file_path), print_command=True)
+
+    if 2 < len(fastq_gz_file_paths):
+        raise ValueError(
+            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
+        )
+
+    output_bam_file_path = join(
+        dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
+
+    if isfile(output_bam_file_path):
+        raise ValueError('{} exists.'.format(output_bam_file_path))
+
+    run_command_and_monitor(
+        'bwa mem -t {} {} | samtools view -Sb --threads {} > {}'.format(
+            n_jobs, ' '.join(fastq_gz_file_paths), n_jobs,
+            output_bam_file_path),
+        print_command=True)
+
+    return index_bam_using_samtools(
+        sort_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs),
+        n_jobs=n_jobs)
 
 
 def align_fastq_gzs_using_hisat2(fasta_file_path,
@@ -38,7 +90,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
 
     else:
         raise ValueError(
-            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file paths.'
+            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
         )
 
     if sequence_type == 'DNA':
@@ -47,8 +99,11 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     elif sequence_type == 'RNA':
         additional_argument = '--dta --dta-cufflinks'
 
-    output_bam_file_path = fastq_gz_file_paths[0].replace(
-        '.fastq.gz', '.align_fastq_gzs_using_hisat2.bam')
+    output_bam_file_path = join(
+        dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
+
+    if isfile(output_bam_file_path):
+        raise ValueError('{} exists.'.format(output_bam_file_path))
 
     summary_file_path = output_bam_file_path + '.summary'
 
@@ -56,42 +111,6 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         'hisat2 {} -x {} --summary-file {} --threads {} {} | samtools view -Sb --threads {} > {}'.
         format(sample_argument, fasta_file_path, summary_file_path, n_jobs,
                additional_argument, n_jobs, output_bam_file_path),
-        print_command=True)
-
-    return index_bam_using_samtools(
-        sort_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs),
-        n_jobs=n_jobs)
-
-
-def align_fastq_gzs_using_bwa(fasta_gz_file_path,
-                              fastq_gz_file_paths,
-                              n_jobs=1):
-    """
-    Align unpaired or paired .fastq.gz files using bwa.
-    Arguments:
-        fasta_gz_file_path (str):
-        fastq_gz_file_paths (iterable): (<= 2) unpaired or paired sequences
-        n_jobs (int):
-    Returns:
-        str:
-    """
-
-    if not all([
-            isfile('{}.{}'.format(fasta_gz_file_path, suffix))
-            for suffix in ['bwt', 'pac', 'ann', 'amb', 'sa']
-    ]):
-        print('Indexing ...')
-
-        run_command_and_monitor(
-            'bwa index {}'.format(fasta_gz_file_path), print_command=True)
-
-    output_bam_file_path = fastq_gz_file_paths[0].replace(
-        '.fastq.gz', '.align_fastq_gzs_using_bwa.bam')
-
-    run_command_and_monitor(
-        'bwa mem -t {} {} | samtools view -Sb --threads {} > {}'.format(
-            n_jobs, ' '.join(fastq_gz_file_paths), n_jobs,
-            output_bam_file_path),
         print_command=True)
 
     return index_bam_using_samtools(
@@ -125,8 +144,7 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
         fasta_gz_file_path)
 
     if not isfile(fasta_gz_kallisto_index_file_path):
-        print('Could not find {}; creating it ...'.format(
-            fasta_gz_kallisto_index_file_path))
+        print('Indexing ...')
 
         run_command_and_monitor(
             'kallisto index --index {} {}'.format(
@@ -147,7 +165,7 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
 
     else:
         raise ValueError(
-            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file paths.'
+            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
         )
 
     run_command_and_monitor(

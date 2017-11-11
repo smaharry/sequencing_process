@@ -1,3 +1,6 @@
+from inspect import stack
+from os.path import dirname, isfile, join
+
 from . import CHROMOSOMES
 from .bgzip_and_tabix import bgzip_and_tabix
 from .process_vcf_gz import concatenate_vcf_gzs_using_bcftools
@@ -15,8 +18,10 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1):
         str:
     """
 
-    output_bam_file_path = bam_file_path.replace(
-        '.bam', '.sort_bam_using_samtools.bam')
+    output_bam_file_path = join(dirname(bam_file_path), stack()[0][3] + '.bam')
+
+    if isfile(output_bam_file_path):
+        raise ValueError('{} exists.'.format(output_bam_file_path))
 
     run_command_and_monitor(
         'samtools sort --threads {} {} > {}'.format(n_jobs, bam_file_path,
@@ -27,6 +32,35 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1):
         'rm --force --recursive {}'.format(bam_file_path), print_command=True)
 
     return output_bam_file_path
+
+
+def remove_duplicates_in_bam_using_picard(bam_file_path,
+                                          maximum_memory='8G',
+                                          n_jobs=1):
+    """
+    Remove duplicates in .bam file using picard.
+    Arguments:
+        bam_file_path (str):
+        maximum_memory (str):
+        n_jobs (int):
+    Returns:
+        str:
+    """
+
+    output_bam_file_path = join(dirname(bam_file_path), stack()[0][3] + '.bam')
+
+    if isfile(output_bam_file_path):
+        raise ValueError('{} exists.'.format(output_bam_file_path))
+
+    metrics_file_path = output_bam_file_path + '.metrics'
+
+    run_command_and_monitor(
+        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES=true INPUT={} OUTPUT={} METRICS_FILE={}'.
+        format(maximum_memory, bam_file_path, output_bam_file_path,
+               metrics_file_path),
+        print_command=True)
+
+    return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
 
 
 def index_bam_using_samtools(bam_file_path, n_jobs=1):
@@ -44,33 +78,6 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1):
         print_command=True)
 
     return bam_file_path
-
-
-def remove_duplicates_in_bam_using_picard(bam_file_path,
-                                          maximum_memory='8G',
-                                          n_jobs=1):
-    """
-    Remove duplicates in .bam file using picard.
-    Arguments:
-        bam_file_path (str):
-        maximum_memory (str):
-        n_jobs (int):
-    Returns:
-        str:
-    """
-
-    output_bam_file_path = bam_file_path.replace(
-        '.bam', '.remove_duplicates_in_bam_using_picard.bam')
-
-    metrics_file_path = output_bam_file_path + '.metrics'
-
-    run_command_and_monitor(
-        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES=true INPUT={} OUTPUT={} METRICS_FILE={}'.
-        format(maximum_memory, bam_file_path, output_bam_file_path,
-               metrics_file_path),
-        print_command=True)
-
-    return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
 
 
 def call_variants_on_bam_using_freebayes_and_multiprocess(
@@ -109,21 +116,23 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         str:
     """
 
-    output_vcf_gz_file_path = bam_file_path.replace(
-        '.bam', '.call_variants_on_bam_using_freebayes.vcf')
+    output_vcf_file_path = join(dirname(bam_file_path), stack()[0][3] + '.vcf')
+
+    if isfile(output_vcf_file_path):
+        raise ValueError('{} exists.'.format(output_vcf_file_path))
 
     additional_argument = ''
     if regions:
         additional_argument += '--regions {}'.format(regions)
 
     if additional_argument:
-        output_vcf_gz_file_path = output_vcf_gz_file_path.replace(
+        output_vcf_file_path = output_vcf_file_path.replace(
             '.vcf', '.{}.vcf'.format(additional_argument.replace(' ', '_')))
 
     run_command_and_monitor(
         'freebayes --fasta-reference {} {} {} > {}'.format(
             fasta_file_path, additional_argument, bam_file_path,
-            output_vcf_gz_file_path),
+            output_vcf_file_path),
         run_command=True)
 
-    return bgzip_and_tabix(output_vcf_gz_file_path, n_jobs=n_jobs)
+    return bgzip_and_tabix(output_vcf_file_path, n_jobs=n_jobs)

@@ -1,4 +1,4 @@
-from .support.support.subprocess_ import run_command
+from .support.support.subprocess_ import run_command_and_monitor
 
 
 def bgzip_and_tabix(file_path, n_jobs=1):
@@ -13,7 +13,9 @@ def bgzip_and_tabix(file_path, n_jobs=1):
 
     output_file_path = file_path + '.gz'
 
-    run_command('bgzip -f -@ {} {}; tabix -f {}'.format(
-        n_jobs, file_path, output_file_path))
+    run_command_and_monitor(
+        'bgzip --force --threads {} {}; tabix --force {}'.format(
+            n_jobs, file_path, output_file_path),
+        print_command=True)
 
     return output_file_path

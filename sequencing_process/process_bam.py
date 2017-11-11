@@ -2,7 +2,7 @@ from . import CHROMOSOMES
 from .bgzip_and_tabix import bgzip_and_tabix
 from .process_vcf_gz import concatenate_vcf_gzs_using_bcftools
 from .support.support.multiprocess import multiprocess
-from .support.support.subprocess_ import run_command
+from .support.support.subprocess_ import run_command_and_monitor
 
 
 def sort_bam_using_samtools(bam_file_path, n_jobs=1):
@@ -18,10 +18,13 @@ def sort_bam_using_samtools(bam_file_path, n_jobs=1):
     output_bam_file_path = bam_file_path.replace(
         '.bam', '.sort_bam_using_samtools.bam')
 
-    run_command('samtools sort -@ {} {} > {}'.format(n_jobs, bam_file_path,
-                                                     output_bam_file_path))
+    run_command_and_monitor(
+        'samtools sort --threads {} {} > {}'.format(n_jobs, bam_file_path,
+                                                    output_bam_file_path),
+        print_command=True)
 
-    run_command('rm -rf {}'.format(bam_file_path))
+    run_command_and_monitor(
+        'rm --force --recursive {}'.format(bam_file_path), print_command=True)
 
     return output_bam_file_path
 
@@ -36,7 +39,9 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1):
         str:
     """
 
-    run_command('samtools index -@ {} {}'.format(n_jobs, bam_file_path))
+    run_command_and_monitor(
+        'samtools index --threads {} {}'.format(n_jobs, bam_file_path),
+        print_command=True)
 
     return bam_file_path
 
@@ -57,10 +62,13 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
     output_bam_file_path = bam_file_path.replace(
         '.bam', '.remove_duplicates_in_bam_using_picard.bam')
 
-    run_command(
-        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES=true I={} O={} M={}'.
+    metrics_file_path = output_bam_file_path + '.metrics'
+
+    run_command_and_monitor(
+        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES=true INPUT={} OUTPUT={} METRICS_FILE={}'.
         format(maximum_memory, bam_file_path, output_bam_file_path,
-               output_bam_file_path[:-4]))
+               metrics_file_path),
+        print_command=True)
 
     return index_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs)
 
@@ -104,16 +112,18 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
     output_vcf_gz_file_path = bam_file_path.replace(
         '.bam', '.call_variants_on_bam_using_freebayes.vcf')
 
-    additional_arguments = ''
+    additional_argument = ''
     if regions:
-        additional_arguments += '-r {}'.format(regions)
+        additional_argument += '--regions {}'.format(regions)
 
-    if additional_arguments:
+    if additional_argument:
         output_vcf_gz_file_path = output_vcf_gz_file_path.replace(
-            '.vcf', '.{}.vcf'.format(additional_arguments.replace(' ', '_')))
+            '.vcf', '.{}.vcf'.format(additional_argument.replace(' ', '_')))
 
-    run_command('freebayes -f {} {} {} > {}'.format(
-        fasta_file_path, additional_arguments, bam_file_path,
-        output_vcf_gz_file_path))
+    run_command_and_monitor(
+        'freebayes --fasta-reference {} {} {} > {}'.format(
+            fasta_file_path, additional_argument, bam_file_path,
+            output_vcf_gz_file_path),
+        run_command=True)
 
     return bgzip_and_tabix(output_vcf_gz_file_path, n_jobs=n_jobs)

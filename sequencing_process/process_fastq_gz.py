@@ -53,7 +53,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     summary_file_path = output_bam_file_path + '.summary'
 
     run_command_and_monitor(
-        'hisat2 {} -x {} --summary-file {} --threads {} {} | samtools view -Sb -@ {} > {}'.
+        'hisat2 {} -x {} --summary-file {} --threads {} {} | samtools view -Sb --threads {} > {}'.
         format(sample_argument, fasta_file_path, summary_file_path, n_jobs,
                additional_argument, n_jobs, output_bam_file_path),
         print_command=True)
@@ -89,7 +89,7 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
         '.fastq.gz', '.align_fastq_gzs_using_bwa.bam')
 
     run_command_and_monitor(
-        'bwa mem -t {} {} | samtools view -Sb -@ {} > {}'.format(
+        'bwa mem -t {} {} | samtools view -Sb --threads {} > {}'.format(
             n_jobs, ' '.join(fastq_gz_file_paths), n_jobs,
             output_bam_file_path),
         print_command=True)
@@ -128,8 +128,10 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
         print('Could not find {}; creating it ...'.format(
             fasta_gz_kallisto_index_file_path))
 
-        run_command_and_monitor('kallisto index --index {} {}'.format(
-            fasta_gz_kallisto_index_file_path, fasta_gz_file_path))
+        run_command_and_monitor(
+            'kallisto index --index {} {}'.format(
+                fasta_gz_kallisto_index_file_path, fasta_gz_file_path),
+            print_command=True)
 
     if len(fastq_gz_file_paths) == 1:
         print('Using single-end ...')
@@ -151,6 +153,7 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
     run_command_and_monitor(
         'kallisto quant --index {} --output-dir {} --bootstrap-samples {} {}'.
         format(fasta_gz_kallisto_index_file_path, output_directory_path,
-               n_bootstraps, sample_argument))
+               n_bootstraps, sample_argument),
+        print_command=True)
 
     return output_directory_path

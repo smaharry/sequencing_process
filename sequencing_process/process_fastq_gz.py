@@ -6,6 +6,19 @@ from .support.support.path import remove_path
 from .support.support.subprocess_ import run_command_and_monitor
 
 
+def validate_fastq_gzs_using_fqtools(fastq_gz_file_paths):
+    """
+    Validate .fastq.gz file(s) using fqtools.
+    Arguments:
+        fastq_gz_file_paths (str):
+    Returns:
+        None
+    """
+
+    run_command_and_monitor(
+        'fqtools validate {}'.format(' '.join(fastq_gz_file_paths)))
+
+
 def align_fastq_gzs_using_bwa(fasta_gz_file_path,
                               fastq_gz_file_paths,
                               n_jobs=1,
@@ -20,6 +33,8 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
     Returns:
         str:
     """
+
+    validate_fastq_gzs_using_fqtools(fastq_gz_file_paths)
 
     if not all([
             isfile('{}.{}'.format(fasta_gz_file_path, suffix))
@@ -76,6 +91,8 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     Returns:
         str:
     """
+
+    validate_fastq_gzs_using_fqtools(fastq_gz_file_paths)
 
     if not all(
         [isfile('{}.{}.ht2'.format(fasta_file_path, i)) for i in range(1, 9)]):
@@ -148,6 +165,8 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
     Returns:
         str:
     """
+
+    validate_fastq_gzs_using_fqtools(fastq_gz_file_paths)
 
     fasta_gz_kallisto_index_file_path = '{}.kallisto.index'.format(
         fasta_gz_file_path)

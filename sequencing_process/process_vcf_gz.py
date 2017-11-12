@@ -103,7 +103,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
 
 def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
                                    annotation_file_path,
-                                   additional_arguments,
+                                   additional_arguments=['--columns =ID,INFO'],
                                    n_jobs=1,
                                    overwrite=False):
     """
@@ -134,17 +134,16 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
         output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
-def filter_vcf_gz_using_bcftools(vcf_gz_file_path,
-                                 qual=60,
-                                 dp=30,
-                                 n_jobs=1,
-                                 overwrite=False):
+def filter_vcf_gz_using_bcftools(
+        vcf_gz_file_path,
+        include_expression='10 <= DP & 10 <= QUAL & 10 <= QUAL / AO & 1 <= SRF & 1 <= SRR & 1 <= SAF & 1 <= SAR & 1 <= RPR & 1 <= RPL',
+        n_jobs=1,
+        overwrite=False):
     """
     Filter .vcf.gz file using bcftools.
     Arguments:
         vcf_gz_file_path (str):
-        qual (int):
-        dp (int):
+        include_expression (str):
         n_jobs (int):
         overwrite (bool):
     Returns:
@@ -158,8 +157,9 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path,
         raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
-        'bcftools view --include \'{}<QUAL & {}<DP\' --threads {} {} > {}'.
-        format(qual, dp, n_jobs, vcf_gz_file_path, output_vcf_file_path),
+        'bcftools view --include \'{}\' --threads {} {} > {}'.format(
+            include_expression, n_jobs, vcf_gz_file_path,
+            output_vcf_file_path),
         print_command=True)
 
     return bgzip_and_tabix(

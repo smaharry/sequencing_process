@@ -136,7 +136,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
 
 def filter_vcf_gz_using_bcftools(
         vcf_gz_file_path,
-        include_expression='10 <= DP & 10 <= QUAL & 10 <= QUAL / AO & 1 <= SRF & 1 <= SRR & 1 <= SAF & 1 <= SAR & 1 <= RPR & 1 <= RPL',
+        include_expression='10<=DP & 10<=QUAL & 10<=(QUAL/AO) & 1<=SRF & 1<=SRR & 1<=SAF & 1<=SAR & 1<=RPR & 1<=RPL',
         n_jobs=1,
         overwrite=False):
     """

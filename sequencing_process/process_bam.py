@@ -89,7 +89,7 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
 def call_variants_on_bam_using_freebayes_and_multiprocess(
         bam_file_path,
         fasta_file_path,
-        chromosomes=CHROMOSOMES,
+        regions=CHROMOSOMES,
         n_jobs=2,
         overwrite=False):
     """
@@ -97,7 +97,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
     Arguments:
         bam_file_path (str):
         fasta_file_path (str): reference .fasta file
-        chromosomes (iterable):
+        regions (iterable):
         n_jobs (int):
         overwrite (bool):
     Returns:
@@ -106,8 +106,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
 
     ps = multiprocess(
         call_variants_on_bam_using_freebayes,
-        [[bam_file_path, fasta_file_path, c, 1, overwrite]
-         for c in chromosomes],
+        [[bam_file_path, fasta_file_path, r, 1, overwrite] for r in regions],
         n_jobs=n_jobs)
 
     return concatenate_vcf_gzs_using_bcftools(

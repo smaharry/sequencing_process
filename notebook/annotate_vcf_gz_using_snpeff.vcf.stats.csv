@@ -3,9 +3,9 @@
 
 Name , Value
 Genome , GRCh38.86 
-Date , 2017-11-11 12:13
+Date , 2017-11-11 17:17
 SnpEff_version , SnpEff 4.3r (build 2017-09-06 16:41), by Pablo Cingolani
-Command_line_arguments , SnpEff  -htmlStats annotate_vcf_gz_using_snpeff.vcf.summary.html -csvStats annotate_vcf_gz_using_snpeff.vcf.summary.csv GRCh38.86 concatenate_vcf_gzs_using_bcftools.vcf.gz 
+Command_line_arguments , SnpEff  -htmlStats annotate_vcf_gz_using_snpeff.vcf.stats.html -csvStats annotate_vcf_gz_using_snpeff.vcf.stats.csv GRCh38.86 concatenate_vcf_gzs_using_bcftools.vcf.gz 
 Warnings , 0 
 Number_of_lines_in_input_file, 0
 Number_of_variants_before_filter, 0

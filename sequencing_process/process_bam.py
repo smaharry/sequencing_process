@@ -2,7 +2,6 @@ from inspect import stack
 from os import remove
 from os.path import dirname, exists, join
 
-from . import CHROMOSOMES
 from .bgzip_and_tabix import bgzip_and_tabix
 from .process_vcf_gz import concatenate_vcf_gzs_using_bcftools
 from .support.support.multiprocess import multiprocess
@@ -87,11 +86,7 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
 
 
 def call_variants_on_bam_using_freebayes_and_multiprocess(
-        bam_file_path,
-        fasta_file_path,
-        regions=CHROMOSOMES,
-        n_jobs=2,
-        overwrite=False):
+        bam_file_path, fasta_file_path, regions, n_jobs=2, overwrite=False):
     """
     Call variants on .bam file using freebayes and multiprocess.
     Arguments:
@@ -132,17 +127,21 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
 
     output_vcf_file_path = join(dirname(bam_file_path), stack()[0][3] + '.vcf')
 
+    additional_arguments = []
+
     if regions:
-        additional_argument = '--region {}'.format(regions)
+        additional_arguments.append('--region {}'.format(regions))
+
+    if any(additional_arguments):
         output_vcf_file_path = output_vcf_file_path.replace(
-            '.vcf', '.{}.vcf'.format(additional_argument.replace(' ', '_')))
+            '.vcf', '.{}.vcf'.format('_'.join(additional_arguments)))
 
     if not overwrite and exists(output_vcf_file_path):
         raise FileExistsError('{} exists.'.format(output_vcf_file_path))
 
     run_command_and_monitor(
         'freebayes --fasta-reference {} {} {} > {}'.format(
-            fasta_file_path, additional_argument, bam_file_path,
+            fasta_file_path, ' '.join(additional_arguments), bam_file_path,
             output_vcf_file_path),
         print_command=True)
 

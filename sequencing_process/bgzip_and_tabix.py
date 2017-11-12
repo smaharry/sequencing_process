@@ -14,17 +14,17 @@ def bgzip_and_tabix(file_path, n_jobs=1, overwrite=False):
 
     output_file_path = file_path + '.gz'
 
+    bgzip_additional_arguments = []
+    tabix_additional_arguments = []
+
     if overwrite:
-        bgzip_additional_argument = '--force'
-        tabix_additional_argument = '--force'
-    else:
-        bgzip_additional_argument = ''
-        tabix_additional_argument = ''
+        bgzip_additional_arguments.append('--force')
+        tabix_additional_arguments.append('--force')
 
     run_command_and_monitor(
         'bgzip --threads {} {} {}; tabix {} {}'.format(
-            n_jobs, bgzip_additional_argument, file_path,
-            tabix_additional_argument, output_file_path),
+            n_jobs, ' '.join(bgzip_additional_arguments), file_path,
+            ' '.join(tabix_additional_arguments), output_file_path),
         print_command=True)
 
     return output_file_path

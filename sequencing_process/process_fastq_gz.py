@@ -96,16 +96,18 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     output_bam_file_path = join(
         dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
 
+    additional_arguments = []
+
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError('{} exists.'.format(output_bam_file_path))
 
     if len(fastq_gz_file_paths) == 1:
         print('Using single-end ...')
-        sample_argument = '-U {}'.format(*fastq_gz_file_paths)
+        additional_arguments.append('-U {}'.format(*fastq_gz_file_paths))
 
     elif len(fastq_gz_file_paths) == 2:
         print('Using paired-end ...')
-        sample_argument = '-1 {} -2 {}'.format(*fastq_gz_file_paths)
+        additional_arguments.append('-1 {} -2 {}'.format(*fastq_gz_file_paths))
 
     else:
         raise ValueError(
@@ -113,14 +115,14 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         )
 
     if sequence_type == 'DNA':
-        additional_argument = '--no-spliced-alignment'
+        additional_arguments.append('--no-spliced-alignment')
     elif sequence_type == 'RNA':
-        additional_argument = '--dta --dta-cufflinks'
+        additional_arguments.append('--dta --dta-cufflinks')
 
     run_command_and_monitor(
-        'hisat2 {} -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.
-        format(sample_argument, fasta_file_path, output_bam_file_path, n_jobs,
-               additional_argument, n_jobs, output_bam_file_path),
+        'hisat2 -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.
+        format(fasta_file_path, output_bam_file_path, n_jobs,
+               ' '.join(additional_arguments), n_jobs, output_bam_file_path),
         print_command=True)
 
     return index_bam_using_samtools(

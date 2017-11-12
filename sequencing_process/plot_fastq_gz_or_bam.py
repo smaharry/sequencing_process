@@ -18,10 +18,9 @@ def plot_fastq_gz_or_bam(fastq_gz_or_bam_file_path, overwrite=False):
 
     if not overwrite:
         if exists(plot_zip_directory_path + '.zip'):
-            raise FileExistsError(
-                '{} exists.'.format(plot_zip_directory_path + '.zip'))
+            raise FileExistsError(plot_zip_directory_path + '.zip')
         if exists(plot_tsv_file_path):
-            raise FileExistsError('{} exists.'.format(plot_tsv_file_path))
+            raise FileExistsError(plot_tsv_file_path)
 
     run_command_and_monitor(
         'fastqp --output {} --text {} {}'.format(plot_zip_directory_path,

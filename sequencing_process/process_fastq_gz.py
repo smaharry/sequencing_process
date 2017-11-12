@@ -53,7 +53,7 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
         dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
 
     if not overwrite and exists(output_bam_file_path):
-        raise FileExistsError('{} exists.'.format(output_bam_file_path))
+        raise FileExistsError(output_bam_file_path)
 
     run_command_and_monitor(
         'bwa mem -t {} {} {} | samtools view -Sb --threads {} > {}'.format(
@@ -99,7 +99,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     additional_arguments = []
 
     if not overwrite and exists(output_bam_file_path):
-        raise FileExistsError('{} exists.'.format(output_bam_file_path))
+        raise FileExistsError(output_bam_file_path)
 
     if len(fastq_gz_file_paths) == 1:
         print('Using single-end ...')
@@ -118,6 +118,8 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         additional_arguments.append('--no-spliced-alignment')
     elif sequence_type == 'RNA':
         additional_arguments.append('--dta --dta-cufflinks')
+    else:
+        raise ValueError('Unknown sequence_type {}.'.format(sequence_type))
 
     run_command_and_monitor(
         'hisat2 -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.

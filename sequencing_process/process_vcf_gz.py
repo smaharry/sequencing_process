@@ -23,7 +23,7 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
         dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path):
-        raise FileExistsError('{} exists.'.format(output_vcf_file_path))
+        raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
         'bcftools concat --allow-overlaps --threads {} {} > {}'.format(
@@ -57,7 +57,7 @@ def extract_regions_from_vcf_gz_using_bcftools(vcf_gz_file_path,
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path):
-        raise FileExistsError('{} exists.'.format(output_vcf_file_path))
+        raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
         'bcftools view --regions {} --threads {} {} > {}'.format(
@@ -89,7 +89,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path):
-        raise FileExistsError('{} exists.'.format(output_vcf_file_path))
+        raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
         'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -verbose -noLog {} {} > {}'.
@@ -122,7 +122,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path):
-        raise FileExistsError('{} exists.'.format(output_vcf_file_path))
+        raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
         'bcftools annotate --annotations {} --threads {} {} {} > {}'.format(
@@ -155,7 +155,7 @@ def filter_vcf_gz_using_bcftools(vcf_gz_file_path,
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path):
-        raise FileExistsError('{} exists.'.format(output_vcf_file_path))
+        raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
         'bcftools view --include \'{}<QUAL & {}<DP\' --threads {} {} > {}'.

@@ -2,18 +2,17 @@ from inspect import stack
 from os.path import dirname, exists, join
 
 from .process_bam import index_bam_using_samtools, sort_bam_using_samtools
-from .support.support.multiprocess import multiprocess
 from .support.support.path import remove_path
 from .support.support.subprocess_ import run_command, run_command_and_monitor
 
 
-def validate_fastq_gzs_using_fqtools(fastq_gz_file_path):
+def validate_fastq_gz_using_fqtools(fastq_gz_file_path):
     """
-    Validate .fastq.gz file(s) using fqtools.
+    Validate .fastq.gz file using fqtools.
     Arguments:
         fastq_gz_file_path (str):
     Returns:
-        None
+        bool:
     """
 
     return run_command(
@@ -35,11 +34,6 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
     Returns:
         str:
     """
-
-    for p, r in zip(fastq_gz_file_paths,
-                    multiprocess(validate_fastq_gzs_using_fqtools,
-                                 [[p] for p in fastq_gz_file_paths], n_jobs)):
-        print('{} ==> {}'.format(p, r))
 
     if not all([
             exists('{}.{}'.format(fasta_gz_file_path, suffix))
@@ -89,11 +83,6 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     Returns:
         str:
     """
-
-    for p, r in zip(fastq_gz_file_paths,
-                    multiprocess(validate_fastq_gzs_using_fqtools,
-                                 [[p] for p in fastq_gz_file_paths], n_jobs)):
-        print('{} ==> {}'.format(p, r))
 
     if not all(
         [exists('{}.{}.ht2'.format(fasta_file_path, i)) for i in range(1, 9)]):
@@ -164,11 +153,6 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
     Returns:
         str:
     """
-
-    for p, r in zip(fastq_gz_file_paths,
-                    multiprocess(validate_fastq_gzs_using_fqtools,
-                                 [[p] for p in fastq_gz_file_paths], n_jobs)):
-        print('{} ==> {}'.format(p, r))
 
     fasta_gz_kallisto_index_file_path = '{}.kallisto.index'.format(
         fasta_gz_file_path)

@@ -45,6 +45,6 @@ def make_reference_genome_for_sequencing_process(
             full_file_name, extra_file_path, full_plus_extra_file_name))
 
     alt_file_path = 'bwa.kit/resource-GRCh38/hs38DH.fa.alt'
-    print('Copying {} to {}.alt ...'.format(alt_file_path,
-                                            full_plus_extra_file_name))
+    print('Copying {} to {}.gz.alt ...'.format(alt_file_path,
+                                               full_plus_extra_file_name))
     copy(alt_file_path, '{}.alt'.format(full_plus_extra_file_name))

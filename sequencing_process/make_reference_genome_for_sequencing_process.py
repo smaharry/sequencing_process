@@ -1,13 +1,12 @@
 from os import chdir
-from os.path import exists, expanduser
+from os.path import abspath, exists
 from shutil import copy
 
 from .support.support.network import download
 from .support.support.subprocess_ import run_command_and_monitor
 
 
-def make_reference_genome_for_sequencing_process(
-        directory_path=expanduser('~/Downloads')):
+def make_reference_genome_for_sequencing_process(directory_path='.'):
     """
     Make reference genome for sequencing process.
     Get NCBI's GRCh38 sequences designed for sequencing process (0).
@@ -20,6 +19,8 @@ def make_reference_genome_for_sequencing_process(
     Returns:
         None
     """
+
+    directory_path = abspath(directory_path)
 
     chdir(directory_path)
 

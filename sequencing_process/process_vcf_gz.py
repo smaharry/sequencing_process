@@ -22,7 +22,7 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path):
+    if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
@@ -56,7 +56,7 @@ def extract_regions_from_vcf_gz_using_bcftools(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path):
+    if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
@@ -72,6 +72,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
                                  genomic_assembly='GRCh38.86',
                                  maximum_memory='8G',
                                  n_jobs=1,
+                                 output_vcf_file_path=None,
                                  overwrite=False):
     """
     Annotate .vcf.gz file using snpeff.
@@ -80,15 +81,17 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
         genomic_assembly (str):
         maximum_memory (str):
         n_jobs (int):
+        output_vcf_file_path (str):
         overwrite (bool):
     Returns:
         str:
     """
 
-    output_vcf_file_path = join(
-        dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+    if not output_vcf_file_path:
+        output_vcf_file_path = join(
+            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path):
+    if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
@@ -121,7 +124,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path):
+    if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(
@@ -153,7 +156,7 @@ def filter_vcf_gz_using_bcftools(
     output_vcf_file_path = join(
         dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path):
+    if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
     run_command_and_monitor(

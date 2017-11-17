@@ -60,11 +60,11 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
             output_bam_file_path),
         print_command=True)
 
+    sorted_bam_file_path = sort_bam_using_samtools(
+        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
+
     return index_bam_using_samtools(
-        sort_bam_using_samtools(
-            output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite),
-        n_jobs=n_jobs,
-        overwrite=overwrite)
+        sorted_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def align_fastq_gzs_using_hisat2(fasta_file_path,

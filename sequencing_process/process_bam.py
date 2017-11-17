@@ -7,29 +7,6 @@ from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command_and_monitor
 
 
-def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
-    """
-    Index .bam file using samtools.
-    Arguments:
-        bam_file_path (str):
-        n_jobs (int):
-        overwrite (bool):
-    Returns:
-        str:
-    """
-
-    output_bai_file_path = bam_file_path + '.bai'
-
-    if not overwrite and exists(output_bai_file_path):
-        raise FileExistsError(output_bai_file_path)
-
-    run_command_and_monitor(
-        'samtools index -@ {} {}'.format(n_jobs, bam_file_path),
-        print_command=True)
-
-    return bam_file_path
-
-
 def sort_bam_using_samtools(bam_file_path,
                             n_jobs=1,
                             output_bam_file_path=None,
@@ -61,6 +38,29 @@ def sort_bam_using_samtools(bam_file_path,
         bam_file_path))
 
     return output_bam_file_path
+
+
+def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
+    """
+    Index .bam file using samtools.
+    Arguments:
+        bam_file_path (str):
+        n_jobs (int):
+        overwrite (bool):
+    Returns:
+        str:
+    """
+
+    output_bai_file_path = bam_file_path + '.bai'
+
+    if not overwrite and exists(output_bai_file_path):
+        raise FileExistsError(output_bai_file_path)
+
+    run_command_and_monitor(
+        'samtools index -@ {} {}'.format(n_jobs, bam_file_path),
+        print_command=True)
+
+    return bam_file_path
 
 
 def remove_duplicates_in_bam_using_picard(bam_file_path,

@@ -1,7 +1,6 @@
 from inspect import stack
 from os.path import dirname, exists, join
 
-from .process_bam import index_bam_using_samtools
 from .support.support.subprocess_ import run_command, run_command_and_monitor
 
 
@@ -62,8 +61,7 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
             output_bam_file_path),
         print_command=True)
 
-    return index_bam_using_samtools(
-        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
+    return output_bam_file_path
 
 
 def align_fastq_gzs_using_hisat2(fasta_file_path,
@@ -130,8 +128,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
                ' '.join(additional_arguments), n_jobs, output_bam_file_path),
         print_command=True)
 
-    return index_bam_using_samtools(
-        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
+    return output_bam_file_path
 
 
 def count_transcripts_using_kallisto(fasta_gz_file_path,

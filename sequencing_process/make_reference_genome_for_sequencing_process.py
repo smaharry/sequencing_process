@@ -1,6 +1,4 @@
-from os import chdir
-from os.path import abspath
-from shutil import copy
+from os.path import abspath, exists, join, split
 
 from .support.support.network import download
 from .support.support.subprocess_ import run_command_and_monitor
@@ -22,31 +20,38 @@ def make_reference_genome_for_sequencing_process(directory_path='.'):
 
     directory_path = abspath(directory_path)
 
-    chdir(directory_path)
+    f_e_fa_gz_file_path = join(
+        directory_path,
+        'GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa.gz')
+    if exists(f_e_fa_gz_file_path):
+        raise FileExistsError(f_e_fa_gz_file_path)
 
-    full_file_name = 'GCA_000001405.15_GRCh38_full_analysis_set.fna.gz'
-    print('Downloading {} ...'.format(full_file_name))
+    f_fa_gz_file_path = join(
+        directory_path, 'GCA_000001405.15_GRCh38_full_analysis_set.fna.gz')
     download(
         'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/{}'.
-        format(full_file_name))
+        format(split(f_fa_gz_file_path)[:-3]), directory_path)
 
-    print('Downloading and uncompressing bwa.kit ...')
     download(
-        'https://sourceforge.net/projects/bio-bwa/files/bwakit/bwakit-0.7.15_x64-linux.tar.bz2/download'
-    )
+        'https://sourceforge.net/projects/bio-bwa/files/bwakit/bwakit-0.7.15_x64-linux.tar.bz2/download',
+        directory_path)
     run_command_and_monitor(
-        'gzip -dc download | tar -xf -; rm -rf download', print_command=True)
-
-    extra_file_path = 'bwa.kit/resource-GRCh38/hs38DH-extra.fa'
-    full_plus_extra_file_name = 'GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa'
-    print('Concatenating {} and {} into {} and gzipping it ...'.format(
-        full_file_name, extra_file_path, full_plus_extra_file_name))
-    run_command_and_monitor(
-        'gzip -dc {0} > {2}; cat {1} >> {2}; gzip {2}'.format(
-            full_file_name, extra_file_path, full_plus_extra_file_name),
+        'gzip -dc {0} | tar -xf -; rm -rf {0}'.format(
+            join(directory_path, 'download')),
         print_command=True)
 
-    alt_file_path = 'bwa.kit/resource-GRCh38/hs38DH.fa.alt'
-    print('Copying {} to {}.gz.alt ...'.format(alt_file_path,
-                                               full_plus_extra_file_name))
-    copy(alt_file_path, '{}.alt'.format(full_plus_extra_file_name))
+    e_fa_file_path = join(directory_path, 'bwa.kit', 'resource-GRCh38',
+                          'hs38DH-extra.fa')
+    run_command_and_monitor(
+        'gzip -dc {0} > {2}; cat {1} >> {2}; gzip {2}'.format(
+            f_fa_gz_file_path, e_fa_file_path, f_e_fa_gz_file_path),
+        print_command=True)
+
+    fa_alt_file_path = join(directory_path, 'bwa.kit', 'resource-GRCh38',
+                            'hs38DH.fa.alt')
+
+    run_command_and_monitor(
+        'cp {} {}.alt'.format(fa_alt_file_path, f_e_fa_gz_file_path),
+        print_command=True)
+
+    print('Consider removing {}.'.format(join(directory_path, 'bwa.kit')))

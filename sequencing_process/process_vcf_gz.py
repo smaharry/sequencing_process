@@ -1,5 +1,4 @@
 from inspect import stack
-from os import remove
 from os.path import dirname, exists, join
 
 from .bgzip_and_tabix import bgzip_and_tabix
@@ -33,9 +32,8 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
             n_jobs, ' '.join(vcf_gz_file_paths), output_vcf_file_path),
         print_command=True)
 
-    for vcf_gz_file_path in vcf_gz_file_paths:
-        remove(vcf_gz_file_path)
-        remove(vcf_gz_file_path + '.tbi')
+    print('Consider removing .vcf.gz files {} and their indices.'.format(
+        vcf_gz_file_paths))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)

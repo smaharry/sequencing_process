@@ -91,14 +91,18 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         run_command_and_monitor(
             'hisat2-build {0} {0}'.format(fasta_file_path), print_command=True)
 
+    if len(fastq_gz_file_paths) == 2:
+        raise ValueError(
+            'fastq_gz_file_paths must contain paired .fastq.gz file paths.')
+
     if not output_bam_file_path:
         output_bam_file_path = join(
             dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
 
-    additional_arguments = []
-
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
+
+    additional_arguments = []
 
     if len(fastq_gz_file_paths) == 1:
         print('Using single-end ...')

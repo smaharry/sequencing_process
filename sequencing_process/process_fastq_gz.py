@@ -1,8 +1,7 @@
 from inspect import stack
 from os.path import dirname, exists, join
 
-from .process_bam import index_bam_using_samtools, sort_bam_using_samtools
-from .support.support.path import remove_path
+from .process_bam import index_bam_using_samtools
 from .support.support.subprocess_ import run_command, run_command_and_monitor
 
 
@@ -23,6 +22,7 @@ def validate_fastq_gz_using_fqtools(fastq_gz_file_path):
 def align_fastq_gzs_using_bwa(fasta_gz_file_path,
                               fastq_gz_file_paths,
                               n_jobs=1,
+                              output_bam_file_path=None,
                               overwrite=False):
     """
     Align unpaired or paired .fastq.gz file using bwa.
@@ -30,6 +30,7 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
         fasta_gz_file_path (str):
         fastq_gz_file_paths (iterable): (<= 2) unpaired or paired sequences
         n_jobs (int):
+        output_bam_file_path (str):
         overwrite (bool):
     Returns:
         str:
@@ -48,8 +49,9 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
             'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
         )
 
-    output_bam_file_path = join(
-        dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
+    if not output_bam_file_path:
+        output_bam_file_path = join(
+            dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
 
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
@@ -60,17 +62,15 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
             output_bam_file_path),
         print_command=True)
 
-    sorted_bam_file_path = sort_bam_using_samtools(
-        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
-
     return index_bam_using_samtools(
-        sorted_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
+        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def align_fastq_gzs_using_hisat2(fasta_file_path,
                                  fastq_gz_file_paths,
                                  sequence_type,
                                  n_jobs=1,
+                                 output_bam_file_path=None,
                                  overwrite=False):
     """
     Align unpaired or paired .fastq.gz files using hisat2.
@@ -79,6 +79,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         fastq_gz_file_paths (iterable): (<= 2) unpaired or paired end sequences
         sequence_type (str): 'DNA' | 'RNA'
         n_jobs (int):
+        output_bam_file_path (str):
         overwrite (bool):
     Returns:
         str:
@@ -90,8 +91,9 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         run_command_and_monitor(
             'hisat2-build {0} {0}'.format(fasta_file_path), print_command=True)
 
-    output_bam_file_path = join(
-        dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
+    if not output_bam_file_path:
+        output_bam_file_path = join(
+            dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
 
     additional_arguments = []
 
@@ -125,9 +127,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
         print_command=True)
 
     return index_bam_using_samtools(
-        sort_bam_using_samtools(output_bam_file_path, n_jobs=n_jobs),
-        n_jobs=n_jobs,
-        overwrite=overwrite)
+        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def count_transcripts_using_kallisto(fasta_gz_file_path,
@@ -179,8 +179,8 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
             'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
         )
 
-    if overwrite:
-        remove_path(output_directory_path)
+    if not overwrite and exists(output_directory_path):
+        raise FileExistsError(output_directory_path)
 
     run_command_and_monitor(
         'kallisto quant --index {} --output-dir {} --bootstrap-samples {} {}'.

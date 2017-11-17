@@ -8,19 +8,22 @@ from .support.support.subprocess_ import run_command_and_monitor
 
 def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
                                        n_jobs=1,
+                                       output_vcf_file_path=None,
                                        overwrite=False):
     """
     Concatenate .vcf.gz files using bcftools.
     Arguments
         vcf_gz_file_paths (iterable):
         n_jobs (int):
+        output_vcf_file_path (str):
         overwrite (bool):
     Returns:
         str:
     """
 
-    output_vcf_file_path = join(
-        dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
+    if not output_vcf_file_path:
+        output_vcf_file_path = join(
+            dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
@@ -41,6 +44,7 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
 def extract_regions_from_vcf_gz_using_bcftools(vcf_gz_file_path,
                                                regions,
                                                n_jobs=1,
+                                               output_vcf_file_path=None,
                                                overwrite=False):
     """
     Extract regions from .vcf.gz file using bcftools.
@@ -48,13 +52,15 @@ def extract_regions_from_vcf_gz_using_bcftools(vcf_gz_file_path,
         vcf_gz_file_path (str):
         regions (iterable):
         n_jobs (int):
+        output_vcf_file_path (str):
         overwrite (bool):
     Returns:
         str:
     """
 
-    output_vcf_file_path = join(
-        dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+    if not output_vcf_file_path:
+        output_vcf_file_path = join(
+            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
@@ -108,6 +114,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
                                    annotation_file_path,
                                    additional_arguments=['--columns =ID,INFO'],
                                    n_jobs=1,
+                                   output_vcf_file_path=None,
                                    overwrite=False):
     """
     Annotate .vcf.gz file using bcftools.
@@ -116,13 +123,15 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
         annotation_file_path (str):
         additional_arguments (list):
         n_jobs (int):
+        output_vcf_file_path (str):
         overwrite (bool):
     Returns:
         str:
     """
 
-    output_vcf_file_path = join(
-        dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+    if not output_vcf_file_path:
+        output_vcf_file_path = join(
+            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
@@ -141,6 +150,7 @@ def filter_vcf_gz_using_bcftools(
         vcf_gz_file_path,
         include_expression='10<=DP & 10<=QUAL & 10<=(QUAL/AO) & 1<=SRF & 1<=SRR & 1<=SAF & 1<=SAR & 1<=RPR & 1<=RPL',
         n_jobs=1,
+        output_vcf_file_path=None,
         overwrite=False):
     """
     Filter .vcf.gz file using bcftools.
@@ -148,13 +158,15 @@ def filter_vcf_gz_using_bcftools(
         vcf_gz_file_path (str):
         include_expression (str):
         n_jobs (int):
+        output_vcf_file_path (str):
         overwrite (bool):
     Returns:
         str:
     """
 
-    output_vcf_file_path = join(
-        dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+    if not output_vcf_file_path:
+        output_vcf_file_path = join(
+            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
 
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)

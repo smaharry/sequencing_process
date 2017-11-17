@@ -13,17 +13,17 @@ def plot_fastq_gz_or_bam(fastq_gz_or_bam_file_path, overwrite=False):
         None
     """
 
-    plot_zip_directory_path = fastq_gz_or_bam_file_path + '.plot.zip'
-    plot_tsv_file_path = plot_zip_directory_path + '.plot.tsv'
+    plot_zip_prefix_path = fastq_gz_or_bam_file_path + '.plot'
+    plot_tsv_file_path = plot_zip_prefix_path + '.tsv'
 
     if not overwrite:
-        if exists(plot_zip_directory_path):
-            raise FileExistsError(plot_zip_directory_path)
+        if exists(plot_zip_prefix_path + '.zip'):
+            raise FileExistsError(plot_zip_prefix_path + '.zip')
         if exists(plot_tsv_file_path):
             raise FileExistsError(plot_tsv_file_path)
 
     run_command_and_monitor(
-        'fastqp --output {} --text {} {}'.format(plot_zip_directory_path,
+        'fastqp --output {} --text {} {}'.format(plot_zip_prefix_path,
                                                  plot_tsv_file_path,
                                                  fastq_gz_or_bam_file_path),
         print_command=True)

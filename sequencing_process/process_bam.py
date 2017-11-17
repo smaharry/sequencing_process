@@ -34,10 +34,10 @@ def sort_bam_using_samtools(bam_file_path,
                                                     output_bam_file_path),
         print_command=True)
 
-    print('Consider removing unsorted .bam file {} and its index.'.format(
-        bam_file_path))
+    print('Consider removing unsorted .bam file {}.'.format(bam_file_path))
 
-    return output_bam_file_path
+    return index_bam_using_samtools(
+        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):

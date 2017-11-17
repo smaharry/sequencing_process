@@ -7,12 +7,12 @@ from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command_and_monitor
 
 
-def sort_bam_using_samtools(bam_file_path,
+def sort_and_index_bam_using_samtools(bam_file_path,
                             n_jobs=1,
                             output_bam_file_path=None,
                             overwrite=False):
     """
-    Sort .bam file using samtools.
+    Sort and index .bam file using samtools.
     Arguments:
         bam_file_path (str):
         n_jobs (int):

@@ -4,7 +4,8 @@ from .support.support.network import download
 from .support.support.subprocess_ import run_command_and_monitor
 
 
-def make_reference_genome_for_sequencing_process(directory_path='.'):
+def make_reference_genome_for_sequencing_process(directory_path='.',
+                                                 overwrite=False):
     """
     Make reference genome for sequencing process.
     Get NCBI's GRCh38 sequences designed for sequencing process (0).
@@ -14,6 +15,7 @@ def make_reference_genome_for_sequencing_process(directory_path='.'):
     align alt sequences to non-alt sequences.
     Arguments:
         directory_path (str):
+        overwrite (bool):
     Returns:
         None
     """
@@ -23,7 +25,7 @@ def make_reference_genome_for_sequencing_process(directory_path='.'):
     f_e_fa_gz_file_path = join(
         directory_path,
         'GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa.gz')
-    if exists(f_e_fa_gz_file_path):
+    if not overwrite and exists(f_e_fa_gz_file_path):
         raise FileExistsError(f_e_fa_gz_file_path)
 
     f_fa_gz_file_path = join(

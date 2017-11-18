@@ -1,0 +1,4 @@
+# The following table is formatted as tab separated values. 
+#GeneName	GeneId	TranscriptId	BioType	variants_impact_MODIFIER	variants_effect_intron_variant
+HLA-DRB1	ENSG00000196126	ENST00000360004	protein_coding	2	2
+HLA-DRB1	ENSG00000196126	ENST00000611060	protein_coding	2	2

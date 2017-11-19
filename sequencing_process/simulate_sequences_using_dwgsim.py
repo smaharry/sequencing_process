@@ -1,5 +1,3 @@
-from os.path import abspath
-
 from .bgzip_and_tabix import bgzip_and_tabix
 from .support.support.path import establish_path
 from .support.support.subprocess_ import run_command
@@ -23,7 +21,6 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
         None
     """
 
-    file_path_prefix = abspath(file_path_prefix)
     establish_path(file_path_prefix)
 
     run_command(

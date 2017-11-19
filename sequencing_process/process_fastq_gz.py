@@ -1,6 +1,8 @@
 from inspect import stack
 from os.path import dirname, exists, join
+from sys import platform
 
+from .support.support.path import clean_path
 from .support.support.subprocess_ import run_command, run_command_and_monitor
 
 
@@ -43,6 +45,10 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
         run_command_and_monitor(
             'bwa index {}'.format(fasta_gz_file_path), print_command=True)
 
+    if not exists('{}.alt'.format(fasta_gz_file_path)):
+        raise FileExistsError('ALT-aware BWA-MEM alignment needs {}.'.format(
+            output_bam_file_path))
+
     if 2 < len(fastq_gz_file_paths):
         raise ValueError(
             'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
@@ -55,10 +61,15 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
 
+    directory_path = dirname(clean_path(__file__))
+    k8_path = join(directory_path, 'k8-0.2.3', 'k8-{}'.format(platform))
+    js_path = join(directory_path, 'bwa-postalt.js')
+
     run_command_and_monitor(
-        'bwa mem -t {} {} {} | samtools view -Sb --threads {} > {}'.format(
-            n_jobs, fasta_gz_file_path, ' '.join(fastq_gz_file_paths), n_jobs,
-            output_bam_file_path),
+        'bwa mem -t {} {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
+        format(n_jobs, fasta_gz_file_path, ' '.join(fastq_gz_file_paths),
+               k8_path, js_path, fasta_gz_file_path, n_jobs,
+               output_bam_file_path),
         print_command=True)
 
     return output_bam_file_path

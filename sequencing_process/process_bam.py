@@ -1,4 +1,5 @@
 from inspect import stack
+from os import remove
 from os.path import dirname, exists, join
 
 from .bgzip_and_tabix import bgzip_and_tabix
@@ -8,9 +9,9 @@ from .support.support.subprocess_ import run_command_and_monitor
 
 
 def sort_and_index_bam_using_samtools(bam_file_path,
-                            n_jobs=1,
-                            output_bam_file_path=None,
-                            overwrite=False):
+                                      n_jobs=1,
+                                      output_bam_file_path=None,
+                                      overwrite=False):
     """
     Sort and index .bam file using samtools.
     Arguments:
@@ -63,16 +64,18 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
     return bam_file_path
 
 
-def remove_duplicates_in_bam_using_picard(bam_file_path,
-                                          maximum_memory='8G',
-                                          n_jobs=1,
-                                          output_bam_file_path=None,
-                                          overwrite=False):
+def mark_duplicates_in_bam_using_picard(bam_file_path,
+                                        maximum_memory='8G',
+                                        remove=False,
+                                        n_jobs=1,
+                                        output_bam_file_path=None,
+                                        overwrite=False):
     """
     Remove duplicates in .bam file using picard.
     Arguments:
         bam_file_path (str):
         maximum_memory (str):
+        remove (bool):
         n_jobs (int):
         output_bam_file_path (str):
         overwrite (bool):
@@ -88,8 +91,9 @@ def remove_duplicates_in_bam_using_picard(bam_file_path,
         raise FileExistsError(output_bam_file_path)
 
     run_command_and_monitor(
-        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES=true INPUT={} OUTPUT={} METRICS_FILE={}.metrics'.
-        format(maximum_memory, bam_file_path, output_bam_file_path,
+        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES={} INPUT={} OUTPUT={} METRICS_FILE={}.metrics'.
+        format(maximum_memory,
+               str(remove).lower(), bam_file_path, output_bam_file_path,
                output_bam_file_path),
         print_command=True)
 
@@ -122,11 +126,17 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
          for r in regions],
         n_jobs=n_jobs)
 
-    return concatenate_vcf_gzs_using_bcftools(
+    output_vcf_gz_file_path = concatenate_vcf_gzs_using_bcftools(
         ps,
         n_jobs=n_jobs,
         output_vcf_file_path=output_vcf_file_path,
         overwrite=overwrite)
+
+    for p in ps:
+        remove(p)
+        remove(p + '.tbi')
+
+    return output_vcf_gz_file_path
 
 
 def call_variants_on_bam_using_freebayes(bam_file_path,
@@ -147,8 +157,6 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
     Returns:
         str:
     """
-
-    # TODO: improve output_vcf_file_path logic
 
     if not output_vcf_file_path:
         output_vcf_file_path = join(

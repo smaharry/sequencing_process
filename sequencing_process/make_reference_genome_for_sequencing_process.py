@@ -1,10 +1,10 @@
-from os.path import abspath, exists, join, split
+from os.path import exists, join, split
 
 from .support.support.network import download
 from .support.support.subprocess_ import run_command_and_monitor
 
 
-def make_reference_genome_for_sequencing_process(directory_path='.',
+def make_reference_genome_for_sequencing_process(directory_path,
                                                  overwrite=False):
     """
     Make reference genome for sequencing process.
@@ -19,8 +19,6 @@ def make_reference_genome_for_sequencing_process(directory_path='.',
     Returns:
         None
     """
-
-    directory_path = abspath(directory_path)
 
     f_e_fa_gz_file_path = join(
         directory_path,

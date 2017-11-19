@@ -2,7 +2,7 @@ from inspect import stack
 from os.path import dirname, exists, join
 
 from .bgzip_and_tabix import bgzip_and_tabix
-from .support.support.subprocess_ import run_command_and_monitor
+from .support.support.subprocess_ import run_command
 
 
 def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
@@ -27,7 +27,7 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'bcftools concat --allow-overlaps --threads {} {} > {}'.format(
             n_jobs, ' '.join(vcf_gz_file_paths), output_vcf_file_path),
         print_command=True)
@@ -63,7 +63,7 @@ def extract_regions_from_vcf_gz_using_bcftools(vcf_gz_file_path,
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'bcftools view --regions {} --threads {} {} > {}'.format(
             ','.join(regions), n_jobs, vcf_gz_file_path, output_vcf_file_path),
         print_command=True)
@@ -98,7 +98,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -verbose -noLog {} {} > {}'.
         format(maximum_memory, output_vcf_file_path, output_vcf_file_path,
                genomic_assembly, vcf_gz_file_path, output_vcf_file_path),
@@ -134,7 +134,7 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'bcftools annotate --annotations {} --threads {} {} {} > {}'.format(
             annotation_file_path, n_jobs, ' '.join(additional_arguments),
             vcf_gz_file_path, output_vcf_file_path),
@@ -169,7 +169,7 @@ def filter_vcf_gz_using_bcftools(
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'bcftools view --include \'{}\' --threads {} {} > {}'.format(
             include_expression, n_jobs, vcf_gz_file_path,
             output_vcf_file_path),

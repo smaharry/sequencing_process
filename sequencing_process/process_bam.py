@@ -5,7 +5,7 @@ from os.path import dirname, exists, join
 from .bgzip_and_tabix import bgzip_and_tabix
 from .process_vcf_gz import concatenate_vcf_gzs_using_bcftools
 from .support.support.multiprocess import multiprocess
-from .support.support.subprocess_ import run_command_and_monitor
+from .support.support.subprocess_ import run_command
 
 
 def sort_and_index_bam_using_samtools(bam_file_path,
@@ -30,7 +30,7 @@ def sort_and_index_bam_using_samtools(bam_file_path,
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'samtools sort --threads {} {} > {}'.format(n_jobs, bam_file_path,
                                                     output_bam_file_path),
         print_command=True)
@@ -57,7 +57,7 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
     if not overwrite and exists(output_bai_file_path):
         raise FileExistsError(output_bai_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'samtools index -@ {} {}'.format(n_jobs, bam_file_path),
         print_command=True)
 
@@ -90,7 +90,7 @@ def mark_duplicates_in_bam_using_picard(bam_file_path,
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES={} INPUT={} OUTPUT={} METRICS_FILE={}.metrics'.
         format(maximum_memory,
                str(remove).lower(), bam_file_path, output_bam_file_path,
@@ -175,7 +175,7 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
     if not overwrite and exists(output_vcf_file_path):
         raise FileExistsError(output_vcf_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'freebayes --fasta-reference {} {} {} > {}'.format(
             fasta_file_path, ' '.join(additional_arguments), bam_file_path,
             output_vcf_file_path),

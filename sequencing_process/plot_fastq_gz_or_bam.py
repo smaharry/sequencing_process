@@ -1,6 +1,6 @@
 from os.path import exists
 
-from .support.support.subprocess_ import run_command_and_monitor
+from .support.support.subprocess_ import run_command
 
 
 def plot_fastq_gz_or_bam(fastq_gz_or_bam_file_path, overwrite=False):
@@ -22,7 +22,7 @@ def plot_fastq_gz_or_bam(fastq_gz_or_bam_file_path, overwrite=False):
         if exists(plot_tsv_file_path):
             raise FileExistsError(plot_tsv_file_path)
 
-    run_command_and_monitor(
+    run_command(
         'fastqp --output {} --text {} {}'.format(plot_zip_prefix_path,
                                                  plot_tsv_file_path,
                                                  fastq_gz_or_bam_file_path),

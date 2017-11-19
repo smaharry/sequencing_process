@@ -1,7 +1,7 @@
 from os.path import exists, join, split
 
 from .support.support.network import download
-from .support.support.subprocess_ import run_command_and_monitor
+from .support.support.subprocess_ import run_command
 
 
 def make_reference_genome_for_sequencing_process(directory_path,
@@ -35,14 +35,14 @@ def make_reference_genome_for_sequencing_process(directory_path,
     download(
         'https://sourceforge.net/projects/bio-bwa/files/bwakit/bwakit-0.7.15_x64-linux.tar.bz2/download',
         directory_path)
-    run_command_and_monitor(
+    run_command(
         'gzip -dc {0} | tar -xf -; rm -rf {0}'.format(
             join(directory_path, 'download')),
         print_command=True)
 
     e_fa_file_path = join(directory_path, 'bwa.kit', 'resource-GRCh38',
                           'hs38DH-extra.fa')
-    run_command_and_monitor(
+    run_command(
         'gzip -dc {0} > {2}; cat {1} >> {2}; gzip {2}'.format(
             f_fa_gz_file_path, e_fa_file_path, f_e_fa_gz_file_path),
         print_command=True)
@@ -50,7 +50,7 @@ def make_reference_genome_for_sequencing_process(directory_path,
     fa_alt_file_path = join(directory_path, 'bwa.kit', 'resource-GRCh38',
                             'hs38DH.fa.alt')
 
-    run_command_and_monitor(
+    run_command(
         'cp {} {}.alt'.format(fa_alt_file_path, f_e_fa_gz_file_path),
         print_command=True)
 

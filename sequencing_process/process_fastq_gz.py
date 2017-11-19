@@ -3,7 +3,7 @@ from os.path import dirname, exists, join
 from sys import platform
 
 from .support.support.path import clean_path
-from .support.support.subprocess_ import run_command, run_command_and_monitor
+from .support.support.subprocess_ import run_command
 
 
 def validate_fastq_gz_using_fqtools(fastq_gz_file_path):
@@ -42,7 +42,7 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
             for suffix in ['bwt', 'pac', 'ann', 'amb', 'sa']
     ]):
         print('Indexing ...')
-        run_command_and_monitor(
+        run_command(
             'bwa index {}'.format(fasta_gz_file_path), print_command=True)
 
     if not exists('{}.alt'.format(fasta_gz_file_path)):
@@ -65,7 +65,7 @@ def align_fastq_gzs_using_bwa(fasta_gz_file_path,
     k8_path = join(directory_path, 'k8-0.2.3', 'k8-{}'.format(platform))
     js_path = join(directory_path, 'bwa-postalt.js')
 
-    run_command_and_monitor(
+    run_command(
         'bwa mem -t {} {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
         format(n_jobs, fasta_gz_file_path, ' '.join(fastq_gz_file_paths),
                k8_path, js_path, fasta_gz_file_path, n_jobs,
@@ -97,7 +97,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     if not all(
         [exists('{}.{}.ht2'.format(fasta_file_path, i)) for i in range(1, 9)]):
         print('Indexing ...')
-        run_command_and_monitor(
+        run_command(
             'hisat2-build {0} {0}'.format(fasta_file_path), print_command=True)
 
     if len(fastq_gz_file_paths) == 2:
@@ -133,7 +133,7 @@ def align_fastq_gzs_using_hisat2(fasta_file_path,
     else:
         raise ValueError('Unknown sequence_type {}.'.format(sequence_type))
 
-    run_command_and_monitor(
+    run_command(
         'hisat2 -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.
         format(fasta_file_path, output_bam_file_path, n_jobs,
                ' '.join(additional_arguments), n_jobs, output_bam_file_path),
@@ -171,7 +171,7 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
 
     if not exists(fasta_gz_kallisto_index_file_path):
         print('Indexing ...')
-        run_command_and_monitor(
+        run_command(
             'kallisto index --index {} {}'.format(
                 fasta_gz_kallisto_index_file_path, fasta_gz_file_path),
             print_command=True)
@@ -194,7 +194,7 @@ def count_transcripts_using_kallisto(fasta_gz_file_path,
     if not overwrite and exists(output_directory_path):
         raise FileExistsError(output_directory_path)
 
-    run_command_and_monitor(
+    run_command(
         'kallisto quant --index {} --output-dir {} --bootstrap-samples {} {}'.
         format(fasta_gz_kallisto_index_file_path, output_directory_path,
                n_bootstraps, sample_argument),

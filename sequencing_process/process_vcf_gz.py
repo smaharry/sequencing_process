@@ -82,7 +82,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
     Annotate .vcf.gz file using snpeff.
     Arguments:
         vcf_gz_file_path (str):
-        genomic_assembly (str):
+        genomic_assembly (str): GRCh38.86 | GRCh37.75 | hg19
         maximum_memory (str):
         n_jobs (int):
         output_vcf_file_path (str):

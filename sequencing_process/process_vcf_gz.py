@@ -39,6 +39,39 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
         output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
+def rename_contigs_using_bcftools(vcf_gz_file_path,
+                                  map_file_path=join(
+                                      dirname(__file__), 'map_chrn_to_n.tsv'),
+                                  n_jobs=1,
+                                  output_vcf_file_path=None,
+                                  overwrite=False):
+    """
+    Rename contigs.
+    Arguments:
+        vcf_gz_file_path (str):
+        n_jobs (int):
+        output_vcf_file_path (str):
+        overwrite (bool):
+    Returns:
+        str:
+    """
+
+    if not output_vcf_file_path:
+        output_vcf_file_path = join(
+            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+
+    if not overwrite and exists(output_vcf_file_path + '.gz'):
+        raise FileExistsError(output_vcf_file_path)
+
+    run_command(
+        'bcftools annotate --rename-chrs {} --threads {} {} > {}'.format(
+            map_file_path, n_jobs, vcf_gz_file_path, output_vcf_file_path),
+        print_command=True)
+
+    return bgzip_and_tabix(
+        output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
+
+
 def extract_regions_from_vcf_gz_using_bcftools(vcf_gz_file_path,
                                                regions,
                                                n_jobs=1,

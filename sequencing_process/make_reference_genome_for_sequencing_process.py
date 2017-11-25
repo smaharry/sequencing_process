@@ -30,28 +30,27 @@ def make_reference_genome_for_sequencing_process(directory_path,
         directory_path, 'GCA_000001405.15_GRCh38_full_analysis_set.fna.gz')
     download(
         'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/{}'.
-        format(split(f_fa_gz_file_path)[:-3]), directory_path)
+        format(split(f_fa_gz_file_path)[-1]), directory_path)
 
     download(
         'https://sourceforge.net/projects/bio-bwa/files/bwakit/bwakit-0.7.15_x64-linux.tar.bz2/download',
         directory_path)
     run_command(
-        'gzip -dc {0} | tar -xf -; rm -rf {0}'.format(
+        'gzip -dc {0} | tar -xf - && rm -rf {0}'.format(
             join(directory_path, 'download')),
         print_command=True)
 
     e_fa_file_path = join(directory_path, 'bwa.kit', 'resource-GRCh38',
                           'hs38DH-extra.fa')
     run_command(
-        'gzip -dc {0} > {2}; cat {1} >> {2}; gzip {2}'.format(
-            f_fa_gz_file_path, e_fa_file_path, f_e_fa_gz_file_path),
+        'gzip -dc {0} > {2} && cat {1} >> {2} && gzip {2}'.format(
+            f_fa_gz_file_path, e_fa_file_path, f_e_fa_gz_file_path[:-3]),
         print_command=True)
 
     fa_alt_file_path = join(directory_path, 'bwa.kit', 'resource-GRCh38',
                             'hs38DH.fa.alt')
-
     run_command(
-        'cp {} {}.alt'.format(fa_alt_file_path, f_e_fa_gz_file_path),
+        'cp {} {}'.format(fa_alt_file_path, f_e_fa_gz_file_path + '.alt'),
         print_command=True)
 
     print('Consider removing {}.'.format(join(directory_path, 'bwa.kit')))

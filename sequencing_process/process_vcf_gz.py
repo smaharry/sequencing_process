@@ -132,7 +132,7 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
         raise FileExistsError(output_vcf_file_path)
 
     run_command(
-        'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -verbose -noLog {} {} > {}'.
+        'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -t -verbose -noLog {} {} > {}'.
         format(maximum_memory, output_vcf_file_path, output_vcf_file_path,
                genomic_assembly, vcf_gz_file_path, output_vcf_file_path),
         print_command=True)

@@ -41,7 +41,8 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
 
 def rename_contigs_using_bcftools(vcf_gz_file_path,
                                   map_file_path=join(
-                                      dirname(__file__), 'map_chrn_to_n.tsv'),
+                                      dirname(dirname(__file__)), 'resource',
+                                      'map_chrn_to_n.tsv'),
                                   n_jobs=1,
                                   output_vcf_file_path=None,
                                   overwrite=False):

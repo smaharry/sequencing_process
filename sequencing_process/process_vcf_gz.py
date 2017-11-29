@@ -50,7 +50,7 @@ def concatenate_vcf_gzs_using_bcftools_concat(
 
 def rename_chromosomes_of_vcf_gz_using_bcftools_annotate(
         vcf_gz_file_path,
-        map_file_path=join(RESOURCE_DIRECTORY_PATH, 'map_chrn_to_n.tsv'),
+        map_file_path=join(RESOURCE_DIRECTORY_PATH, 'chrn_to_n.tsv'),
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_jobs=1,
         output_vcf_file_path=None,

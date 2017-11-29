@@ -80,8 +80,8 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         for i in [1, 2]
     ]
     for fp in output_fastq_file_paths:
-        if not overwrite and exists(fp):
-            raise FileExistsError(fp)
+        if not overwrite and exists(fp + '.gz'):
+            raise FileExistsError(fp + '.gz')
 
     command = 'skewer -x {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {}'.format(
         forward_bad_sequence_fasta_file_path, snv_error_rate, indel_error_rate,
@@ -100,8 +100,13 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         '{} {}'.format(command, ' '.join(additional_arguments)),
         print_command=True)
 
+    log_file_path = output_fastq_gz_file_path_prefix + '-trimmed.log'
+    print('{}:'.format(log_file_path))
+    with open(log_file_path) as f:
+        print(f.read())
+
     for fp in output_fastq_file_paths:
-        run_command('gzip {}'.format(fp), print_command=True)
+        run_command('gzip --force {}'.format(fp), print_command=True)
 
     return [fp + '.gz' for fp in output_fastq_file_paths]
 

@@ -1,3 +1,6 @@
 from os.path import dirname, join
 
-RESOURCE_DIRECTORY_PATH = join(dirname(dirname(__file__)), 'resource')
+from .support.support.path import clean_path
+
+RESOURCE_DIRECTORY_PATH = clean_path(
+    join(dirname(dirname(__file__)), 'resource'))

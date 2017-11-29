@@ -1,18 +1,22 @@
 from inspect import stack
 from os.path import dirname, exists, join
 
+from . import RESOURCE_DIRECTORY_PATH
 from .bgzip_and_tabix import bgzip_and_tabix
 from .support.support.subprocess_ import run_command
 
 
-def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
-                                       n_jobs=1,
-                                       output_vcf_file_path=None,
-                                       overwrite=False):
+def concatenate_vcf_gzs_using_bcftools(
+        vcf_gz_file_paths,
+        remove_input_vcf_gz_file_paths_and_their_indices=False,
+        n_jobs=1,
+        output_vcf_file_path=None,
+        overwrite=False):
     """
     Concatenate .vcf.gz files using bcftools.
     Arguments
         vcf_gz_file_paths (iterable):
+        remove_input_vcf_gz_file_paths_and_their_indices (bool):
         n_jobs (int):
         output_vcf_file_path (str):
         overwrite (bool):
@@ -32,17 +36,21 @@ def concatenate_vcf_gzs_using_bcftools(vcf_gz_file_paths,
             n_jobs, ' '.join(vcf_gz_file_paths), output_vcf_file_path),
         print_command=True)
 
-    print('Consider removing .vcf.gz files {} and their indices.'.format(
-        vcf_gz_file_paths))
+    if remove_input_vcf_gz_file_paths_and_their_indices:
+        for vcf_gz_file_path in vcf_gz_file_paths:
+            run_command(
+                'rm -rf {}'.format(vcf_gz_file_path), print_command=True)
+            run_command(
+                'rm -rf {}'.format(vcf_gz_file_path + '.tbi'),
+                print_command=True)
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def rename_contigs_using_bcftools(vcf_gz_file_path,
-                                  map_file_path=join(
-                                      dirname(dirname(__file__)), 'resource',
-                                      'map_chrn_to_n.tsv'),
+                                  map_file_path=join(RESOURCE_DIRECTORY_PATH,
+                                                     'map_chrn_to_n.tsv'),
                                   n_jobs=1,
                                   output_vcf_file_path=None,
                                   overwrite=False):
@@ -106,18 +114,21 @@ def extract_regions_from_vcf_gz_using_bcftools(vcf_gz_file_path,
         output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
-def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
-                                 genomic_assembly='GRCh38.86',
-                                 maximum_memory='8G',
-                                 n_jobs=1,
-                                 output_vcf_file_path=None,
-                                 overwrite=False):
+def annotate_vcf_gz_using_snpeff(
+        vcf_gz_file_path,
+        genomic_assembly,
+        maximum_memory='12G',
+        remove_input_vcf_gz_file_path_and_its_index=False,
+        n_jobs=1,
+        output_vcf_file_path=None,
+        overwrite=False):
     """
     Annotate .vcf.gz file using snpeff.
     Arguments:
         vcf_gz_file_path (str):
         genomic_assembly (str): GRCh38.86 | GRCh37.75 | hg19
         maximum_memory (str):
+        remove_input_vcf_gz_file_path_and_its_index (bool):
         n_jobs (int):
         output_vcf_file_path (str):
         overwrite (bool):
@@ -138,22 +149,30 @@ def annotate_vcf_gz_using_snpeff(vcf_gz_file_path,
                genomic_assembly, vcf_gz_file_path, output_vcf_file_path),
         print_command=True)
 
+    if remove_input_vcf_gz_file_path_and_its_index:
+        run_command('rm -rf {}'.format(vcf_gz_file_path), print_command=True)
+        run_command(
+            'rm -rf {}'.format(vcf_gz_file_path + '.tbi'), print_command=True)
+
     return bgzip_and_tabix(
         output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
-def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
-                                   annotation_file_path,
-                                   additional_arguments=['--columns =ID,INFO'],
-                                   n_jobs=1,
-                                   output_vcf_file_path=None,
-                                   overwrite=False):
+def annotate_vcf_gz_using_bcftools(
+        vcf_gz_file_path,
+        annotation_file_path,
+        additional_arguments=['--columns =ID,INFO'],
+        remove_input_vcf_gz_file_path_and_its_index=False,
+        n_jobs=1,
+        output_vcf_file_path=None,
+        overwrite=False):
     """
     Annotate .vcf.gz file using bcftools.
     Arguments:
         vcf_gz_file_path (str):
         annotation_file_path (str):
         additional_arguments (list):
+        remove_input_vcf_gz_file_path_and_its_index (bool):
         n_jobs (int):
         output_vcf_file_path (str):
         overwrite (bool):
@@ -174,13 +193,18 @@ def annotate_vcf_gz_using_bcftools(vcf_gz_file_path,
             vcf_gz_file_path, output_vcf_file_path),
         print_command=True)
 
+    if remove_input_vcf_gz_file_path_and_its_index:
+        run_command('rm -rf {}'.format(vcf_gz_file_path), print_command=True)
+        run_command(
+            'rm -rf {}'.format(vcf_gz_file_path + '.tbi'), print_command=True)
+
     return bgzip_and_tabix(
         output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
 def filter_vcf_gz_using_bcftools(
         vcf_gz_file_path,
-        include_expression='10<=DP & 10<=QUAL & 10<=(QUAL/AO) & 1<=SRF & 1<=SRR & 1<=SAF & 1<=SAR & 1<=RPR & 1<=RPL',
+        include_expression='10<DP & 30<QUAL & 10<(QUAL/AO) & 1<SRF & 1<SRR & 1<SAF & 1<SAR & 1<RPR & 1<RPL',
         n_jobs=1,
         output_vcf_file_path=None,
         overwrite=False):

@@ -1,5 +1,4 @@
 from inspect import stack
-from os import remove
 from os.path import dirname, exists, join
 
 from .bgzip_and_tabix import bgzip_and_tabix
@@ -9,6 +8,7 @@ from .support.support.subprocess_ import run_command
 
 
 def sort_and_index_bam_using_samtools(bam_file_path,
+                                      remove_input_bam_file_path=False,
                                       n_jobs=1,
                                       output_bam_file_path=None,
                                       overwrite=False):
@@ -16,6 +16,7 @@ def sort_and_index_bam_using_samtools(bam_file_path,
     Sort and index .bam file using samtools.
     Arguments:
         bam_file_path (str):
+        remove_input_bam_file_path (bool):
         n_jobs (int):
         output_bam_file_path (str):
         overwrite (bool):
@@ -35,7 +36,8 @@ def sort_and_index_bam_using_samtools(bam_file_path,
                                                     output_bam_file_path),
         print_command=True)
 
-    print('Consider removing unsorted .bam file {}.'.format(bam_file_path))
+    if remove_input_bam_file_path:
+        run_command('rm -rf {}'.format(bam_file_path), print_command=True)
 
     return index_bam_using_samtools_index(
         output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
@@ -64,18 +66,21 @@ def index_bam_using_samtools_index(bam_file_path, n_jobs=1, overwrite=False):
     return bam_file_path
 
 
-def mark_duplicates_in_bam_using_picard(bam_file_path,
-                                        maximum_memory='8G',
-                                        remove=True,
-                                        n_jobs=1,
-                                        output_bam_file_path=None,
-                                        overwrite=False):
+def mark_duplicates_in_bam_using_picard_markduplicates(
+        bam_file_path,
+        maximum_memory='12G',
+        remove_duplicates=False,
+        remove_input_bam_file_path_and_its_index=False,
+        n_jobs=1,
+        output_bam_file_path=None,
+        overwrite=False):
     """
-    Remove duplicates in .bam file using picard.
+    Remove duplicates in .bam file using picard markduplicates.
     Arguments:
         bam_file_path (str):
         maximum_memory (str):
-        remove (bool):
+        remove_duplicates (bool):
+        remove_input_bam_file_path_and_its_index (bool):
         n_jobs (int):
         output_bam_file_path (str):
         overwrite (bool):
@@ -93,9 +98,14 @@ def mark_duplicates_in_bam_using_picard(bam_file_path,
     run_command(
         'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES={} INPUT={} OUTPUT={} METRICS_FILE={}.metrics'.
         format(maximum_memory,
-               str(remove).lower(), bam_file_path, output_bam_file_path,
-               output_bam_file_path),
+               str(remove_duplicates).lower(), bam_file_path,
+               output_bam_file_path, output_bam_file_path),
         print_command=True)
+
+    if remove_input_bam_file_path_and_its_index:
+        run_command('rm -rf {}'.format(bam_file_path), print_command=True)
+        run_command(
+            'rm -rf {}'.format(bam_file_path + '.bai'), print_command=True)
 
     return index_bam_using_samtools_index(
         output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
@@ -124,9 +134,9 @@ def check_fastq_gz_or_bam_using_fastqp(fastq_gz_or_bam_file_path,
             raise FileExistsError(plot_tsv_file_path)
 
     run_command(
-        'fastqp --kmer {} --output {} --text {} --count-duplicates True {}'.
-        format(kmer_length, plot_zip_prefix_path, plot_tsv_file_path,
-               fastq_gz_or_bam_file_path),
+        'fastqp --kmer {} --output {} --text {} {}'.format(
+            kmer_length, plot_zip_prefix_path, plot_tsv_file_path,
+            fastq_gz_or_bam_file_path),
         print_command=True)
 
 
@@ -156,6 +166,10 @@ def check_bam_using_samtools_flagstat(bam_file_path,
             n_jobs, bam_file_path, output_file_path),
         print_command=True)
 
+    print('{}:'.format(output_file_path))
+    with open(output_file_path) as f:
+        print(f.read())
+
 
 def call_variants_on_bam_using_freebayes_and_multiprocess(
         bam_file_path,
@@ -176,21 +190,16 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         str:
     """
 
-    ps = multiprocess(
-        call_variants_on_bam_using_freebayes,
-        [[bam_file_path, fasta_file_path, r, 1, None, overwrite]
-         for r in regions],
-        n_jobs=n_jobs)
-
     output_vcf_gz_file_path = concatenate_vcf_gzs_using_bcftools(
-        ps,
+        multiprocess(
+            call_variants_on_bam_using_freebayes,
+            [[bam_file_path, fasta_file_path, r, 1, None, overwrite]
+             for r in regions],
+            n_jobs=n_jobs),
+        remove_input_vcf_gz_file_paths_and_their_indices=True,
         n_jobs=n_jobs,
         output_vcf_file_path=output_vcf_file_path,
         overwrite=overwrite)
-
-    for p in ps:
-        remove(p)
-        remove(p + '.tbi')
 
     return output_vcf_gz_file_path
 

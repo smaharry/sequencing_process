@@ -50,7 +50,5 @@ def make_reference_genome_for_sequencing_process(directory_path,
     fa_alt_file_path = join(directory_path, 'bwa.kit', 'resource-GRCh38',
                             'hs38DH.fa.alt')
     run_command(
-        'cp {} {}'.format(fa_alt_file_path, f_e_fa_gz_file_path + '.alt'),
+        'cp -f {} {}'.format(fa_alt_file_path, f_e_fa_gz_file_path + '.alt'),
         print_command=True)
-
-    print('Consider removing {}.'.format(join(directory_path, 'bwa.kit')))

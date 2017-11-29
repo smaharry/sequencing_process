@@ -8,12 +8,12 @@ from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command
 
 
-def sort_and_index_bam_using_samtools_sort(bam_file_path,
-                                           n_jobs=1,
-                                           output_bam_file_path=None,
-                                           overwrite=False):
+def sort_and_index_bam_using_samtools(bam_file_path,
+                                      n_jobs=1,
+                                      output_bam_file_path=None,
+                                      overwrite=False):
     """
-    Sort and index .bam file using samtools sort.
+    Sort and index .bam file using samtools.
     Arguments:
         bam_file_path (str):
         n_jobs (int):

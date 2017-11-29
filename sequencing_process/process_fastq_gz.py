@@ -134,7 +134,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
             'bwa index {}'.format(fasta_gz_file_path), print_command=True)
 
     if not exists(fasta_gz_file_path + '.alt'):
-        raise ValueError('ALT-aware BWA-MEM alignment needs {}.'.format(
+        raise FileNotFoundError('ALT-aware BWA-MEM alignment needs {}.'.format(
             fasta_gz_file_path + '.alt'))
 
     if not output_bam_file_path:

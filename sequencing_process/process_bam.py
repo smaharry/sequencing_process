@@ -196,7 +196,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         str:
     """
 
-    output_vcf_gz_file_path = concatenate_vcf_gzs_using_bcftools(
+    output_vcf_gz_file_path = concatenate_vcf_gzs_using_bcftools_concat(
         multiprocess(
             call_variants_on_bam_using_freebayes,
             [[bam_file_path, fasta_file_path, r, 1, None, overwrite]

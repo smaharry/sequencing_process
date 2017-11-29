@@ -2,18 +2,19 @@ from inspect import stack
 from os.path import dirname, exists, join
 
 from .bgzip_and_tabix import bgzip_and_tabix
-from .process_vcf_gz import concatenate_vcf_gzs_using_bcftools
+from .process_vcf_gz import concatenate_vcf_gzs_using_bcftools_concat
 from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command
 
 
-def sort_and_index_bam_using_samtools(bam_file_path,
-                                      remove_input_bam_file_path=False,
-                                      n_jobs=1,
-                                      output_bam_file_path=None,
-                                      overwrite=False):
+def sort_and_index_bam_using_samtools_sort_and_index(
+        bam_file_path,
+        remove_input_bam_file_path=False,
+        n_jobs=1,
+        output_bam_file_path=None,
+        overwrite=False):
     """
-    Sort and index .bam file using samtools.
+    Sort and index .bam file using samtools sort and index.
     Arguments:
         bam_file_path (str):
         remove_input_bam_file_path (bool):
@@ -95,11 +96,12 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
 
+    metrics_file_path = output_bam_file_path + '.metrics'
     run_command(
-        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES={} INPUT={} OUTPUT={} METRICS_FILE={}.metrics'.
+        'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES={} INPUT={} OUTPUT={} METRICS_FILE={}'.
         format(maximum_memory,
                str(remove_duplicates).lower(), bam_file_path,
-               output_bam_file_path, output_bam_file_path),
+               output_bam_file_path, metrics_file_path),
         print_command=True)
 
     if remove_input_bam_file_path_and_its_index:
@@ -107,8 +109,43 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
         run_command(
             'rm -rf {}'.format(bam_file_path + '.bai'), print_command=True)
 
+    print('{}:'.format(metrics_file_path))
+    with open(metrics_file_path) as f:
+        print(f.read())
+
     return index_bam_using_samtools_index(
         output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
+
+
+def check_bam_using_samtools_flagstat(bam_file_path,
+                                      n_jobs=1,
+                                      output_file_path=None,
+                                      overwrite=False):
+    """
+    Check .bam file using samtools flagstat.
+    Arguments:
+        bam_file_path (str):
+        n_jobs (int):
+        output_file_path (str):
+        overwrite (bool):
+    Returns:
+        None
+    """
+
+    if not output_file_path:
+        output_file_path = bam_file_path + '.flagstat'
+
+    if not overwrite and exists(output_file_path):
+        raise FileExistsError(output_file_path)
+
+    run_command(
+        'samtools flagstat --threads {} {} > {}'.format(
+            n_jobs, bam_file_path, output_file_path),
+        print_command=True)
+
+    print('{}:'.format(output_file_path))
+    with open(output_file_path) as f:
+        print(f.read())
 
 
 def check_fastq_gz_or_bam_using_fastqp(fastq_gz_or_bam_file_path,
@@ -140,37 +177,6 @@ def check_fastq_gz_or_bam_using_fastqp(fastq_gz_or_bam_file_path,
         print_command=True)
 
 
-def check_bam_using_samtools_flagstat(bam_file_path,
-                                      n_jobs=1,
-                                      output_file_path=None,
-                                      overwrite=False):
-    """
-    Check .bam file using samtools flagstat.
-    Arguments:
-        bam_file_path (str):
-        n_jobs (int):
-        output_file_path (str):
-        overwrite (bool):
-    Returns:
-        None
-    """
-
-    if not output_file_path:
-        output_file_path = join(dirname(bam_file_path), stack()[0][3])
-
-    if not overwrite and exists(output_file_path):
-        raise FileExistsError(output_file_path)
-
-    run_command(
-        'samtools flagstat --threads {} {} > {}'.format(
-            n_jobs, bam_file_path, output_file_path),
-        print_command=True)
-
-    print('{}:'.format(output_file_path))
-    with open(output_file_path) as f:
-        print(f.read())
-
-
 def call_variants_on_bam_using_freebayes_and_multiprocess(
         bam_file_path,
         fasta_file_path,
@@ -179,7 +185,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         output_vcf_file_path=None,
         overwrite=False):
     """
-    Call variants on .bam file using freebayes and multiprocess.
+    Call variants on .bam file using freebayes via multiprocess.
     Arguments:
         bam_file_path (str):
         fasta_file_path (str): reference .fasta file

@@ -10,8 +10,7 @@ def check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
                                  n_jobs=1,
                                  overwrite=False):
     """
-    fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
-        .fastq.gz file path
+    Check .fastq.gz files using fastqc.
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
             .fastq.gz file path
@@ -26,7 +25,7 @@ def check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
         if not overwrite and exists(fp):
             raise FileExistsError(fp)
 
-    check_fastq_gz_file_paths(fastq_gz_file_paths)
+    check_fastq_gzs(fastq_gz_file_paths)
 
     run_command(
         'fastqc --threads {} {}'.format(n_jobs, ' '.join(fastq_gz_file_paths)),
@@ -47,10 +46,10 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
                                 min_length_after_trimming=30,
                                 remove_n=True,
                                 n_jobs=1,
-                                output_fastq_gz_file_path_prefix=None,
+                                output_prefix=None,
                                 overwrite=False):
     """
-    Trim paired .fastq.gz files using skewer.
+    Trim .fastq.gz files using skewer.
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
             .fastq.gz file path
@@ -63,21 +62,19 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         min_length_after_trimming (int):
         remove_n (bool):
         n_jobs (int):
-        output_fastq_gz_file_path_prefix (str):
+        output_prefix (str):
         overwrite (bool):
     Returns:
         list:
     """
 
-    check_fastq_gz_file_paths(fastq_gz_file_paths)
+    check_fastq_gzs(fastq_gz_file_paths)
 
-    if not output_fastq_gz_file_path_prefix:
-        output_fastq_gz_file_path_prefix = join(
-            dirname(fastq_gz_file_paths[0]), stack()[0][3])
+    if not output_prefix:
+        output_prefix = join(dirname(fastq_gz_file_paths[0]), stack()[0][3])
 
     output_fastq_file_paths = [
-        '{}-trimmed-pair{}.fastq'.format(output_fastq_gz_file_path_prefix, i)
-        for i in [1, 2]
+        '{}-trimmed-pair{}.fastq'.format(output_prefix, i) for i in [1, 2]
     ]
     for fp in output_fastq_file_paths:
         if not overwrite and exists(fp + '.gz'):
@@ -86,7 +83,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
     command = 'skewer -x {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {}'.format(
         forward_bad_sequence_fasta_file_path, snv_error_rate, indel_error_rate,
         end_quality, min_length_after_trimming, ['', '-n'][remove_n],
-        output_fastq_gz_file_path_prefix, n_jobs)
+        output_prefix, n_jobs)
 
     additional_arguments = []
     if len(fastq_gz_file_paths) == 1:
@@ -100,7 +97,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         '{} {}'.format(command, ' '.join(additional_arguments)),
         print_command=True)
 
-    log_file_path = output_fastq_gz_file_path_prefix + '-trimmed.log'
+    log_file_path = output_prefix + '-trimmed.log'
     print('{}:'.format(log_file_path))
     with open(log_file_path) as f:
         print(f.read())
@@ -117,7 +114,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
                                   output_bam_file_path=None,
                                   overwrite=False):
     """
-    Align unpaired or paired .fastq.gz file using bwa mem.
+    Align .fastq.gz files using bwa mem.
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
             .fastq.gz file path
@@ -129,7 +126,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
         str:
     """
 
-    check_fastq_gz_file_paths(fastq_gz_file_paths)
+    check_fastq_gzs(fastq_gz_file_paths)
 
     if not all([
             exists(fasta_gz_file_path + e)
@@ -168,7 +165,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
                                  output_bam_file_path=None,
                                  overwrite=False):
     """
-    Align unpaired or paired .fastq.gz files using hisat2.
+    Align .fastq.gz files using hisat2.
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
             .fastq.gz file path
@@ -183,7 +180,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
         str:
     """
 
-    check_fastq_gz_file_paths(fastq_gz_file_paths)
+    check_fastq_gzs(fastq_gz_file_paths)
 
     if not all([
             exists(fasta_file_path + '.{}.ht2'.format(i))
@@ -246,7 +243,7 @@ def count_transcripts_using_kallisto_quant(
         str:
     """
 
-    check_fastq_gz_file_paths(fastq_gz_file_paths)
+    check_fastq_gzs(fastq_gz_file_paths)
 
     fasta_gz_kallisto_index_file_path = '{}.kallisto.index'.format(
         fasta_gz_file_path)
@@ -275,9 +272,9 @@ def count_transcripts_using_kallisto_quant(
     return output_directory_path
 
 
-def check_fastq_gz_file_paths(fastq_gz_file_paths):
+def check_fastq_gzs(fastq_gz_file_paths):
     """
-    Check .fastq_gz_file_paths.
+    Check .fastq.gz files.
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
             .fastq.gz file path
@@ -285,13 +282,7 @@ def check_fastq_gz_file_paths(fastq_gz_file_paths):
         None
     """
 
-    if len(fastq_gz_file_paths) == 1:
-        print('Using unpaired .fastq.gz file path ...')
-
-    elif len(fastq_gz_file_paths) == 2:
-        print('Using paired .fastq.gz file paths ...')
-
-    else:
+    if len(fastq_gz_file_paths) not in [1, 2]:
         raise ValueError(
             'fastq_gz_file_paths must contain either 1 (unpaired) or 2 (paired) .fastq.gz file path.'
         )

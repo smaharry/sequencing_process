@@ -41,6 +41,7 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
     bgzip_and_tabix(file_path_prefix + '.mutations.vcf')
 
 
+# TODO: evaluate processing of the simulated sequences
 # rows = []
 # with open('1k/dwgsim_eval.tsv') as f:
 #     for l in f:

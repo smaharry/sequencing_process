@@ -46,7 +46,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
                                 min_length_after_trimming=30,
                                 remove_n=True,
                                 n_jobs=1,
-                                output_prefix=None,
+                                output_directory_path=None,
                                 overwrite=False):
     """
     Trim .fastq.gz files using skewer.
@@ -62,7 +62,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         min_length_after_trimming (int):
         remove_n (bool):
         n_jobs (int):
-        output_prefix (str):
+        output_directory_path (str):
         overwrite (bool):
     Returns:
         list:
@@ -70,25 +70,26 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    if not output_prefix:
-        output_prefix = join(dirname(fastq_gz_file_paths[0]), stack()[0][3])
+    if not output_directory_path:
+        output_directory_path = join(
+            dirname(fastq_gz_file_paths[0]), stack()[0][3])
+    if not output_directory_path.endswith('/'):
+        output_directory_path += '/'
 
-    output_fastq_file_paths = [
-        '{}-trimmed-pair{}.fastq'.format(output_prefix, i) for i in [1, 2]
-    ]
-    for fp in output_fastq_file_paths:
-        if not overwrite and exists(fp + '.gz'):
-            raise FileExistsError(fp + '.gz')
+    if not overwrite and exists(output_directory_path):
+        raise FileExistsError(output_directory_path)
 
     command = 'skewer -x {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {}'.format(
         forward_bad_sequence_fasta_file_path, snv_error_rate, indel_error_rate,
         end_quality, min_length_after_trimming, ['', '-n'][remove_n],
-        output_prefix, n_jobs)
+        output_directory_path, n_jobs)
 
     additional_arguments = []
     if len(fastq_gz_file_paths) == 1:
+        additional_arguments.append('-m tail')
         additional_arguments.append('-k {}'.format(overlap_length))
     else:
+        additional_arguments.append('-m pe')
         additional_arguments.append(
             '-y {}'.format(reverse_bad_sequence_fasta_file_path))
     additional_arguments.extend(fastq_gz_file_paths)
@@ -97,10 +98,15 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         '{} {}'.format(command, ' '.join(additional_arguments)),
         print_command=True)
 
-    log_file_path = output_prefix + '-trimmed.log'
+    log_file_path = join(output_directory_path, 'trimmed.log')
     print('{}:'.format(log_file_path))
     with open(log_file_path) as f:
         print(f.read())
+
+    output_fastq_file_paths = [
+        join(output_directory_path, 'trimmed-pair{}.fastq'.format(i))
+        for i in [1, 2]
+    ]
 
     for fp in output_fastq_file_paths:
         run_command('gzip --force {}'.format(fp), print_command=True)
@@ -147,7 +153,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
         raise FileExistsError(output_bam_file_path)
 
     run_command(
-        'bwa mem -t {} {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
+        'bwa mem -t {} -v 3 {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
         format(n_jobs, fasta_gz_file_path, ' '.join(fastq_gz_file_paths),
                join(RESOURCE_DIRECTORY_PATH, 'k8-0.2.3',
                     'k8-{}'.format(platform)),

@@ -8,12 +8,12 @@ from .support.support.multiprocess import multiprocess
 from .support.support.subprocess_ import run_command
 
 
-def sort_and_index_bam_using_samtools(bam_file_path,
-                                      n_jobs=1,
-                                      output_bam_file_path=None,
-                                      overwrite=False):
+def sort_and_index_bam_using_samtools_sort(bam_file_path,
+                                           n_jobs=1,
+                                           output_bam_file_path=None,
+                                           overwrite=False):
     """
-    Sort and index .bam file using samtools.
+    Sort and index .bam file using samtools sort.
     Arguments:
         bam_file_path (str):
         n_jobs (int):
@@ -37,11 +37,11 @@ def sort_and_index_bam_using_samtools(bam_file_path,
 
     print('Consider removing unsorted .bam file {}.'.format(bam_file_path))
 
-    return index_bam_using_samtools(
+    return index_bam_using_samtools_index(
         output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
 
 
-def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
+def index_bam_using_samtools_index(bam_file_path, n_jobs=1, overwrite=False):
     """
     Index .bam file using samtools.
     Arguments:
@@ -66,7 +66,7 @@ def index_bam_using_samtools(bam_file_path, n_jobs=1, overwrite=False):
 
 def mark_duplicates_in_bam_using_picard(bam_file_path,
                                         maximum_memory='8G',
-                                        remove=False,
+                                        remove=True,
                                         n_jobs=1,
                                         output_bam_file_path=None,
                                         overwrite=False):
@@ -97,8 +97,64 @@ def mark_duplicates_in_bam_using_picard(bam_file_path,
                output_bam_file_path),
         print_command=True)
 
-    return index_bam_using_samtools(
+    return index_bam_using_samtools_index(
         output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
+
+
+def check_fastq_gz_or_bam_using_fastqp(fastq_gz_or_bam_file_path,
+                                       kmer_length=7,
+                                       overwrite=False):
+    """
+    Check .fastq.gz or .bam file using fastqp.
+    Arguments:
+        fastq_gz_or_bam_file_path (str):
+        kmer_length (int):
+        overwrite (bool):
+    Returns:
+        None
+    """
+
+    plot_zip_prefix_path = fastq_gz_or_bam_file_path + '.plot'
+    plot_tsv_file_path = plot_zip_prefix_path + '.tsv'
+
+    if not overwrite:
+        if exists(plot_zip_prefix_path + '.zip'):
+            raise FileExistsError(plot_zip_prefix_path + '.zip')
+        if exists(plot_tsv_file_path):
+            raise FileExistsError(plot_tsv_file_path)
+
+    run_command(
+        'fastqp --kmer {} --output {} --text {} --count-duplicates True {}'.
+        format(kmer_length, plot_zip_prefix_path, plot_tsv_file_path,
+               fastq_gz_or_bam_file_path),
+        print_command=True)
+
+
+def check_bam_using_samtools_flagstat(bam_file_path,
+                                      n_jobs=1,
+                                      output_file_path=None,
+                                      overwrite=False):
+    """
+    Check .bam file using samtools flagstat.
+    Arguments:
+        bam_file_path (str):
+        n_jobs (int):
+        output_file_path (str):
+        overwrite (bool):
+    Returns:
+        None
+    """
+
+    if not output_file_path:
+        output_file_path = join(dirname(bam_file_path), stack()[0][3])
+
+    if not overwrite and exists(output_file_path):
+        raise FileExistsError(output_file_path)
+
+    run_command(
+        'samtools flagstat --threads {} {} > {}'.format(
+            n_jobs, bam_file_path, output_file_path),
+        print_command=True)
 
 
 def call_variants_on_bam_using_freebayes_and_multiprocess(

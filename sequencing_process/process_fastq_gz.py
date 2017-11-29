@@ -2,27 +2,60 @@ from inspect import stack
 from os.path import dirname, exists, join
 from sys import platform
 
-from .support.support.path import clean_path
+from . import RESOURCE_DIRECTORY_PATH
 from .support.support.subprocess_ import run_command
 
 
+def check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
+                                 n_jobs=1,
+                                 overwrite=False):
+    """
+    fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+        .fastq.gz file path
+    Arguments:
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+            .fastq.gz file path
+        n_jobs (int):
+        overwrite (bool):
+    Returns:
+        None
+    """
+
+    for fp in fastq_gz_file_paths:
+        fp += '_fastqc.html'
+        if not overwrite and exists(fp):
+            raise FileExistsError(fp)
+
+    check_fastq_gz_file_paths(fastq_gz_file_paths)
+
+    run_command(
+        'fastqc --threads {} {}'.format(n_jobs, ' '.join(fastq_gz_file_paths)),
+        print_command=True)
+
+
 def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
-                                bad_sequence_fasta_file_path=join(
-                                    dirname(dirname(__file__)), 'resource',
+                                forward_bad_sequence_fasta_file_path=join(
+                                    RESOURCE_DIRECTORY_PATH,
+                                    'general_bad_sequence.fasta'),
+                                reverse_bad_sequence_fasta_file_path=join(
+                                    RESOURCE_DIRECTORY_PATH,
                                     'general_bad_sequence.fasta'),
                                 snv_error_rate=0,
                                 indel_error_rate=0,
-                                overlap_length=13,
+                                overlap_length=12,
                                 end_quality=30,
                                 min_length_after_trimming=30,
                                 remove_n=True,
                                 n_jobs=1,
-                                output_fastq_gz_file_path_prefix=None):
+                                output_fastq_gz_file_path_prefix=None,
+                                overwrite=False):
     """
     Trim paired .fastq.gz files using skewer.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) unpaired or paired sequences
-        bad_sequence_fasta_file_path (str):
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+            .fastq.gz file path
+        forward_bad_sequence_fasta_file_path (str):
+        reverse_bad_sequence_fasta_file_path (str):
         snv_error_rate (float):
         indel_error_rate (float):
         overlap_length (int):
@@ -31,47 +64,58 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         remove_n (bool):
         n_jobs (int):
         output_fastq_gz_file_path_prefix (str):
+        overwrite (bool):
     Returns:
         list:
     """
 
     check_fastq_gz_file_paths(fastq_gz_file_paths)
 
-    common_command = 'skewer -x {} -y {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {}'.
-        format(bad_sequence_fasta_file_path, bad_sequence_fasta_file_path,
-               snv_error_rate, indel_error_rate, end_quality,
-               min_length_after_trimming, ['', '-n'][remove_n],
-               output_fastq_gz_file_path_prefix, n_jobs)
-
-    additional_arguments = []
-    if len(fastq_gz_file_paths) == 1:
-        additional_arguments.append('-k {}'.format(overlap_length))
-    additional_arguments.extend(fastq_gz_file_paths)
-
-    run_command('{} {}'.format(
-        common_command, ' '.join(additional_arguments)),
-        print_command=True)
+    if not output_fastq_gz_file_path_prefix:
+        output_fastq_gz_file_path_prefix = join(
+            dirname(fastq_gz_file_paths[0]), stack()[0][3])
 
     output_fastq_file_paths = [
         '{}-trimmed-pair{}.fastq'.format(output_fastq_gz_file_path_prefix, i)
         for i in [1, 2]
     ]
+    for fp in output_fastq_file_paths:
+        if not overwrite and exists(fp):
+            raise FileExistsError(fp)
+
+    command = 'skewer -x {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {}'.format(
+        forward_bad_sequence_fasta_file_path, snv_error_rate, indel_error_rate,
+        end_quality, min_length_after_trimming, ['', '-n'][remove_n],
+        output_fastq_gz_file_path_prefix, n_jobs)
+
+    additional_arguments = []
+    if len(fastq_gz_file_paths) == 1:
+        additional_arguments.append('-k {}'.format(overlap_length))
+    else:
+        additional_arguments.append(
+            '-y {}'.format(reverse_bad_sequence_fasta_file_path))
+    additional_arguments.extend(fastq_gz_file_paths)
+
+    run_command(
+        '{} {}'.format(command, ' '.join(additional_arguments)),
+        print_command=True)
 
     for fp in output_fastq_file_paths:
         run_command('gzip {}'.format(fp), print_command=True)
 
-    return ['{}.gz'.format(fp) for fp in output_fastq_file_paths]
+    return [fp + '.gz' for fp in output_fastq_file_paths]
 
 
-def align_fastq_gzs_using_bwa(fastq_gz_file_paths,
-                              fasta_gz_file_path,
-                              n_jobs=1,
-                              output_bam_file_path=None,
-                              overwrite=False):
+def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
+                                  fasta_gz_file_path,
+                                  n_jobs=1,
+                                  output_bam_file_path=None,
+                                  overwrite=False):
     """
-    Align unpaired or paired .fastq.gz file using bwa.
+    Align unpaired or paired .fastq.gz file using bwa mem.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) unpaired or paired sequences
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+            .fastq.gz file path
         fasta_gz_file_path (str):
         n_jobs (int):
         output_bam_file_path (str):
@@ -80,22 +124,18 @@ def align_fastq_gzs_using_bwa(fastq_gz_file_paths,
         str:
     """
 
+    check_fastq_gz_file_paths(fastq_gz_file_paths)
+
     if not all([
-            exists('{}.{}'.format(fasta_gz_file_path, suffix))
-            for suffix in ['bwt', 'pac', 'ann', 'amb', 'sa']
+            exists(fasta_gz_file_path + e)
+            for e in ['.bwt', '.pac', '.ann', '.amb', '.sa']
     ]):
-        print('Indexing ...')
         run_command(
             'bwa index {}'.format(fasta_gz_file_path), print_command=True)
 
-    if not exists('{}.alt'.format(fasta_gz_file_path)):
-        raise FileExistsError('ALT-aware BWA-MEM alignment needs {}.'.format(
-            output_bam_file_path))
-
-    if 2 < len(fastq_gz_file_paths):
-        raise ValueError(
-            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
-        )
+    if not exists(fasta_gz_file_path + '.alt'):
+        raise ValueError('ALT-aware BWA-MEM alignment needs {}.'.format(
+            fasta_gz_file_path + '.alt'))
 
     if not output_bam_file_path:
         output_bam_file_path = join(
@@ -104,15 +144,13 @@ def align_fastq_gzs_using_bwa(fastq_gz_file_paths,
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
 
-    directory_path = dirname(clean_path(__file__))
-    k8_path = join(directory_path, 'k8-0.2.3', 'k8-{}'.format(platform))
-    js_path = join(directory_path, 'bwa-postalt.js')
-
     run_command(
         'bwa mem -t {} {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
         format(n_jobs, fasta_gz_file_path, ' '.join(fastq_gz_file_paths),
-               k8_path, js_path, fasta_gz_file_path, n_jobs,
-               output_bam_file_path),
+               join(RESOURCE_DIRECTORY_PATH, 'k8-0.2.3',
+                    'k8-{}'.format(platform)),
+               join(RESOURCE_DIRECTORY_PATH, 'bwa-postalt.js'),
+               fasta_gz_file_path, n_jobs, output_bam_file_path),
         print_command=True)
 
     return output_bam_file_path
@@ -127,7 +165,8 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
     """
     Align unpaired or paired .fastq.gz files using hisat2.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) unpaired or paired sequences
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+            .fastq.gz file path
         fasta_gz_file_path (str):
         fasta_file_path (str): reference .fasta.gz file path
         fastq_gz_file_paths (iterable): (<= 2) unpaired or paired end sequences
@@ -139,15 +178,14 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
         str:
     """
 
-    if not all(
-        [exists('{}.{}.ht2'.format(fasta_file_path, i)) for i in range(1, 9)]):
-        print('Indexing ...')
+    check_fastq_gz_file_paths(fastq_gz_file_paths)
+
+    if not all([
+            exists(fasta_file_path + '.{}.ht2'.format(i))
+            for i in [1, 2, 3, 4, 5, 6, 7, 8]
+    ]):
         run_command(
             'hisat2-build {0} {0}'.format(fasta_file_path), print_command=True)
-
-    if len(fastq_gz_file_paths) == 2:
-        raise ValueError(
-            'fastq_gz_file_paths must contain paired .fastq.gz file paths.')
 
     if not output_bam_file_path:
         output_bam_file_path = join(
@@ -157,20 +195,10 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
         raise FileExistsError(output_bam_file_path)
 
     additional_arguments = []
-
     if len(fastq_gz_file_paths) == 1:
-        print('Using single-end ...')
         additional_arguments.append('-U {}'.format(*fastq_gz_file_paths))
-
-    elif len(fastq_gz_file_paths) == 2:
-        print('Using paired-end ...')
-        additional_arguments.append('-1 {} -2 {}'.format(*fastq_gz_file_paths))
-
     else:
-        raise ValueError(
-            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
-        )
-
+        additional_arguments.append('-1 {} -2 {}'.format(*fastq_gz_file_paths))
     if sequence_type == 'DNA':
         additional_arguments.append('--no-spliced-alignment')
     elif sequence_type == 'RNA':
@@ -187,18 +215,20 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
     return output_bam_file_path
 
 
-def count_transcripts_using_kallisto(fastq_gz_file_paths,
-                                     fasta_gz_file_path,
-                                     output_directory_path,
-                                     n_bootstraps=100,
-                                     fragment_lendth=180,
-                                     fragment_lendth_standard_deviation=20,
-                                     n_jobs=1,
-                                     overwrite=False):
+def count_transcripts_using_kallisto_quant(
+        fastq_gz_file_paths,
+        fasta_gz_file_path,
+        output_directory_path,
+        n_bootstraps=100,
+        fragment_lendth=180,
+        fragment_lendth_standard_deviation=20,
+        n_jobs=1,
+        overwrite=False):
     """
-    Count transcripts using kallisto.
+    Count transcripts using kallisto quant.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) unpaired or paired sequences
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+            .fastq.gz file path
         fasta_gz_file_path (str): cDNA sequences
         output_directory_path (str):
         n_bootstraps (int):
@@ -211,30 +241,22 @@ def count_transcripts_using_kallisto(fastq_gz_file_paths,
         str:
     """
 
+    check_fastq_gz_file_paths(fastq_gz_file_paths)
+
     fasta_gz_kallisto_index_file_path = '{}.kallisto.index'.format(
         fasta_gz_file_path)
-
     if not exists(fasta_gz_kallisto_index_file_path):
-        print('Indexing ...')
         run_command(
             'kallisto index --index {} {}'.format(
                 fasta_gz_kallisto_index_file_path, fasta_gz_file_path),
             print_command=True)
 
     if len(fastq_gz_file_paths) == 1:
-        print('Using single-end ...')
         sample_argument = '--single --fragment-length {} --sd {} {}'.format(
             fragment_lendth, fragment_lendth_standard_deviation,
             *fastq_gz_file_paths)
-
-    elif len(fastq_gz_file_paths) == 2:
-        print('Using paired-end ...')
-        sample_argument = '{} {}'.format(*fastq_gz_file_paths)
-
     else:
-        raise ValueError(
-            'fastq_gz_file_paths must contain unpaired or paired .fastq.gz file path.'
-        )
+        sample_argument = '{} {}'.format(*fastq_gz_file_paths)
 
     if not overwrite and exists(output_directory_path):
         raise FileExistsError(output_directory_path)
@@ -252,16 +274,17 @@ def check_fastq_gz_file_paths(fastq_gz_file_paths):
     """
     Check .fastq_gz_file_paths.
     Arguments:
-        fastq_gz_file_paths (iterable):
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+            .fastq.gz file path
     Returns:
         None
     """
 
     if len(fastq_gz_file_paths) == 1:
-        print('Using single-end ...')
+        print('Using unpaired .fastq.gz file path ...')
 
     elif len(fastq_gz_file_paths) == 2:
-        print('Using paired-end ...')
+        print('Using paired .fastq.gz file paths ...')
 
     else:
         raise ValueError(

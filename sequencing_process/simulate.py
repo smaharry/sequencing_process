@@ -30,12 +30,15 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
         print_command=True)
 
     run_command(
-        'gzip {}.bwa.read1.fastq'.format(file_path_prefix), print_command=True)
+        'gzip {}'.format(file_path_prefix + '.bwa.read1.fastq'),
+        print_command=True)
     run_command(
-        'gzip {}.bwa.read2.fastq'.format(file_path_prefix), print_command=True)
+        'gzip {}'.format(file_path_prefix + '.bwa.read2.fastq'),
+        print_command=True)
     run_command(
-        'rm -rf {}.bfast.fastq'.format(file_path_prefix), print_command=True)
-    bgzip_and_tabix('{}.mutations.vcf'.format(file_path_prefix))
+        'rm -rf {}'.format(file_path_prefix + '.bfast.fastq'),
+        print_command=True)
+    bgzip_and_tabix(file_path_prefix + '.mutations.vcf')
 
 
 # rows = []

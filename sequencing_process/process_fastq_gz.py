@@ -212,7 +212,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
     elif sequence_type == 'RNA':
         additional_arguments.append('--dta --dta-cufflinks')
     else:
-        raise ValueError('Unknown sequence_type {}.'.format(sequence_type))
+        raise ValueError('Unknown sequence_type: {}.'.format(sequence_type))
 
     run_command(
         'hisat2 -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.

@@ -21,7 +21,7 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
         None
     """
 
-    establish_path(file_path_prefix)
+    establish_path(file_path_prefix, 'file')
 
     run_command(
         'dwgsim -N {} -1 150 -2 150 -r {} -R {} {} {}'.format(

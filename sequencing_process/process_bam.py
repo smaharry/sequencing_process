@@ -10,7 +10,7 @@ from .support.support.subprocess_ import run_command
 def sort_and_index_bam_using_samtools_sort_and_index(
         bam_file_path,
         remove_input_bam_file_path=False,
-        n_jobs=1,
+        n_job=1,
         output_bam_file_path=None,
         overwrite=False):
     """
@@ -18,7 +18,7 @@ def sort_and_index_bam_using_samtools_sort_and_index(
     Arguments:
         bam_file_path (str):
         remove_input_bam_file_path (bool):
-        n_jobs (int):
+        n_job (int):
         output_bam_file_path (str):
         overwrite (bool):
     Returns:
@@ -33,7 +33,7 @@ def sort_and_index_bam_using_samtools_sort_and_index(
         raise FileExistsError(output_bam_file_path)
 
     run_command(
-        'samtools sort --threads {} {} > {}'.format(n_jobs, bam_file_path,
+        'samtools sort --threads {} {} > {}'.format(n_job, bam_file_path,
                                                     output_bam_file_path),
         print_command=True)
 
@@ -41,15 +41,15 @@ def sort_and_index_bam_using_samtools_sort_and_index(
         run_command('rm -rf {}'.format(bam_file_path), print_command=True)
 
     return index_bam_using_samtools_index(
-        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
+        output_bam_file_path, n_job=n_job, overwrite=overwrite)
 
 
-def index_bam_using_samtools_index(bam_file_path, n_jobs=1, overwrite=False):
+def index_bam_using_samtools_index(bam_file_path, n_job=1, overwrite=False):
     """
     Index .bam file using samtools.
     Arguments:
         bam_file_path (str):
-        n_jobs (int):
+        n_job (int):
         overwrite (bool):
     Returns:
         str:
@@ -61,7 +61,7 @@ def index_bam_using_samtools_index(bam_file_path, n_jobs=1, overwrite=False):
         raise FileExistsError(output_bai_file_path)
 
     run_command(
-        'samtools index -@ {} {}'.format(n_jobs, bam_file_path),
+        'samtools index -@ {} {}'.format(n_job, bam_file_path),
         print_command=True)
 
     return bam_file_path
@@ -72,7 +72,7 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
         maximum_memory='12G',
         remove_duplicates=False,
         remove_input_bam_file_path_and_its_index=False,
-        n_jobs=1,
+        n_job=1,
         output_bam_file_path=None,
         overwrite=False):
     """
@@ -82,7 +82,7 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
         maximum_memory (str):
         remove_duplicates (bool):
         remove_input_bam_file_path_and_its_index (bool):
-        n_jobs (int):
+        n_job (int):
         output_bam_file_path (str):
         overwrite (bool):
     Returns:
@@ -114,18 +114,18 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
         print(f.read())
 
     return index_bam_using_samtools_index(
-        output_bam_file_path, n_jobs=n_jobs, overwrite=overwrite)
+        output_bam_file_path, n_job=n_job, overwrite=overwrite)
 
 
 def check_bam_using_samtools_flagstat(bam_file_path,
-                                      n_jobs=1,
+                                      n_job=1,
                                       output_file_path=None,
                                       overwrite=False):
     """
     Check .bam file using samtools flagstat.
     Arguments:
         bam_file_path (str):
-        n_jobs (int):
+        n_job (int):
         output_file_path (str):
         overwrite (bool):
     Returns:
@@ -140,7 +140,7 @@ def check_bam_using_samtools_flagstat(bam_file_path,
 
     run_command(
         'samtools flagstat --threads {} {} > {}'.format(
-            n_jobs, bam_file_path, output_file_path),
+            n_job, bam_file_path, output_file_path),
         print_command=True)
 
     print('{}:'.format(output_file_path))
@@ -181,7 +181,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         bam_file_path,
         fasta_file_path,
         regions,
-        n_jobs=2,
+        n_job=2,
         output_vcf_file_path=None,
         overwrite=False):
     """
@@ -190,7 +190,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         bam_file_path (str):
         fasta_file_path (str): reference .fasta file
         regions (iterable):
-        n_jobs (int):
+        n_job (int):
         overwrite (bool):
     Returns:
         str:
@@ -201,9 +201,9 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
             call_variants_on_bam_using_freebayes,
             [[bam_file_path, fasta_file_path, r, 1, None, overwrite]
              for r in regions],
-            n_jobs=n_jobs),
+            n_job=n_job),
         remove_input_vcf_gz_file_paths_and_their_indices=True,
-        n_jobs=n_jobs,
+        n_job=n_job,
         output_vcf_file_path=output_vcf_file_path,
         overwrite=overwrite)
 
@@ -213,7 +213,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
 def call_variants_on_bam_using_freebayes(bam_file_path,
                                          fasta_file_path,
                                          regions=None,
-                                         n_jobs=1,
+                                         n_job=1,
                                          output_vcf_file_path=None,
                                          overwrite=False):
     """
@@ -222,7 +222,7 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         bam_file_path (str):
         fasta_file_path (str): reference .fasta file
         regions (str):
-        n_jobs (int):
+        n_job (int):
         output_vcf_file_path (str):
         overwrite (bool):
     Returns:
@@ -253,4 +253,4 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
         print_command=True)
 
     return bgzip_and_tabix(
-        output_vcf_file_path, n_jobs=n_jobs, overwrite=overwrite)
+        output_vcf_file_path, n_job=n_job, overwrite=overwrite)

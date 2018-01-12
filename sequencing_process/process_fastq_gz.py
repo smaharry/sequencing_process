@@ -7,14 +7,14 @@ from .support.support.subprocess_ import run_command
 
 
 def check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
-                                 n_jobs=1,
+                                 n_job=1,
                                  overwrite=False):
     """
     Check .fastq.gz files using fastqc.
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
             .fastq.gz file path
-        n_jobs (int):
+        n_job (int):
         overwrite (bool):
     Returns:
         None
@@ -28,7 +28,7 @@ def check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
     check_fastq_gzs(fastq_gz_file_paths)
 
     run_command(
-        'fastqc --threads {} {}'.format(n_jobs, ' '.join(fastq_gz_file_paths)),
+        'fastqc --threads {} {}'.format(n_job, ' '.join(fastq_gz_file_paths)),
         print_command=True)
 
 
@@ -45,7 +45,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
                                 end_quality=30,
                                 min_length_after_trimming=30,
                                 remove_n=True,
-                                n_jobs=1,
+                                n_job=1,
                                 output_directory_path=None,
                                 overwrite=False):
     """
@@ -61,7 +61,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         end_quality (number):
         min_length_after_trimming (int):
         remove_n (bool):
-        n_jobs (int):
+        n_job (int):
         output_directory_path (str):
         overwrite (bool):
     Returns:
@@ -82,7 +82,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
     command = 'skewer -x {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {}'.format(
         forward_bad_sequence_fasta_file_path, snv_error_rate, indel_error_rate,
         end_quality, min_length_after_trimming, ['', '-n'][remove_n],
-        output_directory_path, n_jobs)
+        output_directory_path, n_job)
 
     additional_arguments = []
     if len(fastq_gz_file_paths) == 1:
@@ -116,7 +116,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
 def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
                                   fasta_gz_file_path,
-                                  n_jobs=1,
+                                  n_job=1,
                                   output_bam_file_path=None,
                                   overwrite=False):
     """
@@ -125,7 +125,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
         fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
             .fastq.gz file path
         fasta_gz_file_path (str):
-        n_jobs (int):
+        n_job (int):
         output_bam_file_path (str):
         overwrite (bool):
     Returns:
@@ -154,11 +154,11 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
 
     run_command(
         'bwa mem -t {} -v 3 {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
-        format(n_jobs, fasta_gz_file_path, ' '.join(fastq_gz_file_paths),
+        format(n_job, fasta_gz_file_path, ' '.join(fastq_gz_file_paths),
                join(RESOURCE_DIRECTORY_PATH, 'k8-0.2.3',
                     'k8-{}'.format(platform)),
                join(RESOURCE_DIRECTORY_PATH, 'bwa-postalt.js'),
-               fasta_gz_file_path, n_jobs, output_bam_file_path),
+               fasta_gz_file_path, n_job, output_bam_file_path),
         print_command=True)
 
     return output_bam_file_path
@@ -167,7 +167,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
 def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
                                  fasta_file_path,
                                  sequence_type,
-                                 n_jobs=1,
+                                 n_job=1,
                                  output_bam_file_path=None,
                                  overwrite=False):
     """
@@ -179,7 +179,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
         fasta_file_path (str): reference .fasta.gz file path
         fastq_gz_file_paths (iterable): (<= 2) unpaired or paired end sequences
         sequence_type (str): 'DNA' | 'RNA'
-        n_jobs (int):
+        n_job (int):
         output_bam_file_path (str):
         overwrite (bool):
     Returns:
@@ -216,8 +216,8 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
 
     run_command(
         'hisat2 -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.
-        format(fasta_file_path, output_bam_file_path, n_jobs,
-               ' '.join(additional_arguments), n_jobs, output_bam_file_path),
+        format(fasta_file_path, output_bam_file_path, n_job,
+               ' '.join(additional_arguments), n_job, output_bam_file_path),
         print_command=True)
 
     return output_bam_file_path
@@ -230,7 +230,7 @@ def count_transcripts_using_kallisto_quant(
         n_bootstraps=100,
         fragment_lendth=180,
         fragment_lendth_standard_deviation=20,
-        n_jobs=1,
+        n_job=1,
         overwrite=False):
     """
     Count transcripts using kallisto quant.
@@ -243,7 +243,7 @@ def count_transcripts_using_kallisto_quant(
         fragment_lendth (number): estimated fragment length
         fragment_lendth_standard_deviation (number): estimated fragment length
             standard deviation
-        n_jobs (int):
+        n_job (int):
         overwrite (bool):
     Returns:
         str:

@@ -237,8 +237,7 @@ def filter_vcf_gz_using_bcftools_view(
 
     run_command(
         'bcftools view --include \'{}\' --threads {} {} > {}'.format(
-            include_expression, n_job, vcf_gz_file_path,
-            output_vcf_file_path),
+            include_expression, n_job, vcf_gz_file_path, output_vcf_file_path),
         print_command=True)
 
     return bgzip_and_tabix(

@@ -6,8 +6,7 @@ from . import RESOURCE_DIRECTORY_PATH
 from .support.support.subprocess_ import run_command
 
 
-def check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
-                                 n_job=1,
+def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
                                  overwrite=False):
     """
     Check .fastq.gz files using fastqc.
@@ -57,7 +56,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         snv_error_rate (float):
         indel_error_rate (float):
         overlap_length (int):
-        end_quality (number):
+        end_quality (float):
         min_length_after_trimming (int):
         remove_n (bool):
         n_job (int):
@@ -239,8 +238,8 @@ def count_transcripts_using_kallisto_quant(
         fasta_gz_file_path (str): cDNA sequences
         output_directory_path (str):
         n_bootstraps (int):
-        fragment_lendth (number): estimated fragment length
-        fragment_lendth_standard_deviation (number): estimated fragment length
+        fragment_lendth (float): estimated fragment length
+        fragment_lendth_standard_deviation (float): estimated fragment length
             standard deviation
         n_job (int):
         overwrite (bool):

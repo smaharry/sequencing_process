@@ -8,16 +8,15 @@ from .support.support.subprocess_ import run_command
 def make_reference_genome(directory_path, overwrite=False):
     """
     Make reference genome.
-        Get NCBI's GRCh38 .fasta.gz file designed for sequencing process (0).
-        Get Heng Li's .fasta file containing decoy and HLA sequences (1).
-        Concatenate 0 and 1 into 2.
-        Copy 1.alt to 2.alt (because bwa needs 2.alt to mark an aliignment as
-        alt and align alt sequences to non-alt sequences.)
+    Get NCBI's GRCh38 .fasta.gz file designed for sequencing process (0).
+    Get Heng Li's .fasta file containing decoy and HLA sequences (1).
+    Concatenate 0 and 1 into 2.
+    Copy 1.alt to 2.alt (because bwa needs 2.alt to mark an alignment as alt
+    and align alt sequences to non-alt sequences.)
     Arguments:
         directory_path (str):
         overwrite (bool):
     Returns:
-        None
     """
 
     f_e_fa_gz_file_path = join(

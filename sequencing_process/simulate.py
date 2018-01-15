@@ -14,11 +14,10 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
         fasta_file_path (str):
         file_path_prefix (str):
         n_sequences (int):
-        n_sequences (int)
+        n_sequences (int):
         fraction_variant (float):
         fraction_indel_variant (float):
     Returns:
-        None
     """
 
     establish_path(file_path_prefix, 'file')

@@ -12,12 +12,11 @@ def check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
     """
     Check .fastq.gz files using fastqc.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) | 2 (paired)
             .fastq.gz file path
         n_job (int):
         overwrite (bool):
     Returns:
-        None
     """
 
     for fp in fastq_gz_file_paths:
@@ -51,7 +50,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
     """
     Trim .fastq.gz files using skewer.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) | 2 (paired)
             .fastq.gz file path
         forward_bad_sequence_fasta_file_path (str):
         reverse_bad_sequence_fasta_file_path (str):
@@ -122,7 +121,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
     """
     Align .fastq.gz files using bwa mem.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) | 2 (paired)
             .fastq.gz file path
         fasta_gz_file_path (str):
         n_job (int):
@@ -173,9 +172,9 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
     """
     Align .fastq.gz files using hisat2.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) | 2 (paired)
             .fastq.gz file path
-        fasta_gz_file_path (str):
+        fasta_file_path (str):
         fasta_file_path (str): reference .fasta.gz file path
         fastq_gz_file_paths (iterable): (<= 2) unpaired or paired end sequences
         sequence_type (str): 'DNA' | 'RNA'
@@ -235,7 +234,7 @@ def count_transcripts_using_kallisto_quant(
     """
     Count transcripts using kallisto quant.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) | 2 (paired)
             .fastq.gz file path
         fasta_gz_file_path (str): cDNA sequences
         output_directory_path (str):
@@ -270,8 +269,8 @@ def count_transcripts_using_kallisto_quant(
         raise FileExistsError(output_directory_path)
 
     run_command(
-        'kallisto quant --index {} --output-dir {} --bootstrap-samples {} {}'.
-        format(fasta_gz_kallisto_index_file_path, output_directory_path,
+        'kallisto quant --index {} --output-dir {} --bootstrap-samples --threads {} {} {}'.
+        format(fasta_gz_kallisto_index_file_path, output_directory_path, n_job,
                n_bootstraps, sample_argument),
         print_command=True)
 
@@ -282,10 +281,9 @@ def check_fastq_gzs(fastq_gz_file_paths):
     """
     Check .fastq.gz files.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) or 2 (paired)
+        fastq_gz_file_paths (iterable): (<= 2) 1 (unpaired) | 2 (paired)
             .fastq.gz file path
     Returns:
-        None
     """
 
     if len(fastq_gz_file_paths) not in [1, 2]:

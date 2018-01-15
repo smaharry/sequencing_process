@@ -129,7 +129,6 @@ def check_bam_using_samtools_flagstat(bam_file_path,
         output_file_path (str):
         overwrite (bool):
     Returns:
-        None
     """
 
     if not output_file_path:
@@ -158,7 +157,6 @@ def check_fastq_gz_or_bam_using_fastqp(fastq_gz_or_bam_file_path,
         kmer_length (int):
         overwrite (bool):
     Returns:
-        None
     """
 
     plot_zip_prefix_path = fastq_gz_or_bam_file_path + '.plot'
@@ -191,6 +189,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         fasta_file_path (str): reference .fasta file
         regions (iterable):
         n_job (int):
+        output_vcf_file_path (str):
         overwrite (bool):
     Returns:
         str:

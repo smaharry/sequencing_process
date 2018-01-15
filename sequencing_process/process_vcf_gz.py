@@ -169,7 +169,7 @@ def annotate_vcf_gz_using_snpeff(
 def annotate_vcf_gz_using_bcftools_annotate(
         vcf_gz_file_path,
         annotation_file_path,
-        additional_arguments=['--columns =ID,INFO'],
+        additional_arguments=('--columns =ID,INFO', ),
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_job=1,
         output_vcf_file_path=None,

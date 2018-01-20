@@ -31,28 +31,32 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
     run_command(
         'gzip {}'.format(file_path_prefix + '.bwa.read1.fastq'),
         print_command=True)
+
     run_command(
         'gzip {}'.format(file_path_prefix + '.bwa.read2.fastq'),
         print_command=True)
+
     run_command(
         'rm -rf {}'.format(file_path_prefix + '.bfast.fastq'),
         print_command=True)
+
     bgzip_and_tabix(file_path_prefix + '.mutations.vcf')
 
 
 # TODO: evaluate processing of the simulated sequences
 # rows = []
-# with open('1k/dwgsim_eval.tsv') as f:
-#     for l in f:
-#         l = l.strip()
+# with open('1k/dwgsim_eval.tsv') as file_:
+#     for line in file_:
+#         line = line.strip()
 #
-#         if l.startswith('#'):
-#             print(l)
+#         if line.startswith('#'):
+#             print(line)
 #         else:
-#             rows.append(([float(x.strip()) for x in l.split() if x]))
-# df = pd.DataFrame(
+#             rows.append(([float(x.strip()) for x in line.split() if x]))
+#
+# df = DataFrame(
 #     rows[:-1],
-#     columns=[
+#     columns=(
 #         'thr',
 #         'mc',
 #         'mi',
@@ -71,6 +75,6 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
 #         'fdr',
 #         's^',
 #         'ppv^',
-#         'fdr^',
-#     ]).set_index('thr')
+#         'fdr^', )).set_index('thr')
+#
 # return df

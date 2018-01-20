@@ -101,10 +101,11 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
     with open(log_file_path) as f:
         print(f.read())
 
-    output_fastq_file_paths = [
-        join(output_directory_path, 'trimmed-pair{}.fastq'.format(i))
-        for i in [1, 2]
-    ]
+    output_fastq_file_paths = (join(output_directory_path,
+                                    'trimmed-pair{}.fastq'.format(i))
+                               for i in (
+                                   1,
+                                   2, ))
 
     for fp in output_fastq_file_paths:
         run_command('gzip --force {}'.format(fp), print_command=True)
@@ -132,10 +133,13 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    if not all([
-            exists(fasta_gz_file_path + e)
-            for e in ['.bwt', '.pac', '.ann', '.amb', '.sa']
-    ]):
+    if not all((exists(fasta_gz_file_path + e)
+                for e in (
+                    '.bwt',
+                    '.pac',
+                    '.ann',
+                    '.amb',
+                    '.sa', ))):
         run_command(
             'bwa index {}'.format(fasta_gz_file_path), print_command=True)
 
@@ -186,10 +190,16 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    if not all([
-            exists(fasta_file_path + '.{}.ht2'.format(i))
-            for i in [1, 2, 3, 4, 5, 6, 7, 8]
-    ]):
+    if not all((exists(fasta_file_path + '.{}.ht2'.format(i))
+                for i in (
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8, ))):
         run_command(
             'hisat2-build {0} {0}'.format(fasta_file_path), print_command=True)
 
@@ -226,8 +236,8 @@ def count_transcripts_using_kallisto_quant(
         fasta_gz_file_path,
         output_directory_path,
         n_bootstraps=100,
-        fragment_lendth=180,
-        fragment_lendth_standard_deviation=20,
+        fragment_length=180,
+        fragment_length_standard_deviation=20,
         n_job=1,
         overwrite=False):
     """
@@ -238,8 +248,8 @@ def count_transcripts_using_kallisto_quant(
         fasta_gz_file_path (str): cDNA sequences
         output_directory_path (str):
         n_bootstraps (int):
-        fragment_lendth (float): estimated fragment length
-        fragment_lendth_standard_deviation (float): estimated fragment length
+        fragment_length (float): estimated fragment length
+        fragment_length_standard_deviation (float): estimated fragment length
             standard deviation
         n_job (int):
         overwrite (bool):
@@ -259,7 +269,7 @@ def count_transcripts_using_kallisto_quant(
 
     if len(fastq_gz_file_paths) == 1:
         sample_argument = '--single --fragment-length {} --sd {} {}'.format(
-            fragment_lendth, fragment_lendth_standard_deviation,
+            fragment_length, fragment_length_standard_deviation,
             *fastq_gz_file_paths)
     else:
         sample_argument = '{} {}'.format(*fastq_gz_file_paths)
@@ -268,9 +278,9 @@ def count_transcripts_using_kallisto_quant(
         raise FileExistsError(output_directory_path)
 
     run_command(
-        'kallisto quant --index {} --output-dir {} --bootstrap-samples --threads {} {} {}'.
-        format(fasta_gz_kallisto_index_file_path, output_directory_path, n_job,
-               n_bootstraps, sample_argument),
+        'kallisto quant --index {} --output-dir {} --bootstrap-samples {} --threads {} {}'.
+        format(fasta_gz_kallisto_index_file_path, output_directory_path,
+               n_bootstraps, n_job, sample_argument),
         print_command=True)
 
     return output_directory_path
@@ -285,7 +295,9 @@ def check_fastq_gzs(fastq_gz_file_paths):
     Returns:
     """
 
-    if len(fastq_gz_file_paths) not in [1, 2]:
+    if len(fastq_gz_file_paths) not in (
+            1,
+            2, ):
         raise ValueError(
             'fastq_gz_file_paths must contain either 1 (unpaired) or 2 (paired) .fastq.gz file path.'
         )

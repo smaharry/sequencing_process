@@ -22,10 +22,11 @@ def check_fastq_gzs(fastq_gz_file_paths):
         )
 
 
-def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
-                                 overwrite=False):
+def quality_check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
+                                         n_job=1,
+                                         overwrite=False):
     """
-    Check .fastq.gz files using fastqc.
+    Quality check .fastq.gz files using fastqc.
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
             .fastq.gz file path
@@ -102,12 +103,12 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
             '-y {}'.format(reverse_bad_sequences_fasta_file_path))
 
     print_and_run_command(
-        'skewer -x {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {} {} {}'.
+        'skewer -x {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {} {}'.
         format(forward_bad_sequences_fasta_file_path, snv_error_rate,
                indel_error_rate, end_quality, min_length_after_trimming, (
                    '',
                    '-n', )[remove_n], output_directory_path, n_job, ' '.join(
-                       additional_arguments), ' '.join(fastq_gz_file_paths)))
+                       additional_arguments + fastq_gz_file_paths)))
 
     log_file_path = join(output_directory_path, 'trimmed.log')
     print('{}:'.format(log_file_path))
@@ -189,9 +190,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
             .fastq.gz file path
-        fasta_file_path (str):
         fasta_file_path (str): reference .fasta.gz file path
-        fastq_gz_file_paths (iterable): (<= 2) unpaired or paired end sequences
         sequence_type (str): 'DNA' | 'RNA'
         n_job (int):
         output_bam_file_path (str):
@@ -223,7 +222,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
     additional_arguments = []
 
     if len(fastq_gz_file_paths) == 1:
-        additional_arguments.append('-U {}'.format(*fastq_gz_file_paths))
+        additional_arguments.append('-U {}'.format(fastq_gz_file_paths[0]))
     else:
         additional_arguments.append('-1 {} -2 {}'.format(*fastq_gz_file_paths))
 
@@ -235,9 +234,9 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
         raise ValueError('Unknown sequence_type: {}.'.format(sequence_type))
 
     print_and_run_command(
-        'hisat2 -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.
-        format(fasta_file_path, output_bam_file_path, n_job, ' '.join(
-            additional_arguments), n_job, output_bam_file_path))
+        'hisat2 -x {} --summary-file {} --threads {} {} | samtools view -Sb --threads {} > {}'.
+        format(fasta_file_path, output_bam_file_path + '.summary', n_job,
+               ' '.join(additional_arguments), n_job, output_bam_file_path))
 
     return output_bam_file_path
 
@@ -246,7 +245,7 @@ def count_transcripts_using_kallisto_quant(
         fastq_gz_file_paths,
         fasta_gz_file_path,
         output_directory_path,
-        n_bootstraps=100,
+        n_bootstrap=100,
         fragment_length=180,
         fragment_length_standard_deviation=20,
         n_job=1,
@@ -258,7 +257,7 @@ def count_transcripts_using_kallisto_quant(
             .fastq.gz file path
         fasta_gz_file_path (str): cDNA sequences
         output_directory_path (str):
-        n_bootstraps (int):
+        n_bootstrap (int):
         fragment_length (float): estimated fragment length
         fragment_length_standard_deviation (float): estimated fragment length
             standard deviation
@@ -276,6 +275,9 @@ def count_transcripts_using_kallisto_quant(
         print_and_run_command('kallisto index --index {} {}'.format(
             fasta_gz_kallisto_index_file_path, fasta_gz_file_path))
 
+    if not overwrite and exists(output_directory_path):
+        raise FileExistsError(output_directory_path)
+
     if len(fastq_gz_file_paths) == 1:
         sample_argument = '--single --fragment-length {} --sd {} {}'.format(
             fragment_length, fragment_length_standard_deviation,
@@ -283,12 +285,9 @@ def count_transcripts_using_kallisto_quant(
     else:
         sample_argument = '{} {}'.format(*fastq_gz_file_paths)
 
-    if not overwrite and exists(output_directory_path):
-        raise FileExistsError(output_directory_path)
-
     print_and_run_command(
         'kallisto quant --index {} --output-dir {} --bootstrap-samples {} --threads {} {}'.
         format(fasta_gz_kallisto_index_file_path, output_directory_path,
-               n_bootstraps, n_job, sample_argument))
+               n_bootstrap, n_job, sample_argument))
 
     return output_directory_path

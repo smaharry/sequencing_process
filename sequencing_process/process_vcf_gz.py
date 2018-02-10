@@ -45,7 +45,7 @@ def concatenate_vcf_gzs_using_bcftools_concat(
 
 def rename_chromosomes_of_vcf_gz_using_bcftools_annotate(
         vcf_gz_file_path,
-        map_file_path=join(RESOURCE_DIRECTORY_PATH, 'chrn_to_n.tsv'),
+        map_file_path=join(RESOURCE_DIRECTORY_PATH, 'chrn_n.tsv'),
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_job=1,
         output_vcf_file_path=None,
@@ -66,7 +66,6 @@ def rename_chromosomes_of_vcf_gz_using_bcftools_annotate(
     if not output_vcf_file_path:
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
-
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -139,7 +138,6 @@ def annotate_vcf_gz_using_snpeff(
     if not output_vcf_file_path:
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
-
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -181,7 +179,6 @@ def annotate_vcf_gz_using_bcftools_annotate(
     if not output_vcf_file_path:
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
-
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -219,7 +216,6 @@ def filter_vcf_gz_using_bcftools_view(
     if not output_vcf_file_path:
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
-
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 

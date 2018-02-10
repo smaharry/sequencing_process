@@ -22,11 +22,10 @@ def check_fastq_gzs(fastq_gz_file_paths):
         )
 
 
-def quality_check_fastq_gzs_using_fastqc(fastq_gz_file_paths,
-                                         n_job=1,
-                                         overwrite=False):
+def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
+                                 overwrite=False):
     """
-    Quality check .fastq.gz files using fastqc.
+    Check .fastq.gz files using fastqc.
     Arguments:
         fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
             .fastq.gz file path

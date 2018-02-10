@@ -116,7 +116,7 @@ def extract_regions_from_vcf_gz_using_bcftools_view(vcf_gz_file_path,
 def annotate_vcf_gz_using_snpeff(
         vcf_gz_file_path,
         genomic_assembly,
-        maximum_memory='12G',
+        maximum_memory='8G',
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_job=1,
         output_vcf_file_path=None,

@@ -107,21 +107,22 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
                indel_error_rate, end_quality, min_length_after_trimming, (
                    '',
                    '-n', )[remove_n], output_directory_path, n_job, ' '.join(
-                       additional_arguments + fastq_gz_file_paths)))
+                       additional_arguments + list(fastq_gz_file_paths))))
 
     log_file_path = join(output_directory_path, 'trimmed.log')
     print('{}:'.format(log_file_path))
     with open(log_file_path) as file_:
         print(file_.read())
 
-    output_fastq_file_paths = (join(output_directory_path,
-                                    'trimmed-pair{}.fastq'.format(i))
-                               for i in (
-                                   1,
-                                   2, ))
+    output_fastq_file_paths = [
+        join(output_directory_path, 'trimmed-pair{}.fastq'.format(i))
+        for i in (
+            1,
+            2, )
+    ]
 
-    for output_directory_path in output_fastq_file_paths:
-        print_and_run_command('gzip --force {}'.format(output_directory_path))
+    for output_fastq_file_path in output_fastq_file_paths:
+        print_and_run_command('gzip --force {}'.format(output_fastq_file_path))
 
     return [
         output_fastq_file_path + '.gz'

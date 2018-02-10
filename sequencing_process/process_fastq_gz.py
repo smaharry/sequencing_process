@@ -3,7 +3,6 @@ from os.path import dirname, exists, join
 from sys import platform
 
 from . import RESOURCE_DIRECTORY_PATH
-from .support.support.subprocess_ import run_command
 
 
 def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
@@ -25,7 +24,7 @@ def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    run_command(
+    print_and_run_command(
         'fastqc --threads {} {}'.format(n_job, ' '.join(fastq_gz_file_paths)),
         print_command=True)
 
@@ -92,7 +91,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
             '-y {}'.format(reverse_bad_sequence_fasta_file_path))
     additional_arguments.extend(fastq_gz_file_paths)
 
-    run_command(
+    print_and_run_command(
         '{} {}'.format(command, ' '.join(additional_arguments)),
         print_command=True)
 
@@ -108,7 +107,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
                                    2, ))
 
     for fp in output_fastq_file_paths:
-        run_command('gzip --force {}'.format(fp), print_command=True)
+        print_and_run_command('gzip --force {}'.format(fp), print_command=True)
 
     return [fp + '.gz' for fp in output_fastq_file_paths]
 
@@ -140,7 +139,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
                     '.ann',
                     '.amb',
                     '.sa', ))):
-        run_command(
+        print_and_run_command(
             'bwa index {}'.format(fasta_gz_file_path), print_command=True)
 
     if not exists(fasta_gz_file_path + '.alt'):
@@ -154,7 +153,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
 
-    run_command(
+    print_and_run_command(
         'bwa mem -t {} -v 3 {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
         format(n_job, fasta_gz_file_path, ' '.join(fastq_gz_file_paths),
                join(RESOURCE_DIRECTORY_PATH, 'k8-0.2.3',
@@ -200,7 +199,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
                     6,
                     7,
                     8, ))):
-        run_command(
+        print_and_run_command(
             'hisat2-build {0} {0}'.format(fasta_file_path), print_command=True)
 
     if not output_bam_file_path:
@@ -222,7 +221,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
     else:
         raise ValueError('Unknown sequence_type: {}.'.format(sequence_type))
 
-    run_command(
+    print_and_run_command(
         'hisat2 -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.
         format(fasta_file_path, output_bam_file_path, n_job,
                ' '.join(additional_arguments), n_job, output_bam_file_path),
@@ -262,7 +261,7 @@ def count_transcripts_using_kallisto_quant(
     fasta_gz_kallisto_index_file_path = '{}.kallisto.index'.format(
         fasta_gz_file_path)
     if not exists(fasta_gz_kallisto_index_file_path):
-        run_command(
+        print_and_run_command(
             'kallisto index --index {} {}'.format(
                 fasta_gz_kallisto_index_file_path, fasta_gz_file_path),
             print_command=True)
@@ -277,7 +276,7 @@ def count_transcripts_using_kallisto_quant(
     if not overwrite and exists(output_directory_path):
         raise FileExistsError(output_directory_path)
 
-    run_command(
+    print_and_run_command(
         'kallisto quant --index {} --output-dir {} --bootstrap-samples {} --threads {} {}'.
         format(fasta_gz_kallisto_index_file_path, output_directory_path,
                n_bootstraps, n_job, sample_argument),

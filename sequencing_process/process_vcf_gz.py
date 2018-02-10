@@ -1,9 +1,8 @@
 from inspect import stack
 from os.path import dirname, exists, join
 
-from . import RESOURCE_DIRECTORY_PATH
+from . import RESOURCE_DIRECTORY_PATH, print_and_run_command
 from .bgzip_and_tabix import bgzip_and_tabix
-from .support.support.subprocess_ import run_command
 
 
 def concatenate_vcf_gzs_using_bcftools_concat(
@@ -27,22 +26,18 @@ def concatenate_vcf_gzs_using_bcftools_concat(
     if not output_vcf_file_path:
         output_vcf_file_path = join(
             dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
-
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    run_command(
+    print_and_run_command(
         'bcftools concat --allow-overlaps --threads {} {} > {}'.format(
-            n_job, ' '.join(vcf_gz_file_paths), output_vcf_file_path),
-        print_command=True)
+            n_job, ' '.join(vcf_gz_file_paths), output_vcf_file_path))
 
     if remove_input_vcf_gz_file_paths_and_their_indices:
         for vcf_gz_file_path in vcf_gz_file_paths:
-            run_command(
-                'rm -rf {}'.format(vcf_gz_file_path), print_command=True)
-            run_command(
-                'rm -rf {}'.format(vcf_gz_file_path + '.tbi'),
-                print_command=True)
+            print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+            print_and_run_command(
+                'rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
@@ -75,15 +70,13 @@ def rename_chromosomes_of_vcf_gz_using_bcftools_annotate(
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    run_command(
+    print_and_run_command(
         'bcftools annotate --rename-chrs {} --threads {} {} > {}'.format(
-            map_file_path, n_job, vcf_gz_file_path, output_vcf_file_path),
-        print_command=True)
+            map_file_path, n_job, vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
-        run_command('rm -rf {}'.format(vcf_gz_file_path), print_command=True)
-        run_command(
-            'rm -rf {}'.format(vcf_gz_file_path + '.tbi'), print_command=True)
+        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
@@ -113,10 +106,9 @@ def extract_regions_from_vcf_gz_using_bcftools_view(vcf_gz_file_path,
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    run_command(
+    print_and_run_command(
         'bcftools view --regions {} --threads {} {} > {}'.format(
-            ','.join(regions), n_job, vcf_gz_file_path, output_vcf_file_path),
-        print_command=True)
+            ','.join(regions), n_job, vcf_gz_file_path, output_vcf_file_path))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
@@ -151,16 +143,14 @@ def annotate_vcf_gz_using_snpeff(
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    run_command(
+    print_and_run_command(
         'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -t -verbose -noLog {} {} > {}'.
         format(maximum_memory, output_vcf_file_path, output_vcf_file_path,
-               genomic_assembly, vcf_gz_file_path, output_vcf_file_path),
-        print_command=True)
+               genomic_assembly, vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
-        run_command('rm -rf {}'.format(vcf_gz_file_path), print_command=True)
-        run_command(
-            'rm -rf {}'.format(vcf_gz_file_path + '.tbi'), print_command=True)
+        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
@@ -195,16 +185,14 @@ def annotate_vcf_gz_using_bcftools_annotate(
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    run_command(
+    print_and_run_command(
         'bcftools annotate --annotations {} --threads {} {} {} > {}'.format(
             annotation_file_path, n_job, ' '.join(additional_arguments),
-            vcf_gz_file_path, output_vcf_file_path),
-        print_command=True)
+            vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
-        run_command('rm -rf {}'.format(vcf_gz_file_path), print_command=True)
-        run_command(
-            'rm -rf {}'.format(vcf_gz_file_path + '.tbi'), print_command=True)
+        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
@@ -235,10 +223,9 @@ def filter_vcf_gz_using_bcftools_view(
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    run_command(
+    print_and_run_command(
         'bcftools view --include \'{}\' --threads {} {} > {}'.format(
-            include_expression, n_job, vcf_gz_file_path, output_vcf_file_path),
-        print_command=True)
+            include_expression, n_job, vcf_gz_file_path, output_vcf_file_path))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)

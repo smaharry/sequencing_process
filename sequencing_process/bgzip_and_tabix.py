@@ -1,4 +1,4 @@
-from .support.support.subprocess_ import run_command
+from . import print_and_run_command
 
 
 def bgzip_and_tabix(file_path, n_job=1, overwrite=False):
@@ -21,10 +21,8 @@ def bgzip_and_tabix(file_path, n_job=1, overwrite=False):
         bgzip_additional_arguments.append('--force')
         tabix_additional_arguments.append('--force')
 
-    run_command(
-        'bgzip --threads {} {} {} && tabix {} {}'.format(
-            n_job, ' '.join(bgzip_additional_arguments), file_path,
-            ' '.join(tabix_additional_arguments), output_file_path),
-        print_command=True)
+    print_and_run_command('bgzip --threads {} {} {} && tabix {} {}'.format(
+        n_job, ' '.join(bgzip_additional_arguments), file_path, ' '.join(
+            tabix_additional_arguments), output_file_path))
 
     return output_file_path

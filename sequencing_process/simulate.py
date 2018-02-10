@@ -4,7 +4,7 @@ from .bgzip_and_tabix import bgzip_and_tabix
 
 def simulate_sequences_using_dwgsim(fasta_file_path,
                                     file_path_prefix,
-                                    n_sequences=1000,
+                                    n_sequence=1000,
                                     fraction_variant=0.001,
                                     fraction_indel_variant=0.1):
     """
@@ -12,8 +12,7 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
     Arguments:
         fasta_file_path (str):
         file_path_prefix (str):
-        n_sequences (int):
-        n_sequences (int):
+        n_sequence (int):
         fraction_variant (float):
         fraction_indel_variant (float):
     Returns:
@@ -21,7 +20,7 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
 
     print_and_run_command(
         'dwgsim -N {} -1 150 -2 150 -r {} -R {} {} {}'.format(
-            n_sequences, fraction_variant, fraction_indel_variant,
+            n_sequence, fraction_variant, fraction_indel_variant,
             fasta_file_path, file_path_prefix))
 
     print_and_run_command(

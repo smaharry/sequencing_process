@@ -10,8 +10,7 @@ def make_reference_genome(directory_path, overwrite=False):
     Get NCBI's GRCh38 .fasta.gz file designed for sequencing process (0).
     Get Heng Li's .fasta file containing decoy and HLA sequences (1).
     Concatenate 0 and 1 into 2.
-    Copy 1.alt to 2.alt (because bwa needs 2.alt to mark an alignment as alt
-    and align alt sequences to non-alt sequences.)
+    Copy 1.alt to 2.alt (because bwa needs 2.alt to mark an alignment as alt).
     Arguments:
         directory_path (str):
         overwrite (bool):

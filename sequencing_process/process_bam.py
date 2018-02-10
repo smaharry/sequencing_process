@@ -64,7 +64,7 @@ def index_bam_using_samtools_index(bam_file_path, n_job=1, overwrite=False):
 
 def mark_duplicates_in_bam_using_picard_markduplicates(
         bam_file_path,
-        maximum_memory='12G',
+        maximum_memory='8G',
         remove_duplicates=False,
         remove_input_bam_file_path_and_its_index=False,
         n_job=1,

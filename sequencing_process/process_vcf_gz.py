@@ -206,7 +206,7 @@ def filter_vcf_gz_using_bcftools_view(
     Filter .vcf.gz file using bcftools annotate.
     Arguments:
         vcf_gz_file_path (str):
-        filters (iterable):
+        keep_filters (iterable):
         include_expression (str):
         n_job (int):
         output_vcf_file_path (str):

@@ -3,7 +3,7 @@
 ##source=freeBayes v1.0.2-dirty
 ##reference=/Users/k/Jumis/grch/sequencing_process/GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa
 ##phasing=none
-##commandline="freebayes --fasta-reference /Users/k/Jumis/grch/sequencing_process/GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa --region chr6 /Users/k/Jumis/github_kwatme/sequencing_process/simulation/duplicate_removed.bam"
+##commandline="freebayes --fasta-reference /Users/k/Jumis/grch/sequencing_process/GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa --region chr14 /Users/k/Jumis/github_kwatme/sequencing_process/simulation/duplicate_removed.bam"
 ##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="Total read depth at the locus">
 ##INFO=<ID=DPB,Number=1,Type=Float,Description="Total read depth per bp at the locus; bases in reads overlapping / bases in haplotype">
@@ -57,4 +57,3 @@
 ##FORMAT=<ID=QA,Number=A,Type=Integer,Description="Sum of quality of the alternate observations">
 ##FORMAT=<ID=MIN,Number=1,Type=Integer,Description="Minimum depth in gVCF output block.">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	unknown
-chr6	32579464	.	T	C	20.3018	.	AB=0;ABP=0;AC=2;AF=1;AN=2;AO=2;CIGAR=1X;DP=2;DPB=2;DPRA=0;EPP=7.35324;EPPR=0;GTI=0;LEN=1;MEANALT=1;MQM=60;MQMR=0;NS=1;NUMALT=1;ODDS=4.66467;PAIRED=1;PAIREDR=0;PAO=0;PQA=0;PQR=0;PRO=0;QA=34;QR=0;RO=0;RPL=1;RPP=3.0103;RPPR=0;RPR=1;RUN=1;SAF=1;SAP=3.0103;SAR=1;SRF=0;SRP=0;SRR=0;TYPE=snp	GT:DP:RO:QR:AO:QA:GL	1/1:2:0:0:2:34:-3.22996,-0.60206,0

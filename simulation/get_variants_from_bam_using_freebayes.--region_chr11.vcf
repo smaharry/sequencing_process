@@ -3,7 +3,7 @@
 ##source=freeBayes v1.0.2-dirty
 ##reference=/Users/k/Jumis/grch/sequencing_process/GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa
 ##phasing=none
-##commandline="freebayes --fasta-reference /Users/k/Jumis/grch/sequencing_process/GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa --region chr1 /Users/k/Jumis/github_kwatme/sequencing_process/simulation/duplicate_removed.bam"
+##commandline="freebayes --fasta-reference /Users/k/Jumis/grch/sequencing_process/GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa --region chr11 /Users/k/Jumis/github_kwatme/sequencing_process/simulation/duplicate_removed.bam"
 ##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="Total read depth at the locus">
 ##INFO=<ID=DPB,Number=1,Type=Float,Description="Total read depth per bp at the locus; bases in reads overlapping / bases in haplotype">

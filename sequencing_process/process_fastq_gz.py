@@ -3,6 +3,7 @@ from os.path import dirname, exists, join
 from sys import platform
 
 from . import RESOURCE_DIRECTORY_PATH, print_and_run_command
+from .support.support.multiprocess import multiprocess
 
 
 def check_fastq_gzs(fastq_gz_file_paths):
@@ -121,13 +122,25 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
             2, )
     ]
 
-    for output_fastq_file_path in output_fastq_file_paths:
-        print_and_run_command('gzip --force {}'.format(output_fastq_file_path))
+    return multiprocess(
+        _gzip_compress,
+        ((outptu_fastq_file_path, )
+         for outptu_fastq_file_path in output_fastq_file_paths),
+        n_job=n_job)
 
-    return [
-        output_fastq_file_path + '.gz'
-        for output_fastq_file_path in output_fastq_file_paths
-    ]
+
+def _gzip_compress(file_path):
+    """
+    Gzip compress file_path.
+    Arguments:
+        file_path (str):
+    Returns:
+        str:
+    """
+
+    print_and_run_command('gzip --force {}'.format(file_path))
+
+    return file_path + '.gz'
 
 
 def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,

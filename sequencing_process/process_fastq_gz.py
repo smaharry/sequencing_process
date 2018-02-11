@@ -28,14 +28,11 @@ def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
     """
     Check .fastq.gz files using fastqc.
     Arguments:
-        fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
-            .fastq.gz file path
+        fastq_gz_file_paths (iterable):
         n_job (int):
         overwrite (bool):
     Returns:
     """
-
-    check_fastq_gzs(fastq_gz_file_paths)
 
     for fastq_gz_file_path in fastq_gz_file_paths:
         html_file_path = fastq_gz_file_path + '_fastqc.html'

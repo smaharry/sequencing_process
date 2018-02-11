@@ -81,38 +81,6 @@ def rename_chromosomes_of_vcf_gz_using_bcftools_annotate(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
 
 
-def extract_regions_from_vcf_gz_using_bcftools_view(vcf_gz_file_path,
-                                                    regions,
-                                                    n_job=1,
-                                                    output_vcf_file_path=None,
-                                                    overwrite=False):
-    """
-    Extract regions from .vcf.gz file using bcftools view.
-    Arguments:
-        vcf_gz_file_path (str):
-        regions (iterable):
-        n_job (int):
-        output_vcf_file_path (str):
-        overwrite (bool):
-    Returns:
-        str:
-    """
-
-    if not output_vcf_file_path:
-        output_vcf_file_path = join(
-            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
-
-    if not overwrite and exists(output_vcf_file_path + '.gz'):
-        raise FileExistsError(output_vcf_file_path + '.gz')
-
-    print_and_run_command(
-        'bcftools view --regions {} --threads {} {} > {}'.format(
-            ','.join(regions), n_job, vcf_gz_file_path, output_vcf_file_path))
-
-    return bgzip_and_tabix(
-        output_vcf_file_path, n_job=n_job, overwrite=overwrite)
-
-
 def annotate_vcf_gz_using_snpeff(
         vcf_gz_file_path,
         genomic_assembly,
@@ -195,17 +163,18 @@ def annotate_vcf_gz_using_bcftools_annotate(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
 
 
-def filter_vcf_gz_using_bcftools_view(
-        vcf_gz_file_path,
-        keep_filters=('PASS', ),
-        include_expression='10<DP & 30<QUAL & 10<(QUAL/AO) & 1<SRF & 1<SRR & 1<SAF & 1<SAR & 1<RPR & 1<RPL',
-        n_job=1,
-        output_vcf_file_path=None,
-        overwrite=False):
+def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
+                                      regions=(),
+                                      keep_filters=(),
+                                      include_expression=None,
+                                      n_job=1,
+                                      output_vcf_file_path=None,
+                                      overwrite=False):
     """
     Filter .vcf.gz file using bcftools annotate.
     Arguments:
         vcf_gz_file_path (str):
+        regions (iterable):
         keep_filters (iterable):
         include_expression (str):
         n_job (int):
@@ -222,6 +191,9 @@ def filter_vcf_gz_using_bcftools_view(
         raise FileExistsError(output_vcf_file_path + '.gz')
 
     additional_arguments = []
+
+    if any(regions):
+        additional_arguments.append('--regions {}'.format(','.join(regions)))
 
     if any(keep_filters):
         additional_arguments.append(

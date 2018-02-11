@@ -197,6 +197,7 @@ def annotate_vcf_gz_using_bcftools_annotate(
 
 def filter_vcf_gz_using_bcftools_view(
         vcf_gz_file_path,
+        keep_filters=('PASS', ),
         include_expression='10<DP & 30<QUAL & 10<(QUAL/AO) & 1<SRF & 1<SRR & 1<SAF & 1<SAR & 1<RPR & 1<RPL',
         n_job=1,
         output_vcf_file_path=None,
@@ -205,6 +206,7 @@ def filter_vcf_gz_using_bcftools_view(
     Filter .vcf.gz file using bcftools annotate.
     Arguments:
         vcf_gz_file_path (str):
+        filters (iterable):
         include_expression (str):
         n_job (int):
         output_vcf_file_path (str):
@@ -220,8 +222,9 @@ def filter_vcf_gz_using_bcftools_view(
         raise FileExistsError(output_vcf_file_path + '.gz')
 
     print_and_run_command(
-        'bcftools view --include \'{}\' --threads {} {} > {}'.format(
-            include_expression, n_job, vcf_gz_file_path, output_vcf_file_path))
+        'bcftools view --apply-filters {} --include \'{}\' --threads {} {} > {}'.
+        format(','.join(keep_filters), include_expression, n_job,
+               vcf_gz_file_path, output_vcf_file_path))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)

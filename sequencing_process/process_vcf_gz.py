@@ -221,10 +221,19 @@ def filter_vcf_gz_using_bcftools_view(
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    print_and_run_command(
-        'bcftools view --apply-filters {} --include \'{}\' --threads {} {} > {}'.
-        format(','.join(keep_filters), include_expression, n_job,
-               vcf_gz_file_path, output_vcf_file_path))
+    additional_arguments = []
+
+    if any(keep_filters):
+        additional_arguments.append(
+            '--apply-filters {}'.format(','.join(keep_filters)))
+
+    if include_expression:
+        additional_arguments.append(
+            '--include \'{}\''.format(include_expression))
+
+    print_and_run_command('bcftools view {} --threads {} {} > {}'.format(
+        ' '.join(additional_arguments), n_job, vcf_gz_file_path,
+        output_vcf_file_path))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)

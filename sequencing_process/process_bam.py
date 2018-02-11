@@ -183,7 +183,7 @@ def get_variants_from_bam_using_freebayes_and_multiprocess(
 
     output_vcf_gz_file_path = concatenate_vcf_gzs_using_bcftools_concat(
         multiprocess(
-            call_variants_on_bam_using_freebayes, ((
+            get_variants_from_bam_using_freebayes, ((
                 bam_file_path,
                 fasta_file_path,
                 region,
@@ -259,8 +259,11 @@ def get_variants_from_bam_using_strelka(bam_file_path,
         str:
     """
 
-    if not overwrite and exists(output_directory_path):
-        raise FileExistsError(output_directory_path)
+    if exists(output_directory_path):
+        if overwrite:
+            print_and_run_command('rm -fr {}'.format(output_directory_path))
+        else:
+            raise FileExistsError(output_directory_path)
 
     bash_file_path = '/tmp/strelka.sh'
     with open(bash_file_path, 'w') as file_:

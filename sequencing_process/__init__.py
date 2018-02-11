@@ -9,5 +9,4 @@ def print_and_run_command(*args, **kwargs):
     """Print and run command."""
 
     print()
-    print('=' * 80)
     return run_command(*args, print_command=True, **kwargs)

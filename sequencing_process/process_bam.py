@@ -161,7 +161,7 @@ def check_fastq_gz_or_bam_using_fastqp(fastq_gz_or_bam_file_path,
         fastq_gz_or_bam_file_path))
 
 
-def call_variants_on_bam_using_freebayes_and_multiprocess(
+def get_variants_from_bam_using_freebayes_and_multiprocess(
         bam_file_path,
         fasta_file_path,
         regions,
@@ -169,7 +169,7 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
         output_vcf_file_path=None,
         overwrite=False):
     """
-    Call variants on .bam file using freebayes via multiprocess.
+    Get variants from .bam file using freebayes via multiprocess.
     Arguments:
         bam_file_path (str):
         fasta_file_path (str): reference .fasta file
@@ -199,14 +199,14 @@ def call_variants_on_bam_using_freebayes_and_multiprocess(
     return output_vcf_gz_file_path
 
 
-def call_variants_on_bam_using_freebayes(bam_file_path,
-                                         fasta_file_path,
-                                         regions=None,
-                                         n_job=1,
-                                         output_vcf_file_path=None,
-                                         overwrite=False):
+def get_variants_from_bam_using_freebayes(bam_file_path,
+                                          fasta_file_path,
+                                          regions=None,
+                                          n_job=1,
+                                          output_vcf_file_path=None,
+                                          overwrite=False):
     """
-    Call variants on .bam file using freebayes.
+    Get variants from .bam file using freebayes.
     Arguments:
         bam_file_path (str):
         fasta_file_path (str): reference .fasta file
@@ -241,3 +241,44 @@ def call_variants_on_bam_using_freebayes(bam_file_path,
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
+
+
+def get_variants_from_bam_using_strelka(bam_file_path,
+                                        fasta_file_path,
+                                        output_directory_path,
+                                        n_job=1,
+                                        overwrite=False):
+    """
+    Get variants from .bam file using strelka.
+        bam_file_path (str):
+        fasta_file_path (str): reference .fasta file
+        output_vcf_gz_file_path (str):
+        n_job (int):
+        overwrite (bool):
+    Returns:
+        str:
+    """
+
+    if not overwrite and exists(output_directory_path):
+        raise FileExistsError(output_directory_path)
+
+    bash_file_path = '/tmp/strelka.sh'
+    with open(bash_file_path, 'w') as file_:
+        file_.write('source activate sequencing_process_python2.7 &&\n')
+
+        file_.write(
+            'configureStrelkaGermlineWorkflow.py --bam {} --referenceFasta {} --runDir {} &&\n'.
+            format(bam_file_path, fasta_file_path, output_directory_path))
+
+        file_.write('{}/runWorkflow.py --mode local --jobs {} &&\n'.format(
+            output_directory_path, n_job))
+
+    print_and_run_command('bash ./{}'.format(bash_file_path))
+
+    stats_file_path = '{}/results/stats/runStats.tsv'.format(
+        output_directory_path)
+    print('{}:'.format(stats_file_path))
+    with open(stats_file_path) as file_:
+        print(file_.read())
+
+    return '{}/results/variants/variants.vcf.gz'.format(output_directory_path)

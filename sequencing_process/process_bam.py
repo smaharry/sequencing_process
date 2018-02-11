@@ -273,7 +273,7 @@ def get_variants_from_bam_using_strelka(bam_file_path,
             'configureStrelkaGermlineWorkflow.py --bam {} --referenceFasta {} --runDir {} &&\n'.
             format(bam_file_path, fasta_file_path, output_directory_path))
 
-        file_.write('{}/runWorkflow.py --mode local --jobs {} &&\n'.format(
+        file_.write('{}/runWorkflow.py --mode local --jobs {}\n'.format(
             output_directory_path, n_job))
 
     print_and_run_command('bash {}'.format(bash_file_path))

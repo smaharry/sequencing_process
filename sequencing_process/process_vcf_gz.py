@@ -43,7 +43,7 @@ def concatenate_vcf_gzs_using_bcftools_concat(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
 
 
-def rename_chromosomes_of_vcf_gz_using_bcftools_annotate(
+def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         vcf_gz_file_path,
         map_file_path=join(RESOURCE_DIRECTORY_PATH, 'chrn_n.tsv'),
         remove_input_vcf_gz_file_path_and_its_index=False,
@@ -51,7 +51,7 @@ def rename_chromosomes_of_vcf_gz_using_bcftools_annotate(
         output_vcf_file_path=None,
         overwrite=False):
     """
-    Rename chromosomes of .vcf.gz file using bcftools annotate.
+    Rename chromosome of .vcf.gz file using bcftools annotate.
     Arguments:
         vcf_gz_file_path (str):
         map_file_path (str):

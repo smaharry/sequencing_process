@@ -102,8 +102,8 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
         print_and_run_command('rm -rf {}'.format(bam_file_path + '.bai'))
 
     print('{}:'.format(metrics_file_path))
-    with open(metrics_file_path) as file_:
-        print(file_.read())
+    with open(metrics_file_path) as metric_file:
+        print(metric_file.read())
 
     return index_bam_using_samtools_index(
         output_bam_file_path, n_job=n_job, overwrite=overwrite)
@@ -132,8 +132,8 @@ def check_bam_using_samtools_flagstat(bam_file_path,
         n_job, bam_file_path, output_file_path))
 
     print('{}:'.format(output_file_path))
-    with open(output_file_path) as file_:
-        print(file_.read())
+    with open(output_file_path) as output_file:
+        print(output_file.read())
 
 
 def check_fastq_gz_or_bam_using_fastqp(fastq_gz_or_bam_file_path,
@@ -266,14 +266,14 @@ def get_variants_from_bam_using_strelka(bam_file_path,
             raise FileExistsError(output_directory_path)
 
     bash_file_path = '/tmp/strelka.sh'
-    with open(bash_file_path, 'w') as file_:
-        file_.write('source activate sequencing_process_python2.7 &&\n')
+    with open(bash_file_path, 'w') as bash_file:
+        bash_file.write('source activate sequencing_process_python2.7 &&\n')
 
-        file_.write(
+        bash_file.write(
             'configureStrelkaGermlineWorkflow.py --bam {} --referenceFasta {} --runDir {} &&\n'.
             format(bam_file_path, fasta_file_path, output_directory_path))
 
-        file_.write('{}/runWorkflow.py --mode local --jobs {}\n'.format(
+        bash_file.write('{}/runWorkflow.py --mode local --jobs {}\n'.format(
             output_directory_path, n_job))
 
     print_and_run_command('bash {}'.format(bash_file_path))
@@ -281,7 +281,7 @@ def get_variants_from_bam_using_strelka(bam_file_path,
     stats_file_path = '{}/results/stats/runStats.tsv'.format(
         output_directory_path)
     print('{}:'.format(stats_file_path))
-    with open(stats_file_path) as file_:
-        print(file_.read())
+    with open(stats_file_path) as stats_file:
+        print(stats_file.read())
 
     return '{}/results/variants/variants.vcf.gz'.format(output_directory_path)

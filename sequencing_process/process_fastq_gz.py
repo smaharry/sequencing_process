@@ -109,8 +109,8 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
     log_file_path = join(output_directory_path, 'trimmed.log')
     print('{}:'.format(log_file_path))
-    with open(log_file_path) as file_:
-        print(file_.read())
+    with open(log_file_path) as log_file:
+        print(log_file.read())
 
     output_fastq_file_paths = [
         join(output_directory_path, 'trimmed-pair{}.fastq'.format(i))

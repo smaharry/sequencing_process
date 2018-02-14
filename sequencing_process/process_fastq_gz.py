@@ -123,7 +123,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
         _gzip_compress,
         ((outptu_fastq_file_path, )
          for outptu_fastq_file_path in output_fastq_file_paths),
-        n_job=min(len(output_fastq_file_paths), n_job))
+        n_job=n_job)
 
 
 def _gzip_compress(file_path):

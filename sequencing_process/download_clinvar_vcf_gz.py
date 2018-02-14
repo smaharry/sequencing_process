@@ -17,9 +17,10 @@ def download_clinvar_vcf_gz(directory_path, version=None, overwrite=False):
     if not overwrite and exists(clinvar_vcf_gz_file_path):
         raise FileExistsError(clinvar_vcf_gz_file_path)
 
-    version_suffix = (
-        '_' + version,
-        '', )[version is None]
+    if version is None:
+        version_suffix = ''
+    else:
+        version_suffix = '_' + version
 
     for url in (
             'ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar{}.vcf.gz'.

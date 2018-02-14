@@ -15,6 +15,7 @@ def make_reference_genome(directory_path, overwrite=False):
         directory_path (str):
         overwrite (bool):
     Returns:
+        str:
     """
 
     final_fa_gz_file_path = join(
@@ -38,3 +39,5 @@ def make_reference_genome(directory_path, overwrite=False):
     print_and_run_command('cp -f {} {}'.format(
         join(RESOURCE_DIRECTORY_PATH, 'bwa.kit', 'resource-GRCh38',
              'hs38DH.fa.alt'), final_fa_gz_file_path + '.alt'))
+
+    return final_fa_gz_file_path

@@ -11,20 +11,24 @@ def download_clinvar_vcf_gz(directory_path, version=None, overwrite=False):
         version (str):
         overwrite (bool):
     Returns:
+        str:
     """
 
-    clinvar_vcf_gz_file_path = join(directory_path, 'clinvar.vcf.gz')
+    if version is None:
+        clinvar_vcf_gz_file_name = 'clinvar.vcf.gz'
+    else:
+        clinvar_vcf_gz_file_name = 'clinvar_{}.vcf.gz'.format(version)
+
+    clinvar_vcf_gz_file_path = join(directory_path, clinvar_vcf_gz_file_name)
+
     if not overwrite and exists(clinvar_vcf_gz_file_path):
         raise FileExistsError(clinvar_vcf_gz_file_path)
 
-    if version is None:
-        version_suffix = ''
-    else:
-        version_suffix = '_' + version
-
     for url in (
-            'ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar{}.vcf.gz'.
-            format(version_suffix),
-            'ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar{}.vcf.gz.tbi'.
-            format(version_suffix), ):
+            'ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/{}'.format(
+                clinvar_vcf_gz_file_name),
+            'ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/{}.tbi'.format(
+                clinvar_vcf_gz_file_name), ):
         download(url, directory_path)
+
+    return clinvar_vcf_gz_file_path

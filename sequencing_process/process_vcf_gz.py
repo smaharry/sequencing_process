@@ -192,10 +192,10 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
 
     additional_arguments = []
 
-    if any(regions):
+    if len(regions):
         additional_arguments.append('--regions {}'.format(','.join(regions)))
 
-    if any(keep_filters):
+    if len(keep_filters):
         additional_arguments.append(
             '--apply-filters {}'.format(','.join(keep_filters)))
 

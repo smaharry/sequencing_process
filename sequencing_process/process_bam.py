@@ -227,7 +227,7 @@ def get_variants_from_bam_using_freebayes(bam_file_path,
     if regions:
         additional_arguments.append('--region {}'.format(regions))
 
-    if any(additional_arguments):
+    if len(additional_arguments):
         output_vcf_file_path = output_vcf_file_path.replace(
             '.vcf',
             '.{}.vcf'.format(' '.join(additional_arguments).replace(' ', '_')))

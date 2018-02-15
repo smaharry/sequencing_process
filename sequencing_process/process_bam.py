@@ -64,7 +64,7 @@ def index_bam_using_samtools_index(bam_file_path, n_job=1, overwrite=False):
 
 def mark_duplicates_in_bam_using_picard_markduplicates(
         bam_file_path,
-        maximum_memory='8G',
+        memory='8G',
         remove_duplicates=False,
         remove_input_bam_file_path_and_its_index=False,
         n_job=1,
@@ -74,7 +74,7 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
     Remove duplicates in .bam file using picard markduplicates.
     Arguments:
         bam_file_path (str):
-        maximum_memory (str):
+        memory (str):
         remove_duplicates (bool):
         remove_input_bam_file_path_and_its_index (bool):
         n_job (int):
@@ -93,7 +93,7 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
     metrics_file_path = output_bam_file_path + '.metrics'
     print_and_run_command(
         'picard -Xmx{} MarkDuplicates REMOVE_DUPLICATES={} INPUT={} OUTPUT={} METRICS_FILE={}'.
-        format(maximum_memory,
+        format(memory,
                str(remove_duplicates).lower(), bam_file_path,
                output_bam_file_path, metrics_file_path))
 

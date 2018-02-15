@@ -84,7 +84,7 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
 def annotate_vcf_gz_using_snpeff(
         vcf_gz_file_path,
         genomic_assembly,
-        maximum_memory='8G',
+        memory='8G',
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_job=1,
         output_vcf_file_path=None,
@@ -94,7 +94,7 @@ def annotate_vcf_gz_using_snpeff(
     Arguments:
         vcf_gz_file_path (str):
         genomic_assembly (str): GRCh38.86 | GRCh37.75 | hg19
-        maximum_memory (str):
+        memory (str):
         remove_input_vcf_gz_file_path_and_its_index (bool):
         n_job (int):
         output_vcf_file_path (str):
@@ -111,7 +111,7 @@ def annotate_vcf_gz_using_snpeff(
 
     print_and_run_command(
         'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -t -verbose -noLog {} {} > {}'.
-        format(maximum_memory, output_vcf_file_path, output_vcf_file_path,
+        format(memory, output_vcf_file_path, output_vcf_file_path,
                genomic_assembly, vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:

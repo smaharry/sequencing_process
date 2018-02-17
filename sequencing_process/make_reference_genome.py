@@ -6,17 +6,21 @@ from .support.support.network import download
 
 def make_reference_genome(directory_path, overwrite=False):
     """
-    Make reference genome.
-    Get NCBI's GRCh38 .fasta.gz file designed for sequencing process (0).
-    Get Heng Li's .fasta file containing decoy and HLA sequences (1).
-    Concatenate 0 and 1 into 2.
-    Copy 1.alt to 2.alt (because bwa needs 2.alt to mark an alignment as alt).
+    Make reference genome based on
+        https://github.com/lh3/bwa/blob/master/bwakit/run-gen-ref.
+        Get NCBI's GRCh38 .fasta.gz file designed for sequencing process (0).
+        Get Heng Li's .fasta file containing decoy and HLA sequences (1).
+        Concatenate 0 and 1 into 2.
+        Copy 1.alt to 2.alt (because bwa needs 2.alt to mark an alignment as
+            alt).
     Arguments:
         directory_path (str):
         overwrite (bool):
     Returns:
         str:
     """
+
+    # TODO: consider getting just ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_plus_hs38d1_analysis_set.fna.gz
 
     final_fa_gz_file_path = join(
         directory_path,

@@ -250,6 +250,7 @@ def get_variants_from_bam_using_strelka(bam_file_path,
                                         overwrite=False):
     """
     Get variants from .bam file using strelka.
+    Arguments:
         bam_file_path (str):
         fasta_file_path (str): reference .fasta file
         output_vcf_gz_file_path (str):

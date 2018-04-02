@@ -7,16 +7,6 @@ def simulate_sequences_using_dwgsim(fasta_file_path,
                                     n_sequence=1000,
                                     fraction_variant=0.001,
                                     fraction_indel_variant=0.1):
-    """
-    Simulate sequences using dwgsim.
-    Arguments:
-        fasta_file_path (str):
-        output_file_path_prefix (str):
-        n_sequence (int):
-        fraction_variant (float):
-        fraction_indel_variant (float):
-    Returns:
-    """
 
     print_and_run_command(
         'dwgsim -N {} -1 150 -2 150 -r {} -R {} {} {}'.format(

@@ -7,17 +7,8 @@ from .support.support.multiprocess import multiprocess
 
 
 def check_fastq_gzs(fastq_gz_file_paths):
-    """
-    Check .fastq.gz files.
-    Arguments:
-        fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
-            .fastq.gz file path
-    Returns:
-    """
 
-    if len(fastq_gz_file_paths) not in (
-            1,
-            2, ):
+    if len(fastq_gz_file_paths) not in (1, 2):
         raise ValueError(
             'fastq_gz_file_paths must contain either 1 (unpaired) or 2 (paired) .fastq.gz file path.'
         )
@@ -25,22 +16,14 @@ def check_fastq_gzs(fastq_gz_file_paths):
 
 def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
                                  overwrite=False):
-    """
-    Check .fastq.gz files using fastqc.
-    Arguments:
-        fastq_gz_file_paths (iterable):
-        n_job (int):
-        overwrite (bool):
-    Returns:
-    """
 
     for fastq_gz_file_path in fastq_gz_file_paths:
         html_file_path = fastq_gz_file_path + '_fastqc.html'
         if not overwrite and exists(html_file_path):
             raise FileExistsError(html_file_path)
 
-    print_and_run_command(
-        'fastqc --threads {} {}'.format(n_job, ' '.join(fastq_gz_file_paths)))
+    print_and_run_command('fastqc --threads {} {}'.format(
+        n_job, ' '.join(fastq_gz_file_paths)))
 
 
 def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
@@ -59,31 +42,13 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
                                 n_job=1,
                                 output_directory_path=None,
                                 overwrite=False):
-    """
-    Trim .fastq.gz files using skewer.
-    Arguments:
-        fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
-            .fastq.gz file path
-        forward_bad_sequences_fasta_file_path (str):
-        reverse_bad_sequences_fasta_file_path (str):
-        snv_error_rate (float):
-        indel_error_rate (float):
-        overlap_length (int):
-        end_quality (float):
-        min_length_after_trimming (int):
-        remove_n (bool):
-        n_job (int):
-        output_directory_path (str):
-        overwrite (bool):
-    Returns:
-        list:
-    """
 
     check_fastq_gzs(fastq_gz_file_paths)
 
     if not output_directory_path:
         output_directory_path = join(
-            dirname(fastq_gz_file_paths[0]), stack()[0][3])
+            dirname(fastq_gz_file_paths[0]),
+            stack()[0][3])
     if not output_directory_path.endswith('/'):
         output_directory_path += '/'
     if not overwrite and exists(output_directory_path):
@@ -102,10 +67,9 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
     print_and_run_command(
         'skewer -x {} -r {} -d {} --end-quality {} --min {} {} --output {} --masked-output --excluded-output --threads {} {}'.
         format(forward_bad_sequences_fasta_file_path, snv_error_rate,
-               indel_error_rate, end_quality, min_length_after_trimming, (
-                   '',
-                   '-n', )[remove_n], output_directory_path, n_job, ' '.join(
-                       additional_arguments + list(fastq_gz_file_paths))))
+               indel_error_rate, end_quality, min_length_after_trimming,
+               ('', '-n')[remove_n], output_directory_path, n_job,
+               ' '.join(additional_arguments + list(fastq_gz_file_paths))))
 
     log_file_path = join(output_directory_path, 'trimmed.log')
     print('{}:'.format(log_file_path))
@@ -114,9 +78,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
     output_fastq_file_paths = [
         join(output_directory_path, 'trimmed-pair{}.fastq'.format(i))
-        for i in (
-            1,
-            2, )
+        for i in (1, 2)
     ]
 
     return multiprocess(
@@ -127,13 +89,6 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
 
 def _gzip_compress(file_path):
-    """
-    Gzip compress file_path.
-    Arguments:
-        file_path (str):
-    Returns:
-        str:
-    """
 
     print_and_run_command('gzip --force {}'.format(file_path))
 
@@ -145,28 +100,11 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
                                   n_job=1,
                                   output_bam_file_path=None,
                                   overwrite=False):
-    """
-    Align .fastq.gz files using bwa mem.
-    Arguments:
-        fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
-            .fastq.gz file path
-        fasta_gz_file_path (str):
-        n_job (int):
-        output_bam_file_path (str):
-        overwrite (bool):
-    Returns:
-        str:
-    """
 
     check_fastq_gzs(fastq_gz_file_paths)
 
     if not all((exists(fasta_gz_file_path + extension)
-                for extension in (
-                    '.bwt',
-                    '.pac',
-                    '.ann',
-                    '.amb',
-                    '.sa', ))):
+                for extension in ('.bwt', '.pac', '.ann', '.amb', '.sa'))):
         print_and_run_command('bwa index {}'.format(fasta_gz_file_path))
     if not exists(fasta_gz_file_path + '.alt'):
         raise FileNotFoundError('ALT-aware BWA-MEM alignment needs {}.'.format(
@@ -174,15 +112,16 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
 
     if not output_bam_file_path:
         output_bam_file_path = join(
-            dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
+            dirname(fastq_gz_file_paths[0]),
+            stack()[0][3] + '.bam')
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
 
     print_and_run_command(
         'bwa mem -t {} -v 3 {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
         format(n_job, fasta_gz_file_path, ' '.join(fastq_gz_file_paths),
-               join(RESOURCE_DIRECTORY_PATH, 'k8-0.2.3', 'k8-{}'.format(
-                   platform)),
+               join(RESOURCE_DIRECTORY_PATH, 'k8-0.2.3',
+                    'k8-{}'.format(platform)),
                join(RESOURCE_DIRECTORY_PATH, 'bwa-postalt.js'),
                fasta_gz_file_path, n_job, output_bam_file_path))
 
@@ -195,37 +134,17 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
                                  n_job=1,
                                  output_bam_file_path=None,
                                  overwrite=False):
-    """
-    Align .fastq.gz files using hisat2.
-    Arguments:
-        fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
-            .fastq.gz file path
-        fasta_file_path (str): reference .fasta.gz file path
-        sequence_type (str): 'DNA' | 'RNA'
-        n_job (int):
-        output_bam_file_path (str):
-        overwrite (bool):
-    Returns:
-        str:
-    """
 
     check_fastq_gzs(fastq_gz_file_paths)
 
     if not all((exists(fasta_file_path + '.{}.ht2'.format(i))
-                for i in (
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8, ))):
+                for i in (1, 2, 3, 4, 5, 6, 7, 8))):
         print_and_run_command('hisat2-build {0} {0}'.format(fasta_file_path))
 
     if not output_bam_file_path:
         output_bam_file_path = join(
-            dirname(fastq_gz_file_paths[0]), stack()[0][3] + '.bam')
+            dirname(fastq_gz_file_paths[0]),
+            stack()[0][3] + '.bam')
     if not overwrite and exists(output_bam_file_path):
         raise FileExistsError(output_bam_file_path)
 
@@ -260,22 +179,6 @@ def count_transcripts_using_kallisto_quant(
         fragment_length_standard_deviation=20,
         n_job=1,
         overwrite=False):
-    """
-    Count transcripts using kallisto quant.
-    Arguments:
-        fastq_gz_file_paths (iterable): (<= 2); 1 (unpaired) | 2 (paired)
-            .fastq.gz file path
-        fasta_gz_file_path (str): cDNA sequences
-        output_directory_path (str):
-        n_bootstrap (int):
-        fragment_length (float): estimated fragment length
-        fragment_length_standard_deviation (float): estimated fragment length
-            standard deviation
-        n_job (int):
-        overwrite (bool):
-    Returns:
-        str:
-    """
 
     check_fastq_gzs(fastq_gz_file_paths)
 

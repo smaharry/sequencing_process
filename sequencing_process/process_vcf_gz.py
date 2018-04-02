@@ -11,21 +11,11 @@ def concatenate_vcf_gzs_using_bcftools_concat(
         n_job=1,
         output_vcf_file_path=None,
         overwrite=False):
-    """
-    Concatenate .vcf.gz files using bcftools concat.
-    Arguments
-        vcf_gz_file_paths (iterable):
-        remove_input_vcf_gz_file_paths_and_their_indices (bool):
-        n_job (int):
-        output_vcf_file_path (str):
-        overwrite (bool):
-    Returns:
-        str:
-    """
 
     if not output_vcf_file_path:
         output_vcf_file_path = join(
-            dirname(vcf_gz_file_paths[0]), stack()[0][3] + '.vcf')
+            dirname(vcf_gz_file_paths[0]),
+            stack()[0][3] + '.vcf')
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -50,22 +40,11 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         n_job=1,
         output_vcf_file_path=None,
         overwrite=False):
-    """
-    Rename chromosome of .vcf.gz file using bcftools annotate.
-    Arguments:
-        vcf_gz_file_path (str):
-        map_file_path (str):
-        remove_input_vcf_gz_file_path_and_its_index (bool):
-        n_job (int):
-        output_vcf_file_path (str):
-        overwrite (bool):
-    Returns:
-        str:
-    """
 
     if not output_vcf_file_path:
         output_vcf_file_path = join(
-            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+            dirname(vcf_gz_file_path),
+            stack()[0][3] + '.vcf')
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -89,23 +68,11 @@ def annotate_vcf_gz_using_snpeff(
         n_job=1,
         output_vcf_file_path=None,
         overwrite=False):
-    """
-    Annotate .vcf.gz file using snpeff.
-    Arguments:
-        vcf_gz_file_path (str):
-        genomic_assembly (str): GRCh38.86 | GRCh37.75 | hg19
-        memory (str):
-        remove_input_vcf_gz_file_path_and_its_index (bool):
-        n_job (int):
-        output_vcf_file_path (str):
-        overwrite (bool):
-    Returns:
-        str:
-    """
 
     if not output_vcf_file_path:
         output_vcf_file_path = join(
-            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+            dirname(vcf_gz_file_path),
+            stack()[0][3] + '.vcf')
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -130,23 +97,11 @@ def annotate_vcf_gz_using_bcftools_annotate(
         n_job=1,
         output_vcf_file_path=None,
         overwrite=False):
-    """
-    Annotate .vcf.gz file using bcftools annotate.
-    Arguments:
-        vcf_gz_file_path (str):
-        annotation_file_path (str):
-        additional_arguments (list):
-        remove_input_vcf_gz_file_path_and_its_index (bool):
-        n_job (int):
-        output_vcf_file_path (str):
-        overwrite (bool):
-    Returns:
-        str:
-    """
 
     if not output_vcf_file_path:
         output_vcf_file_path = join(
-            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+            dirname(vcf_gz_file_path),
+            stack()[0][3] + '.vcf')
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -170,23 +125,11 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
                                       n_job=1,
                                       output_vcf_file_path=None,
                                       overwrite=False):
-    """
-    Filter .vcf.gz file using bcftools annotate.
-    Arguments:
-        vcf_gz_file_path (str):
-        regions (iterable):
-        keep_filters (iterable):
-        include_expression (str):
-        n_job (int):
-        output_vcf_file_path (str):
-        overwrite (bool):
-    Returns:
-        str:
-    """
 
     if not output_vcf_file_path:
         output_vcf_file_path = join(
-            dirname(vcf_gz_file_path), stack()[0][3] + '.vcf')
+            dirname(vcf_gz_file_path),
+            stack()[0][3] + '.vcf')
     if not overwrite and exists(output_vcf_file_path + '.gz'):
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -196,8 +139,8 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
         additional_arguments.append('--regions {}'.format(','.join(regions)))
 
     if len(keep_filters):
-        additional_arguments.append(
-            '--apply-filters {}'.format(','.join(keep_filters)))
+        additional_arguments.append('--apply-filters {}'.format(
+            ','.join(keep_filters)))
 
     if include_expression:
         additional_arguments.append(

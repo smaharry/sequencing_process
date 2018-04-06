@@ -119,8 +119,8 @@ def annotate_vcf_gz_using_bcftools_annotate(
 
 
 def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
-                                      regions=(),
-                                      keep_filters=(),
+                                      regions=None,
+                                      keep_filters=None,
                                       include_expression=None,
                                       n_job=1,
                                       output_vcf_file_path=None,
@@ -135,10 +135,10 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
 
     additional_arguments = []
 
-    if len(regions):
+    if regions is not None:
         additional_arguments.append('--regions {}'.format(','.join(regions)))
 
-    if len(keep_filters):
+    if keep_filters is not None:
         additional_arguments.append('--apply-filters {}'.format(
             ','.join(keep_filters)))
 

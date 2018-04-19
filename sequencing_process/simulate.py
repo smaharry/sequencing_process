@@ -1,5 +1,5 @@
-from . import print_and_run_command
 from .bgzip_and_tabix import bgzip_and_tabix
+from .print_and_run_command import print_and_run_command
 
 
 def simulate_sequences_using_dwgsim(fasta_file_path,

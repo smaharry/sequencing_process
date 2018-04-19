@@ -1,8 +1,9 @@
 from inspect import stack
 from os.path import dirname, exists, join
 
-from . import RESOURCE_DIRECTORY_PATH, print_and_run_command
+from . import RESOURCE_DIRECTORY_PATH
 from .bgzip_and_tabix import bgzip_and_tabix
+from .print_and_run_command import print_and_run_command
 
 
 def concatenate_vcf_gzs_using_bcftools_concat(

@@ -1,4 +1,4 @@
-from . import print_and_run_command
+from .print_and_run_command import print_and_run_command
 
 
 def bgzip_and_tabix(file_path, n_job=1, overwrite=False):

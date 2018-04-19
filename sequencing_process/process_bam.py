@@ -1,8 +1,8 @@
 from inspect import stack
 from os.path import dirname, exists, join
 
-from . import print_and_run_command
 from .bgzip_and_tabix import bgzip_and_tabix
+from .print_and_run_command import print_and_run_command
 from .process_vcf_gz import concatenate_vcf_gzs_using_bcftools_concat
 from .support.support.multiprocess import multiprocess
 

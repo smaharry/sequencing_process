@@ -1,6 +1,7 @@
 from os.path import exists, join, split
 
-from . import RESOURCE_DIRECTORY_PATH, print_and_run_command
+from . import RESOURCE_DIRECTORY_PATH
+from .print_and_run_command import print_and_run_command
 from .support.support.network import download
 
 

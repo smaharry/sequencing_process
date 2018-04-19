@@ -2,7 +2,8 @@ from inspect import stack
 from os.path import dirname, exists, join
 from sys import platform
 
-from . import RESOURCE_DIRECTORY_PATH, print_and_run_command
+from . import RESOURCE_DIRECTORY_PATH
+from .print_and_run_command import print_and_run_command
 from .support.support.multiprocess import multiprocess
 
 

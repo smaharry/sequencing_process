@@ -14,10 +14,13 @@ def concatenate_vcf_gzs_using_bcftools_concat(
         overwrite=False):
 
     if not output_vcf_file_path:
+
         output_vcf_file_path = join(
             dirname(vcf_gz_file_paths[0]),
             stack()[0][3] + '.vcf')
+
     if not overwrite and exists(output_vcf_file_path + '.gz'):
+
         raise FileExistsError(output_vcf_file_path + '.gz')
 
     print_and_run_command(
@@ -25,8 +28,11 @@ def concatenate_vcf_gzs_using_bcftools_concat(
             n_job, ' '.join(vcf_gz_file_paths), output_vcf_file_path))
 
     if remove_input_vcf_gz_file_paths_and_their_indices:
+
         for vcf_gz_file_path in vcf_gz_file_paths:
+
             print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+
             print_and_run_command(
                 'rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
@@ -43,10 +49,13 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         overwrite=False):
 
     if not output_vcf_file_path:
+
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
             stack()[0][3] + '.vcf')
+
     if not overwrite and exists(output_vcf_file_path + '.gz'):
+
         raise FileExistsError(output_vcf_file_path + '.gz')
 
     print_and_run_command(
@@ -54,7 +63,9 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
             map_file_path, n_job, vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
+
         print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+
         print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
@@ -71,10 +82,13 @@ def annotate_vcf_gz_using_snpeff(
         overwrite=False):
 
     if not output_vcf_file_path:
+
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
             stack()[0][3] + '.vcf')
+
     if not overwrite and exists(output_vcf_file_path + '.gz'):
+
         raise FileExistsError(output_vcf_file_path + '.gz')
 
     print_and_run_command(
@@ -83,7 +97,9 @@ def annotate_vcf_gz_using_snpeff(
                genomic_assembly, vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
+
         print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+
         print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
@@ -100,10 +116,13 @@ def annotate_vcf_gz_using_bcftools_annotate(
         overwrite=False):
 
     if not output_vcf_file_path:
+
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
             stack()[0][3] + '.vcf')
+
     if not overwrite and exists(output_vcf_file_path + '.gz'):
+
         raise FileExistsError(output_vcf_file_path + '.gz')
 
     print_and_run_command(
@@ -112,7 +131,9 @@ def annotate_vcf_gz_using_bcftools_annotate(
             vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
+
         print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+
         print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
@@ -128,22 +149,28 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
                                       overwrite=False):
 
     if not output_vcf_file_path:
+
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
             stack()[0][3] + '.vcf')
+
     if not overwrite and exists(output_vcf_file_path + '.gz'):
+
         raise FileExistsError(output_vcf_file_path + '.gz')
 
     additional_arguments = []
 
     if regions is not None:
+
         additional_arguments.append('--regions {}'.format(','.join(regions)))
 
     if keep_filters is not None:
+
         additional_arguments.append('--apply-filters {}'.format(
             ','.join(keep_filters)))
 
     if include_expression:
+
         additional_arguments.append(
             '--include \'{}\''.format(include_expression))
 

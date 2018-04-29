@@ -10,6 +10,7 @@ from .support.support.multiprocess import multiprocess
 def check_fastq_gzs(fastq_gz_file_paths):
 
     if len(fastq_gz_file_paths) not in (1, 2):
+
         raise ValueError(
             'fastq_gz_file_paths must contain either 1 (unpaired) or 2 (paired) .fastq.gz file path.'
         )
@@ -19,8 +20,11 @@ def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
                                  overwrite=False):
 
     for fastq_gz_file_path in fastq_gz_file_paths:
+
         html_file_path = fastq_gz_file_path + '_fastqc.html'
+
         if not overwrite and exists(html_file_path):
+
             raise FileExistsError(html_file_path)
 
     print_and_run_command('fastqc --threads {} {}'.format(
@@ -47,21 +51,31 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
     check_fastq_gzs(fastq_gz_file_paths)
 
     if not output_directory_path:
+
         output_directory_path = join(
             dirname(fastq_gz_file_paths[0]),
             stack()[0][3])
+
     if not output_directory_path.endswith('/'):
+
         output_directory_path += '/'
+
     if not overwrite and exists(output_directory_path):
+
         raise FileExistsError(output_directory_path)
 
     additional_arguments = []
 
     if len(fastq_gz_file_paths) == 1:
+
         additional_arguments.append('-m tail')
+
         additional_arguments.append('-k {}'.format(overlap_length))
+
     else:
+
         additional_arguments.append('-m pe')
+
         additional_arguments.append(
             '-y {}'.format(reverse_bad_sequences_fasta_file_path))
 
@@ -73,8 +87,11 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
                ' '.join(additional_arguments + list(fastq_gz_file_paths))))
 
     log_file_path = join(output_directory_path, 'trimmed.log')
+
     print('{}:'.format(log_file_path))
+
     with open(log_file_path) as log_file:
+
         print(log_file.read())
 
     output_fastq_file_paths = [
@@ -106,16 +123,22 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
 
     if not all((exists(fasta_gz_file_path + extension)
                 for extension in ('.bwt', '.pac', '.ann', '.amb', '.sa'))):
+
         print_and_run_command('bwa index {}'.format(fasta_gz_file_path))
+
     if not exists(fasta_gz_file_path + '.alt'):
+
         raise FileNotFoundError('ALT-aware BWA-MEM alignment needs {}.'.format(
             fasta_gz_file_path + '.alt'))
 
     if not output_bam_file_path:
+
         output_bam_file_path = join(
             dirname(fastq_gz_file_paths[0]),
             stack()[0][3] + '.bam')
+
     if not overwrite and exists(output_bam_file_path):
+
         raise FileExistsError(output_bam_file_path)
 
     print_and_run_command(
@@ -140,27 +163,39 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
 
     if not all((exists(fasta_file_path + '.{}.ht2'.format(i))
                 for i in (1, 2, 3, 4, 5, 6, 7, 8))):
+
         print_and_run_command('hisat2-build {0} {0}'.format(fasta_file_path))
 
     if not output_bam_file_path:
+
         output_bam_file_path = join(
             dirname(fastq_gz_file_paths[0]),
             stack()[0][3] + '.bam')
+
     if not overwrite and exists(output_bam_file_path):
+
         raise FileExistsError(output_bam_file_path)
 
     additional_arguments = []
 
     if len(fastq_gz_file_paths) == 1:
+
         additional_arguments.append('-U {}'.format(fastq_gz_file_paths[0]))
+
     else:
+
         additional_arguments.append('-1 {} -2 {}'.format(*fastq_gz_file_paths))
 
     if sequence_type == 'DNA':
+
         additional_arguments.append('--no-spliced-alignment')
+
     elif sequence_type == 'RNA':
+
         additional_arguments.append('--dta --dta-cufflinks')
+
     else:
+
         raise ValueError('Unknown sequence_type: {}.'.format(sequence_type))
 
     print_and_run_command(
@@ -185,18 +220,24 @@ def count_transcripts_using_kallisto_quant(
 
     fasta_gz_kallisto_index_file_path = '{}.kallisto.index'.format(
         fasta_gz_file_path)
+
     if not exists(fasta_gz_kallisto_index_file_path):
+
         print_and_run_command('kallisto index --index {} {}'.format(
             fasta_gz_kallisto_index_file_path, fasta_gz_file_path))
 
     if not overwrite and exists(output_directory_path):
+
         raise FileExistsError(output_directory_path)
 
     if len(fastq_gz_file_paths) == 1:
+
         sample_argument = '--single --fragment-length {} --sd {} {}'.format(
             fragment_length, fragment_length_standard_deviation,
             fastq_gz_file_paths[0])
+
     else:
+
         sample_argument = '{} {}'.format(*fastq_gz_file_paths)
 
     print_and_run_command(

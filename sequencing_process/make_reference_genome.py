@@ -38,6 +38,10 @@ def make_reference_genome(directory_path, overwrite=False):
 
     print_and_run_command('cp -f {} {}'.format(
         join(RESOURCE_DIRECTORY_PATH, 'bwa.kit', 'resource-GRCh38',
+             'hs38DH.fa.alt'), final_fa_file_path + '.alt'))
+
+    print_and_run_command('cp -f {} {}'.format(
+        join(RESOURCE_DIRECTORY_PATH, 'bwa.kit', 'resource-GRCh38',
              'hs38DH.fa.alt'), final_fa_gz_file_path + '.alt'))
 
     return final_fa_gz_file_path

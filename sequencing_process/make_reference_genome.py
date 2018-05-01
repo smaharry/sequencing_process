@@ -9,9 +9,11 @@ from .support.support.network import download
 
 def make_reference_genome(directory_path, overwrite=False):
 
-    final_fa_gz_file_path = join(
+    final_fa_file_path = join(
         directory_path,
-        'GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa.gz')
+        'GCA_000001405.15_GRCh38_full_plus_hs38DH-extra_analysis_set.fa')
+
+    final_fa_gz_file_path = final_fa_file_path + '.gz'
 
     if not overwrite and exists(final_fa_gz_file_path):
 
@@ -24,11 +26,15 @@ def make_reference_genome(directory_path, overwrite=False):
         'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/{}'.
         format(split(fa_gz_file_path)[-1]), directory_path)
 
-    print_and_run_command(
-        'gzip -dc {0} > {2} && cat {1} >> {2} && gzip {2}'.format(
-            fa_gz_file_path,
-            join(RESOURCE_DIRECTORY_PATH, 'bwa.kit', 'resource-GRCh38',
-                 'hs38DH-extra.fa'), final_fa_gz_file_path[:-3]))
+    print_and_run_command('gzip --decompress --to-stdout {} > {}'.format(
+        fa_gz_file_path, final_fa_file_path))
+
+    print_and_run_command('cat {} >> {}'.format(
+        join(RESOURCE_DIRECTORY_PATH, 'bwa.kit', 'resource-GRCh38',
+             'hs38DH-extra.fa'), final_fa_file_path))
+
+    print_and_run_command('gzip {} --to-stdout > {}'.format(
+        final_fa_file_path, final_fa_gz_file_path))
 
     print_and_run_command('cp -f {} {}'.format(
         join(RESOURCE_DIRECTORY_PATH, 'bwa.kit', 'resource-GRCh38',

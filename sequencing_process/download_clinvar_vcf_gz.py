@@ -1,4 +1,4 @@
-from os.path import exists, join
+from os.path import isfile, join
 
 from .support.support.network import download
 
@@ -15,7 +15,7 @@ def download_clinvar_vcf_gz(directory_path, version=None, overwrite=False):
 
     clinvar_vcf_gz_file_path = join(directory_path, clinvar_vcf_gz_file_name)
 
-    if not overwrite and exists(clinvar_vcf_gz_file_path):
+    if not overwrite and isfile(clinvar_vcf_gz_file_path):
 
         raise FileExistsError(clinvar_vcf_gz_file_path)
 

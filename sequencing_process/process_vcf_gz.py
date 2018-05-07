@@ -1,5 +1,5 @@
 from inspect import stack
-from os.path import dirname, exists, join
+from os.path import dirname, isfile, join
 
 from . import RESOURCE_DIRECTORY_PATH
 from .bgzip_and_tabix import bgzip_and_tabix
@@ -19,7 +19,7 @@ def concatenate_vcf_gzs_using_bcftools_concat(
             dirname(vcf_gz_file_paths[0]),
             stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path + '.gz'):
+    if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -54,7 +54,7 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
             dirname(vcf_gz_file_path),
             stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path + '.gz'):
+    if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -87,7 +87,7 @@ def annotate_vcf_gz_using_snpeff(
             dirname(vcf_gz_file_path),
             stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path + '.gz'):
+    if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -121,7 +121,7 @@ def annotate_vcf_gz_using_bcftools_annotate(
             dirname(vcf_gz_file_path),
             stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path + '.gz'):
+    if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
@@ -154,7 +154,7 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
             dirname(vcf_gz_file_path),
             stack()[0][3] + '.vcf')
 
-    if not overwrite and exists(output_vcf_file_path + '.gz'):
+    if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 

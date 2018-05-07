@@ -1,5 +1,5 @@
 from inspect import stack
-from os.path import dirname, exists, join
+from os.path import dirname, isfile, join
 from sys import platform
 
 from . import RESOURCE_DIRECTORY_PATH
@@ -23,7 +23,7 @@ def check_fastq_gzs_using_fastqc(fastq_gz_file_paths, n_job=1,
 
         html_file_path = fastq_gz_file_path + '_fastqc.html'
 
-        if not overwrite and exists(html_file_path):
+        if not overwrite and isfile(html_file_path):
 
             raise FileExistsError(html_file_path)
 
@@ -60,7 +60,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
         output_directory_path += '/'
 
-    if not overwrite and exists(output_directory_path):
+    if not overwrite and isfile(output_directory_path):
 
         raise FileExistsError(output_directory_path)
 
@@ -121,12 +121,12 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    if not all((exists(fasta_gz_file_path + extension)
+    if not all((isfile(fasta_gz_file_path + extension)
                 for extension in ('.bwt', '.pac', '.ann', '.amb', '.sa'))):
 
         print_and_run_command('bwa index {}'.format(fasta_gz_file_path))
 
-    if not exists(fasta_gz_file_path + '.alt'):
+    if not isfile(fasta_gz_file_path + '.alt'):
 
         raise FileNotFoundError('ALT-aware BWA-MEM alignment needs {}.'.format(
             fasta_gz_file_path + '.alt'))
@@ -137,7 +137,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
             dirname(fastq_gz_file_paths[0]),
             stack()[0][3] + '.bam')
 
-    if not overwrite and exists(output_bam_file_path):
+    if not overwrite and isfile(output_bam_file_path):
 
         raise FileExistsError(output_bam_file_path)
 
@@ -161,7 +161,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    if not all((exists(fasta_file_path + '.{}.ht2'.format(i))
+    if not all((isfile(fasta_file_path + '.{}.ht2'.format(i))
                 for i in (1, 2, 3, 4, 5, 6, 7, 8))):
 
         print_and_run_command('hisat2-build {0} {0}'.format(fasta_file_path))
@@ -172,7 +172,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
             dirname(fastq_gz_file_paths[0]),
             stack()[0][3] + '.bam')
 
-    if not overwrite and exists(output_bam_file_path):
+    if not overwrite and isfile(output_bam_file_path):
 
         raise FileExistsError(output_bam_file_path)
 
@@ -221,12 +221,12 @@ def count_transcripts_using_kallisto_quant(
     fasta_gz_kallisto_index_file_path = '{}.kallisto.index'.format(
         fasta_gz_file_path)
 
-    if not exists(fasta_gz_kallisto_index_file_path):
+    if not isfile(fasta_gz_kallisto_index_file_path):
 
         print_and_run_command('kallisto index --index {} {}'.format(
             fasta_gz_kallisto_index_file_path, fasta_gz_file_path))
 
-    if not overwrite and exists(output_directory_path):
+    if not overwrite and isfile(output_directory_path):
 
         raise FileExistsError(output_directory_path)
 

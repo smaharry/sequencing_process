@@ -1,5 +1,5 @@
 from inspect import stack
-from os.path import dirname, exists, join
+from os.path import dirname, isdir, isfile, join
 
 from .bgzip_and_tabix import bgzip_and_tabix
 from .print_and_run_command import print_and_run_command
@@ -20,7 +20,7 @@ def sort_and_index_bam_using_samtools_sort_and_index(
             dirname(bam_file_path),
             stack()[0][3] + '.bam')
 
-    if not overwrite and exists(output_bam_file_path):
+    if not overwrite and isfile(output_bam_file_path):
 
         raise FileExistsError(output_bam_file_path)
 
@@ -39,7 +39,7 @@ def index_bam_using_samtools_index(bam_file_path, n_job=1, overwrite=False):
 
     output_bai_file_path = bam_file_path + '.bai'
 
-    if not overwrite and exists(output_bai_file_path):
+    if not overwrite and isfile(output_bai_file_path):
 
         raise FileExistsError(output_bai_file_path)
 
@@ -64,7 +64,7 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
             dirname(bam_file_path),
             stack()[0][3] + '.bam')
 
-    if not overwrite and exists(output_bam_file_path):
+    if not overwrite and isfile(output_bam_file_path):
 
         raise FileExistsError(output_bam_file_path)
 
@@ -101,7 +101,7 @@ def check_bam_using_samtools_flagstat(bam_file_path,
 
         output_file_path = bam_file_path + '.flagstat'
 
-    if not overwrite and exists(output_file_path):
+    if not overwrite and isfile(output_file_path):
 
         raise FileExistsError(output_file_path)
 
@@ -125,11 +125,11 @@ def check_fastq_gz_or_bam_using_fastqp(fastq_gz_or_bam_file_path,
 
     if not overwrite:
 
-        if exists(plot_zip_prefix_path + '.zip'):
+        if isfile(plot_zip_prefix_path + '.zip'):
 
             raise FileExistsError(plot_zip_prefix_path + '.zip')
 
-        if exists(plot_tsv_file_path):
+        if isfile(plot_tsv_file_path):
 
             raise FileExistsError(plot_tsv_file_path)
 
@@ -185,7 +185,7 @@ def get_variants_from_bam_using_freebayes(bam_file_path,
             '.vcf', '.{}.vcf'.format(' '.join(additional_arguments).replace(
                 ' ', '_')))
 
-    if not overwrite and exists(output_vcf_file_path):
+    if not overwrite and isfile(output_vcf_file_path):
 
         raise FileExistsError(output_vcf_file_path)
 
@@ -203,7 +203,7 @@ def get_variants_from_bam_using_strelka(bam_file_path,
                                         n_job=1,
                                         overwrite=False):
 
-    if exists(output_directory_path):
+    if isdir(output_directory_path):
 
         if overwrite:
 

@@ -1,4 +1,4 @@
-from os.path import exists, join, split
+from os.path import isfile, join, split
 
 from . import RESOURCE_DIRECTORY_PATH
 from .print_and_run_command import print_and_run_command
@@ -15,7 +15,7 @@ def make_reference_genome(directory_path, overwrite=False):
 
     final_fa_gz_file_path = final_fa_file_path + '.gz'
 
-    if not overwrite and exists(final_fa_gz_file_path):
+    if not overwrite and isfile(final_fa_gz_file_path):
 
         raise FileExistsError(final_fa_gz_file_path)
 

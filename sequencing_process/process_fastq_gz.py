@@ -121,8 +121,9 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    if not all((isfile(fasta_gz_file_path + extension)
-                for extension in ('.bwt', '.pac', '.ann', '.amb', '.sa'))):
+    if not all(
+            isfile(fasta_gz_file_path + extension)
+            for extension in ('.bwt', '.pac', '.ann', '.amb', '.sa')):
 
         print_and_run_command('bwa index {}'.format(fasta_gz_file_path))
 
@@ -161,8 +162,9 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    if not all((isfile(fasta_file_path + '.{}.ht2'.format(i))
-                for i in (1, 2, 3, 4, 5, 6, 7, 8))):
+    if not all(
+            isfile(fasta_file_path + '.{}.ht2'.format(i))
+            for i in (1, 2, 3, 4, 5, 6, 7, 8)):
 
         print_and_run_command('hisat2-build {0} {0}'.format(fasta_file_path))
 
@@ -186,17 +188,17 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
 
         additional_arguments.append('-1 {} -2 {}'.format(*fastq_gz_file_paths))
 
-    if sequence_type == 'DNA':
+    if sequence_type not in ('DNA', 'RNA'):
+
+        raise ValueError('Unknown sequence_type: {}.'.format(sequence_type))
+
+    elif sequence_type == 'DNA':
 
         additional_arguments.append('--no-spliced-alignment')
 
     elif sequence_type == 'RNA':
 
         additional_arguments.append('--dta --dta-cufflinks')
-
-    else:
-
-        raise ValueError('Unknown sequence_type: {}.'.format(sequence_type))
 
     print_and_run_command(
         'hisat2 -x {} --summary-file {} --threads {} {} | samtools view -Sb --threads {} > {}'.
@@ -236,7 +238,7 @@ def count_transcripts_using_kallisto_quant(
             fragment_length, fragment_length_standard_deviation,
             fastq_gz_file_paths[0])
 
-    else:
+    elif len(fastq_gz_file_paths) == 2:
 
         sample_argument = '{} {}'.format(*fastq_gz_file_paths)
 

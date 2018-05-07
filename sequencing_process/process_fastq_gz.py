@@ -1,5 +1,5 @@
 from inspect import stack
-from os.path import dirname, isfile, join
+from os.path import dirname, isdir, isfile, join
 from sys import platform
 
 from . import RESOURCE_DIRECTORY_PATH
@@ -60,7 +60,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
         output_directory_path += '/'
 
-    if not overwrite and isfile(output_directory_path):
+    if not overwrite and isdir(output_directory_path):
 
         raise FileExistsError(output_directory_path)
 
@@ -226,7 +226,7 @@ def count_transcripts_using_kallisto_quant(
         print_and_run_command('kallisto index --index {} {}'.format(
             fasta_gz_kallisto_index_file_path, fasta_gz_file_path))
 
-    if not overwrite and isfile(output_directory_path):
+    if not overwrite and isdir(output_directory_path):
 
         raise FileExistsError(output_directory_path)
 

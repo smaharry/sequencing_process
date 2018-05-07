@@ -72,7 +72,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
         additional_arguments.append('-k {}'.format(overlap_length))
 
-    else:
+    elif len(fastq_gz_file_paths) == 2:
 
         additional_arguments.append('-m pe')
 
@@ -184,7 +184,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
 
         additional_arguments.append('-U {}'.format(fastq_gz_file_paths[0]))
 
-    else:
+    elif len(fastq_gz_file_paths) == 2:
 
         additional_arguments.append('-1 {} -2 {}'.format(*fastq_gz_file_paths))
 

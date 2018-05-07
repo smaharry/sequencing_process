@@ -169,7 +169,7 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
         additional_arguments.append('--apply-filters {}'.format(
             ','.join(keep_filters)))
 
-    if include_expression:
+    if include_expression is not None:
 
         additional_arguments.append(
             '--include \'{}\''.format(include_expression))

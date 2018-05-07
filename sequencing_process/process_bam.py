@@ -175,7 +175,7 @@ def get_variants_from_bam_using_freebayes(bam_file_path,
 
     additional_arguments = []
 
-    if regions:
+    if regions is not None:
 
         additional_arguments.append('--region {}'.format(regions))
 

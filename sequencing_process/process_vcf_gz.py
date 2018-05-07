@@ -13,7 +13,7 @@ def concatenate_vcf_gzs_using_bcftools_concat(
         output_vcf_file_path=None,
         overwrite=False):
 
-    if not output_vcf_file_path:
+    if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_paths[0]),
@@ -48,7 +48,7 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         output_vcf_file_path=None,
         overwrite=False):
 
-    if not output_vcf_file_path:
+    if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
@@ -81,7 +81,7 @@ def annotate_vcf_gz_using_snpeff(
         output_vcf_file_path=None,
         overwrite=False):
 
-    if not output_vcf_file_path:
+    if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
@@ -115,7 +115,7 @@ def annotate_vcf_gz_using_bcftools_annotate(
         output_vcf_file_path=None,
         overwrite=False):
 
-    if not output_vcf_file_path:
+    if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
@@ -148,7 +148,7 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
                                       output_vcf_file_path=None,
                                       overwrite=False):
 
-    if not output_vcf_file_path:
+    if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),

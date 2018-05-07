@@ -50,7 +50,7 @@ def trim_fastq_gzs_using_skewer(fastq_gz_file_paths,
 
     check_fastq_gzs(fastq_gz_file_paths)
 
-    if not output_directory_path:
+    if output_directory_path is None:
 
         output_directory_path = join(
             dirname(fastq_gz_file_paths[0]),
@@ -131,7 +131,7 @@ def align_fastq_gzs_using_bwa_mem(fastq_gz_file_paths,
         raise FileNotFoundError('ALT-aware BWA-MEM alignment needs {}.'.format(
             fasta_gz_file_path + '.alt'))
 
-    if not output_bam_file_path:
+    if output_bam_file_path is None:
 
         output_bam_file_path = join(
             dirname(fastq_gz_file_paths[0]),
@@ -166,7 +166,7 @@ def align_fastq_gzs_using_hisat2(fastq_gz_file_paths,
 
         print_and_run_command('hisat2-build {0} {0}'.format(fasta_file_path))
 
-    if not output_bam_file_path:
+    if output_bam_file_path is None:
 
         output_bam_file_path = join(
             dirname(fastq_gz_file_paths[0]),

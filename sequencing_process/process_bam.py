@@ -14,7 +14,7 @@ def sort_and_index_bam_using_samtools_sort_and_index(
         output_bam_file_path=None,
         overwrite=False):
 
-    if not output_bam_file_path:
+    if output_bam_file_path is None:
 
         output_bam_file_path = join(
             dirname(bam_file_path),
@@ -58,7 +58,7 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
         output_bam_file_path=None,
         overwrite=False):
 
-    if not output_bam_file_path:
+    if output_bam_file_path is None:
 
         output_bam_file_path = join(
             dirname(bam_file_path),
@@ -97,7 +97,7 @@ def check_bam_using_samtools_flagstat(bam_file_path,
                                       output_file_path=None,
                                       overwrite=False):
 
-    if not output_file_path:
+    if output_file_path is None:
 
         output_file_path = bam_file_path + '.flagstat'
 
@@ -167,7 +167,7 @@ def get_variants_from_bam_using_freebayes(bam_file_path,
                                           output_vcf_file_path=None,
                                           overwrite=False):
 
-    if not output_vcf_file_path:
+    if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(bam_file_path),

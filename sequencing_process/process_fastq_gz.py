@@ -228,11 +228,11 @@ def count_transcripts_using_kallisto_quant(
         print_and_run_command('kallisto index --index {} {}'.format(
             fasta_gz_kallisto_index_file_path, fasta_gz_file_path))
 
-     abundance_file_path = join(output_directory_path, 'abundance.tsv')
-    
-     if not overwrite and isfile(abundance_file_path):
- 
-         raise FileExistsError(abundance_file_path)
+    abundance_file_path = join(output_directory_path, 'abundance.tsv')
+
+    if not overwrite and isfile(abundance_file_path):
+
+        raise FileExistsError(abundance_file_path)
 
     if len(fastq_gz_file_paths) == 1:
 

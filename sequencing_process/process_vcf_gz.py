@@ -2,8 +2,8 @@ from inspect import stack
 from os.path import dirname, isfile, join
 
 from . import RESOURCE_DIRECTORY_PATH
+from ._print_and_run_command import _print_and_run_command
 from .bgzip_and_tabix import bgzip_and_tabix
-from .print_and_run_command import print_and_run_command
 
 
 def concatenate_vcf_gzs_using_bcftools_concat(
@@ -23,7 +23,7 @@ def concatenate_vcf_gzs_using_bcftools_concat(
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    print_and_run_command(
+    _print_and_run_command(
         'bcftools concat --allow-overlaps --threads {} {} > {}'.format(
             n_job, ' '.join(vcf_gz_file_paths), output_vcf_file_path))
 
@@ -31,9 +31,9 @@ def concatenate_vcf_gzs_using_bcftools_concat(
 
         for vcf_gz_file_path in vcf_gz_file_paths:
 
-            print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+            _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
 
-            print_and_run_command(
+            _print_and_run_command(
                 'rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
@@ -58,15 +58,15 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    print_and_run_command(
+    _print_and_run_command(
         'bcftools annotate --rename-chrs {} --threads {} {} > {}'.format(
             map_file_path, n_job, vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
 
-        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+        _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
 
-        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
+        _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
@@ -91,16 +91,16 @@ def annotate_vcf_gz_using_snpeff(
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    print_and_run_command(
+    _print_and_run_command(
         'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -t -verbose -noLog {} {} > {}'.
         format(memory, output_vcf_file_path, output_vcf_file_path,
                genomic_assembly, vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
 
-        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+        _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
 
-        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
+        _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
@@ -125,16 +125,16 @@ def annotate_vcf_gz_using_bcftools_annotate(
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
-    print_and_run_command(
+    _print_and_run_command(
         'bcftools annotate --annotations {} --threads {} {} {} > {}'.format(
             annotation_file_path, n_job, ' '.join(additional_arguments),
             vcf_gz_file_path, output_vcf_file_path))
 
     if remove_input_vcf_gz_file_path_and_its_index:
 
-        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
+        _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
 
-        print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
+        _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
         output_vcf_file_path, n_job=n_job, overwrite=overwrite)
@@ -174,7 +174,7 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
         additional_arguments.append(
             '--include \'{}\''.format(include_expression))
 
-    print_and_run_command('bcftools view {} --threads {} {} > {}'.format(
+    _print_and_run_command('bcftools view {} --threads {} {} > {}'.format(
         ' '.join(additional_arguments), n_job, vcf_gz_file_path,
         output_vcf_file_path))
 

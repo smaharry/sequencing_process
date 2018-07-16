@@ -11,13 +11,15 @@ def concatenate_vcf_gzs_using_bcftools_concat(
         remove_input_vcf_gz_file_paths_and_their_indices=False,
         n_job=1,
         output_vcf_file_path=None,
-        overwrite=False):
+        overwrite=False,
+):
 
     if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_paths[0]),
-            stack()[0][3] + '.vcf')
+            stack()[0][3] + '.vcf',
+        )
 
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
@@ -25,7 +27,10 @@ def concatenate_vcf_gzs_using_bcftools_concat(
 
     _print_and_run_command(
         'bcftools concat --allow-overlaps --threads {} {} > {}'.format(
-            n_job, ' '.join(vcf_gz_file_paths), output_vcf_file_path))
+            n_job,
+            ' '.join(vcf_gz_file_paths),
+            output_vcf_file_path,
+        ))
 
     if remove_input_vcf_gz_file_paths_and_their_indices:
 
@@ -37,22 +42,30 @@ def concatenate_vcf_gzs_using_bcftools_concat(
                 'rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
-        output_vcf_file_path, n_job=n_job, overwrite=overwrite)
+        output_vcf_file_path,
+        n_job=n_job,
+        overwrite=overwrite,
+    )
 
 
 def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         vcf_gz_file_path,
-        map_file_path=join(RESOURCE_DIRECTORY_PATH, 'chrn_n.tsv'),
+        map_file_path=join(
+            RESOURCE_DIRECTORY_PATH,
+            'chrn_n.tsv',
+        ),
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_job=1,
         output_vcf_file_path=None,
-        overwrite=False):
+        overwrite=False,
+):
 
     if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
-            stack()[0][3] + '.vcf')
+            stack()[0][3] + '.vcf',
+        )
 
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
@@ -60,7 +73,11 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
 
     _print_and_run_command(
         'bcftools annotate --rename-chrs {} --threads {} {} > {}'.format(
-            map_file_path, n_job, vcf_gz_file_path, output_vcf_file_path))
+            map_file_path,
+            n_job,
+            vcf_gz_file_path,
+            output_vcf_file_path,
+        ))
 
     if remove_input_vcf_gz_file_path_and_its_index:
 
@@ -69,7 +86,10 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
-        output_vcf_file_path, n_job=n_job, overwrite=overwrite)
+        output_vcf_file_path,
+        n_job=n_job,
+        overwrite=overwrite,
+    )
 
 
 def annotate_vcf_gz_using_snpeff(
@@ -79,13 +99,15 @@ def annotate_vcf_gz_using_snpeff(
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_job=1,
         output_vcf_file_path=None,
-        overwrite=False):
+        overwrite=False,
+):
 
     if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
-            stack()[0][3] + '.vcf')
+            stack()[0][3] + '.vcf',
+        )
 
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
@@ -93,8 +115,14 @@ def annotate_vcf_gz_using_snpeff(
 
     _print_and_run_command(
         'snpEff -Xmx{} -htmlStats {}.stats.html -csvStats {}.stats.csv -t -verbose -noLog {} {} > {}'.
-        format(memory, output_vcf_file_path, output_vcf_file_path,
-               genomic_assembly, vcf_gz_file_path, output_vcf_file_path))
+        format(
+            memory,
+            output_vcf_file_path,
+            output_vcf_file_path,
+            genomic_assembly,
+            vcf_gz_file_path,
+            output_vcf_file_path,
+        ))
 
     if remove_input_vcf_gz_file_path_and_its_index:
 
@@ -103,7 +131,10 @@ def annotate_vcf_gz_using_snpeff(
         _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
-        output_vcf_file_path, n_job=n_job, overwrite=overwrite)
+        output_vcf_file_path,
+        n_job=n_job,
+        overwrite=overwrite,
+    )
 
 
 def annotate_vcf_gz_using_bcftools_annotate(
@@ -113,13 +144,15 @@ def annotate_vcf_gz_using_bcftools_annotate(
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_job=1,
         output_vcf_file_path=None,
-        overwrite=False):
+        overwrite=False,
+):
 
     if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
-            stack()[0][3] + '.vcf')
+            stack()[0][3] + '.vcf',
+        )
 
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
@@ -127,8 +160,12 @@ def annotate_vcf_gz_using_bcftools_annotate(
 
     _print_and_run_command(
         'bcftools annotate --annotations {} --threads {} {} {} > {}'.format(
-            annotation_file_path, n_job, ' '.join(additional_arguments),
-            vcf_gz_file_path, output_vcf_file_path))
+            annotation_file_path,
+            n_job,
+            ' '.join(additional_arguments),
+            vcf_gz_file_path,
+            output_vcf_file_path,
+        ))
 
     if remove_input_vcf_gz_file_path_and_its_index:
 
@@ -137,22 +174,28 @@ def annotate_vcf_gz_using_bcftools_annotate(
         _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path + '.tbi'))
 
     return bgzip_and_tabix(
-        output_vcf_file_path, n_job=n_job, overwrite=overwrite)
+        output_vcf_file_path,
+        n_job=n_job,
+        overwrite=overwrite,
+    )
 
 
-def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
-                                      regions=None,
-                                      keep_filters=None,
-                                      include_expression=None,
-                                      n_job=1,
-                                      output_vcf_file_path=None,
-                                      overwrite=False):
+def filter_vcf_gz_using_bcftools_view(
+        vcf_gz_file_path,
+        regions=None,
+        keep_filters=None,
+        include_expression=None,
+        n_job=1,
+        output_vcf_file_path=None,
+        overwrite=False,
+):
 
     if output_vcf_file_path is None:
 
         output_vcf_file_path = join(
             dirname(vcf_gz_file_path),
-            stack()[0][3] + '.vcf')
+            stack()[0][3] + '.vcf',
+        )
 
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
@@ -175,8 +218,14 @@ def filter_vcf_gz_using_bcftools_view(vcf_gz_file_path,
             '--include \'{}\''.format(include_expression))
 
     _print_and_run_command('bcftools view {} --threads {} {} > {}'.format(
-        ' '.join(additional_arguments), n_job, vcf_gz_file_path,
-        output_vcf_file_path))
+        ' '.join(additional_arguments),
+        n_job,
+        vcf_gz_file_path,
+        output_vcf_file_path,
+    ))
 
     return bgzip_and_tabix(
-        output_vcf_file_path, n_job=n_job, overwrite=overwrite)
+        output_vcf_file_path,
+        n_job=n_job,
+        overwrite=overwrite,
+    )

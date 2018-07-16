@@ -1,3 +1,3 @@
-from os.path import dirname, join
+from os.path import dirname
 
-RESOURCE_DIRECTORY_PATH = join(dirname(dirname(__file__)), 'resource')
+RESOURCE_DIRECTORY_PATH = '{}/resource'.format(dirname(dirname(__file__)))

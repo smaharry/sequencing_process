@@ -1,5 +1,5 @@
 from inspect import stack
-from os.path import dirname, isfile, join
+from os.path import dirname, isfile
 
 from . import RESOURCE_DIRECTORY_PATH
 from ._print_and_run_command import _print_and_run_command
@@ -15,16 +15,18 @@ def concatenate_vcf_gzs_using_bcftools_concat(
 ):
 
     if output_vcf_file_path is None:
-
-        output_vcf_file_path = join(
-            dirname(vcf_gz_file_paths[0]),
-            stack()[0][3] + '.vcf',
-        )
-
+        
+        output_vcf_file_path = '{}/{}.vcf'.format(
+            dirname(vcf_gz_file_paths[0],
+            stack()[0][3],
+                  )
+        
+        
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
 
+            
     _print_and_run_command(
         'bcftools concat --allow-overlaps --threads {} {} > {}'.format(
             n_job,
@@ -50,10 +52,8 @@ def concatenate_vcf_gzs_using_bcftools_concat(
 
 def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         vcf_gz_file_path,
-        map_file_path=join(
-            RESOURCE_DIRECTORY_PATH,
-            'chrn_n.tsv',
-        ),
+        map_file_path= '{}/chrn_n.tsv'.format(RESOURCE_DIRECTORY_PATH),
+            ),
         remove_input_vcf_gz_file_path_and_its_index=False,
         n_job=1,
         output_vcf_file_path=None,
@@ -62,9 +62,9 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
 
     if output_vcf_file_path is None:
 
-        output_vcf_file_path = join(
-            dirname(vcf_gz_file_path),
-            stack()[0][3] + '.vcf',
+        output_vcf_file_path = '{}/{}.vcf'.format(
+            dirname(vcf_gz_file_path), 
+            stack()[0][3],
         )
 
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
@@ -104,11 +104,11 @@ def annotate_vcf_gz_using_snpeff(
 
     if output_vcf_file_path is None:
 
-        output_vcf_file_path = join(
-            dirname(vcf_gz_file_path),
-            stack()[0][3] + '.vcf',
+        output_vcf_file_path = '{}/{}.vcf'.format(
+            dirname(vcf_gz_file_path), 
+            stack()[0][3],
         )
-
+        
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
@@ -149,15 +149,16 @@ def annotate_vcf_gz_using_bcftools_annotate(
 
     if output_vcf_file_path is None:
 
-        output_vcf_file_path = join(
+        output_vcf_file_path = '{}/{}.vcf'.format(
             dirname(vcf_gz_file_path),
-            stack()[0][3] + '.vcf',
+            stack()[0][3],
         )
 
+        
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
-
+     
     _print_and_run_command(
         'bcftools annotate --annotations {} --threads {} {} {} > {}'.format(
             annotation_file_path,
@@ -166,7 +167,7 @@ def annotate_vcf_gz_using_bcftools_annotate(
             vcf_gz_file_path,
             output_vcf_file_path,
         ))
-
+    
     if remove_input_vcf_gz_file_path_and_its_index:
 
         _print_and_run_command('rm -rf {}'.format(vcf_gz_file_path))
@@ -192,11 +193,12 @@ def filter_vcf_gz_using_bcftools_view(
 
     if output_vcf_file_path is None:
 
-        output_vcf_file_path = join(
+        output_vcf_file_path = '{}/{}.vcf'.format(
             dirname(vcf_gz_file_path),
-            stack()[0][3] + '.vcf',
+            stack()[0][3],
         )
 
+        
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')

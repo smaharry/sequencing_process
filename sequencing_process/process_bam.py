@@ -1,5 +1,5 @@
 from inspect import stack
-from os.path import dirname, isdir, isfile, join
+from os.path import dirname, isdir, isfile
 
 from ._print_and_run_command import _print_and_run_command
 from .bgzip_and_tabix import bgzip_and_tabix
@@ -17,9 +17,9 @@ def sort_and_index_bam_using_samtools_sort_and_index(
 
     if output_bam_file_path is None:
 
-        output_bam_file_path = join(
+        output_bam_file_path = '{}/{}.bam'.format(
             dirname(bam_file_path),
-            stack()[0][3] + '.bam',
+            stack()[0][3],
         )
 
     if not overwrite and isfile(output_bam_file_path):
@@ -75,9 +75,9 @@ def mark_duplicates_in_bam_using_picard_markduplicates(
 
     if output_bam_file_path is None:
 
-        output_bam_file_path = join(
+        output_bam_file_path = '{}/{}.bam'.format(
             dirname(bam_file_path),
-            stack()[0][3] + '.bam',
+            stack()[0][3],
         )
 
     if not overwrite and isfile(output_bam_file_path):
@@ -213,9 +213,9 @@ def get_variants_from_bam_using_freebayes(
 
     if output_vcf_file_path is None:
 
-        output_vcf_file_path = join(
+        output_vcf_file_path = '{}/{}.vcf'.format(
             dirname(bam_file_path),
-            stack()[0][3] + '.vcf',
+            stack()[0][3],
         )
 
     additional_arguments = []

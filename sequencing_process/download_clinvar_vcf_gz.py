@@ -1,4 +1,4 @@
-from os.path import isfile, join
+from os.path import isfile
 
 from .support.support.network import download
 
@@ -17,7 +17,7 @@ def download_clinvar_vcf_gz(
 
         clinvar_vcf_gz_file_name = 'clinvar_{}.vcf.gz'.format(version)
 
-    clinvar_vcf_gz_file_path = join(
+    clinvar_vcf_gz_file_path = '{}/{}'.format(
         directory_path,
         clinvar_vcf_gz_file_name,
     )

@@ -1,5 +1,5 @@
 from inspect import stack
-from os.path import dirname, isdir, isfile, join
+from os.path import dirname, isdir, isfile
 from sys import platform
 
 from . import RESOURCE_DIRECTORY_PATH
@@ -41,14 +41,10 @@ def check_fastq_gzs_using_fastqc(
 
 def trim_fastq_gzs_using_skewer(
         fastq_gz_file_paths,
-        forward_bad_sequences_fasta_file_path=join(
-            RESOURCE_DIRECTORY_PATH,
-            'general_bad_sequences.fasta',
-        ),
-        reverse_bad_sequences_fasta_file_path=join(
-            RESOURCE_DIRECTORY_PATH,
-            'general_bad_sequences.fasta',
-        ),
+        forward_bad_sequences_fasta_file_path='{}/general_bad_sequences.fasta'.
+        format(RESOURCE_DIRECTORY_PATH),
+        reverse_bad_sequences_fasta_file_path='{}/general_bad_sequences.fasta'.
+        format(RESOURCE_DIRECTORY_PATH),
         snv_error_rate=0,
         indel_error_rate=0,
         overlap_length=12,
@@ -64,7 +60,7 @@ def trim_fastq_gzs_using_skewer(
 
     if output_directory_path is None:
 
-        output_directory_path = join(
+        output_directory_path = '{}/{}'.format(
             dirname(fastq_gz_file_paths[0]),
             stack()[0][3],
         )
@@ -109,10 +105,7 @@ def trim_fastq_gzs_using_skewer(
             ' '.join(additional_arguments + list(fastq_gz_file_paths)),
         ))
 
-    log_file_path = join(
-        output_directory_path,
-        'trimmed.log',
-    )
+    log_file_path = '{}/trimmed.log'.format(output_directory_path)
 
     print('{}:'.format(log_file_path))
 
@@ -121,9 +114,9 @@ def trim_fastq_gzs_using_skewer(
         print(log_file.read())
 
     output_fastq_file_paths = [
-        join(
+        '{}/trimmed-pair{}.fastq'.format(
             output_directory_path,
-            'trimmed-pair{}.fastq'.format(i),
+            i,
         ) for i in (
             1,
             2,
@@ -169,14 +162,14 @@ def align_fastq_gzs_using_bwa_mem(
     if not isfile(fasta_gz_file_path + '.alt'):
 
         raise FileNotFoundError(
-            'ALT-aware BWA-MEM alignment needs {}.'.format(fasta_gz_file_path +
-                                                           '.alt'))
+            'ALT-aware BWA-MEM alignment needs {}.alt.'.format(
+                fasta_gz_file_path))
 
     if output_bam_file_path is None:
 
-        output_bam_file_path = join(
+        output_bam_file_path = '{}/{}.bam'.format(
             dirname(fastq_gz_file_paths[0]),
-            stack()[0][3] + '.bam',
+            stack()[0][3],
         )
 
     if not overwrite and isfile(output_bam_file_path):
@@ -184,20 +177,14 @@ def align_fastq_gzs_using_bwa_mem(
         raise FileExistsError(output_bam_file_path)
 
     _print_and_run_command(
-        'bwa mem -t {} -v 3 {} {} | {} {} {}.alt | samtools view -Sb --threads {} > {}'.
+        'bwa mem -t {} -v 3 {} {} | {}/k8-0.2.3/k8-{} {}/bwa-postalt.js {}.alt | samtools view -Sb --threads {} > {}'.
         format(
             n_job,
             fasta_gz_file_path,
             ' '.join(fastq_gz_file_paths),
-            join(
-                RESOURCE_DIRECTORY_PATH,
-                'k8-0.2.3',
-                'k8-{}'.format(platform),
-            ),
-            join(
-                RESOURCE_DIRECTORY_PATH,
-                'bwa-postalt.js',
-            ),
+            RESOURCE_DIRECTORY_PATH,
+            platform,
+            RESOURCE_DIRECTORY_PATH,
             fasta_gz_file_path,
             n_job,
             output_bam_file_path,
@@ -233,9 +220,9 @@ def align_fastq_gzs_using_hisat2(
 
     if output_bam_file_path is None:
 
-        output_bam_file_path = join(
+        output_bam_file_path = '{}/{}.bam'.format(
             dirname(fastq_gz_file_paths[0]),
-            stack()[0][3] + '.bam',
+            stack()[0][3],
         )
 
     if not overwrite and isfile(output_bam_file_path):
@@ -268,10 +255,10 @@ def align_fastq_gzs_using_hisat2(
         additional_arguments.append('--dta --dta-cufflinks')
 
     _print_and_run_command(
-        'hisat2 -x {} --summary-file {} --threads {} {} | samtools view -Sb --threads {} > {}'.
+        'hisat2 -x {} --summary-file {}.summary --threads {} {} | samtools view -Sb --threads {} > {}'.
         format(
             fasta_file_path,
-            output_bam_file_path + '.summary',
+            output_bam_file_path,
             n_job,
             ' '.join(additional_arguments),
             n_job,
@@ -304,10 +291,7 @@ def count_transcripts_using_kallisto_quant(
             fasta_gz_file_path,
         ))
 
-    abundance_file_path = join(
-        output_directory_path,
-        'abundance.tsv',
-    )
+    abundance_file_path = '{}/abundance.tsv'.format(output_directory_path)
 
     if not overwrite and isfile(abundance_file_path):
 

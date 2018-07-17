@@ -20,8 +20,7 @@ def concatenate_vcf_gzs_using_bcftools_concat(
             dirname(vcf_gz_file_paths[0],
             stack()[0][3],
                   )
-        
-        
+           
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
@@ -48,7 +47,6 @@ def concatenate_vcf_gzs_using_bcftools_concat(
         n_job=n_job,
         overwrite=overwrite,
     )
-
 
 def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         vcf_gz_file_path,
@@ -90,7 +88,6 @@ def rename_chromosome_of_vcf_gz_using_bcftools_annotate(
         n_job=n_job,
         overwrite=overwrite,
     )
-
 
 def annotate_vcf_gz_using_snpeff(
         vcf_gz_file_path,
@@ -136,7 +133,6 @@ def annotate_vcf_gz_using_snpeff(
         overwrite=overwrite,
     )
 
-
 def annotate_vcf_gz_using_bcftools_annotate(
         vcf_gz_file_path,
         annotation_file_path,
@@ -180,7 +176,6 @@ def annotate_vcf_gz_using_bcftools_annotate(
         overwrite=overwrite,
     )
 
-
 def filter_vcf_gz_using_bcftools_view(
         vcf_gz_file_path,
         regions=None,
@@ -197,8 +192,7 @@ def filter_vcf_gz_using_bcftools_view(
             dirname(vcf_gz_file_path),
             stack()[0][3],
         )
-
-        
+   
     if not overwrite and isfile(output_vcf_file_path + '.gz'):
 
         raise FileExistsError(output_vcf_file_path + '.gz')
